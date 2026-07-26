@@ -69,3 +69,13 @@ if (heroStage && heroSection && !reduceMotion) {
     if (rect.bottom > 0) heroStage.style.marginTop = `${Math.min(window.scrollY * 0.08, 42)}px`;
   }, { passive: true });
 }
+
+// Extra mobile motion: subtle scroll parallax without requiring a mouse.
+if (heroStage && heroSection && window.matchMedia('(max-width: 900px)').matches) {
+  window.addEventListener('scroll', () => {
+    const rect = heroSection.getBoundingClientRect();
+    if (rect.bottom <= 0) return;
+    const offset = Math.max(-18, Math.min(18, -rect.top * 0.035));
+    heroStage.style.setProperty('--mobile-scroll-y', `${offset}px`);
+  }, { passive: true });
+}
