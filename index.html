@@ -10,9 +10,10 @@
   <meta property="og:title" content="Sam Kazemi — Broadcast Director" />
   <meta property="og:description" content="TV direction, live production, vMix and broadcast control-room workflows." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://samkazemi.com/" />
+  <meta property="og:url" content="https://samkazemii.github.io/samkazemi/" />
   <title>Sam Kazemi — Broadcast Director</title>
-  <link rel="canonical" href="https://samkazemi.com/" />
+  <link rel="canonical" href="https://samkazemii.github.io/samkazemi/" />
+  <meta property="og:image" content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" />
   <link rel="stylesheet" href="styles.css" />
   <script type="application/ld+json">
   {
@@ -20,14 +21,23 @@
     "@type":"Person",
     "name":"Sam Kazemi",
     "alternateName":"سام کاظمی",
-    "url":"https://samkazemi.com/",
+    "url":"https://samkazemii.github.io/samkazemi/",
     "sameAs":["https://www.linkedin.com/in/samkazemi"],
     "jobTitle":"Broadcast Director",
     "knowsAbout":["TV Direction","Live Production","vMix","Broadcast Control Room","Live Streaming"]
   }
   </script>
 </head>
-<body>
+<body class="is-loading">
+  <div class="boot-loader" id="bootLoader" aria-live="polite">
+    <div class="boot-grid"></div>
+    <div class="boot-panel">
+      <div class="boot-logo">SK</div>
+      <p class="boot-status" id="bootStatus">INITIALIZING CONTROL ROOM...</p>
+      <div class="boot-progress"><span id="bootProgress"></span></div>
+      <div class="boot-meta"><span>VMIX SYSTEM</span><span id="bootPercent">0%</span></div>
+    </div>
+  </div>
   <div class="noise"></div>
   <div class="cursor-glow" id="cursorGlow"></div>
 
@@ -40,6 +50,7 @@
       <a href="#work">Work</a>
       <a href="#expertise">Expertise</a>
       <a href="#about">About</a>
+      <a href="#skills">Skills</a>
       <a class="nav-cta" href="https://www.linkedin.com/in/samkazemi" target="_blank" rel="noreferrer">LinkedIn ↗</a>
     </nav>
   </header>
@@ -137,6 +148,19 @@
         <div class="expertise-item reveal">
           <span>04</span><h3>Visual Storytelling</h3><p>Graphics, pacing and framing that make important stories easier to understand and remember.</p>
         </div>
+      </div>
+    </section>
+
+    <section class="section skills" id="skills">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> CORE SKILLS</p>
+        <h2>Technical precision.<br>Editorial instinct.</h2>
+      </div>
+      <div class="skills-grid">
+        <article class="skill-card reveal" data-value="98"><div class="skill-ring"><span>98%</span></div><h3>vMix</h3><p>Live switching, triggers, overlays, audio buses and remote guests.</p></article>
+        <article class="skill-card reveal delay-1" data-value="97"><div class="skill-ring"><span>97%</span></div><h3>Broadcast Direction</h3><p>Timing, camera calls, talent coordination and live editorial decisions.</p></article>
+        <article class="skill-card reveal delay-2" data-value="95"><div class="skill-ring"><span>95%</span></div><h3>Live Production</h3><p>Reliable workflows for high-pressure, multi-source television programs.</p></article>
+        <article class="skill-card reveal" data-value="92"><div class="skill-ring"><span>92%</span></div><h3>After Effects</h3><p>Broadcast motion graphics, visualizers, titles and animated packages.</p></article>
       </div>
     </section>
 
