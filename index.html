@@ -22,7 +22,7 @@
   <meta name="twitter:title" content="Sam Kazemi — Broadcast Director" />
   <meta name="twitter:description" content="TV direction, live production, vMix and broadcast control-room workflows." />
   <meta name="twitter:image" content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" />
-  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="stylesheet" href="styles.css?v=9" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -44,6 +44,7 @@
         "url": "https://samkazemii.github.io/samkazemi/",
         "image": "https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg",
         "sameAs": ["https://www.linkedin.com/in/samkazemi"],
+        "email": "mailto:sam.kazmi@live.com",
         "jobTitle": ["Broadcast Director", "TV Director", "Live Production Specialist"],
         "knowsAbout": ["TV Direction", "Live Production", "vMix", "Broadcast Control Room", "Live Streaming", "After Effects"],
         "mainEntityOfPage": {"@id": "https://samkazemii.github.io/samkazemi/#website"}
@@ -82,7 +83,7 @@
   <main id="top">
     <section class="hero hero-photo" aria-label="Sam Kazemi in a broadcast control room">
       <div class="hero-photo-stage" id="heroPhotoStage">
-        <img class="hero-photo-image" src="sam-control-room-hero.jpg?v=8" alt="Sam Kazemi wearing a broadcast headset inside a television control room" />
+        <img class="hero-photo-image" src="sam-control-room-hero.jpg?v=9" alt="Sam Kazemi wearing a broadcast headset inside a television control room" />
         <div class="hero-photo-vignette"></div>
         <div class="hero-photo-light light-one"></div>
         <div class="hero-photo-light light-two"></div>
@@ -132,16 +133,25 @@
         </div>
 
         <div class="monitor-wall" aria-label="Broadcast monitor wall">
-          <div class="mini-monitor"><span>CAM 1</span><div class="monitor-figure"></div></div>
-          <div class="mini-monitor"><span>CAM 2</span><div class="monitor-grid"></div></div>
-          <div class="program-monitor">
+          <button class="mini-monitor source-monitor" type="button" data-source="0" disabled><span>CAM 1</span><img src="assets/feed-control-room.jpg" alt="Camera 1 source" /></button>
+          <button class="mini-monitor source-monitor" type="button" data-source="1" disabled><span>CAM 2</span><img src="assets/feed-2.jpg" alt="Camera 2 source" /></button>
+          <div class="program-monitor" id="programMonitor">
             <span class="monitor-label">PROGRAM</span>
+            <img class="program-feed" id="programImage" src="assets/feed-control-room.jpg" alt="Current program feed" />
+            <div class="program-shade"></div>
             <div class="program-message" id="programMessage">PRESS START TO BEGIN</div>
             <div class="program-sub" id="programSub">You have 30 seconds to complete the broadcast sequence.</div>
+            <div class="live-bug" id="liveBug">LIVE</div>
           </div>
-          <div class="mini-monitor"><span>REMOTE</span><div class="monitor-avatar">GUEST</div></div>
-          <div class="mini-monitor"><span>PREVIEW</span><div class="monitor-bars"></div></div>
+          <button class="mini-monitor source-monitor" type="button" data-source="2" disabled><span>REMOTE</span><img src="assets/feed-3.jpg" alt="Remote guest source" /></button>
+          <button class="mini-monitor source-monitor" type="button" data-source="3" disabled><span>PREVIEW</span><img src="assets/feed-4.jpg" alt="Preview source" /></button>
         </div>
+
+        <div class="game-task" id="gameTask" aria-live="polite">
+          <div class="task-copy"><small>CURRENT OPERATION</small><strong id="taskTitle">Console offline</strong><p id="taskText">Start the broadcast to receive your first cue.</p></div>
+          <div class="task-action" id="taskAction"><span class="standby-mark">STANDBY</span></div>
+        </div>
+        <div class="event-log" id="eventLog" aria-label="Broadcast event log"><span>00:00 — System ready.</span></div>
 
         <div class="console-panel">
           <div class="console-lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -204,7 +214,7 @@
 
     <section class="section about" id="about">
       <div class="about-card reveal">
-        <div class="about-monogram">SK</div>
+        <div class="about-photo"><img src="assets/sam-about.jpg" alt="Sam Kazemi in a live television control room" loading="lazy" /></div>
         <div class="about-copy">
           <p class="eyebrow"><span></span> ABOUT</p>
           <h2>I make complicated live productions feel simple.</h2>
@@ -215,7 +225,7 @@
             <h3>درباره من</h3>
             <p>سام کاظمی، کارگردان پخش و متخصص تولید برنامه‌های زنده تلویزیونی است. فعالیت او بر مدیریت اتاق فرمان، کارگردانی فنی، تولید با vMix، سوئیچ زنده، گرافیک تلویزیونی و هماهنگی دقیق روند پخش متمرکز است؛ با هدف ساخت برنامه‌هایی روان، قابل اعتماد و جذاب برای مخاطب.</p>
           </div>
-          <a class="text-link" href="https://www.linkedin.com/in/samkazemi" target="_blank" rel="noreferrer">Connect on LinkedIn <span>↗</span></a>
+          <div class="about-links"><a class="text-link" href="mailto:sam.kazmi@live.com">sam.kazmi@live.com <span>↗</span></a><a class="text-link" href="https://www.linkedin.com/in/samkazemi" target="_blank" rel="noreferrer">Connect on LinkedIn <span>↗</span></a></div>
         </div>
       </div>
     </section>
@@ -223,7 +233,7 @@
     <section class="contact reveal">
       <p class="eyebrow"><span></span> LET’S CREATE SOMETHING LIVE</p>
       <h2>Good broadcasts don’t happen by accident.</h2>
-      <a class="btn btn-primary btn-large" href="https://www.linkedin.com/in/samkazemi" target="_blank" rel="noreferrer">Start a conversation ↗</a>
+      <a class="btn btn-primary btn-large" href="mailto:sam.kazmi@live.com">Email Sam ↗</a><p class="contact-email">sam.kazmi@live.com</p>
     </section>
   </main>
 
@@ -233,6 +243,6 @@
     <span>© <span id="year"></span> Sam Kazemi</span>
   </footer>
 
-  <script src="script.js?v=8"></script>
+  <script src="script.js?v=9"></script>
 </body>
 </html>

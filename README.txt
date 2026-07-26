@@ -1,11 +1,12 @@
-SAM KAZEMI PORTFOLIO — V7 CINEMATIC HERO
+SAM KAZEMI — CINEMATIC PORTFOLIO V9
 
-Upload every file in this folder to the ROOT of your GitHub repository, beside index.html.
-Do not delete the Google verification HTML file already in your repository.
+V9 changes:
+- Sam's uploaded control-room portrait replaces the SK placeholder in About.
+- Contact email added: sam.kazmi@live.com
+- Rebuilt 30-second Control Room Challenge with real mini-operations:
+  camera source selection, audio fader calibration, remote guest sync,
+  preview source matching and two-stage GO LIVE confirmation.
+- Randomized camera/preview choices and dynamic program monitor images.
+- Success message: "خب، تو الان دوست خوب سام هستی ❤️"
 
-V7 changes:
-- Text moved closer to the portrait without covering Sam's face
-- Glass editorial panel for better readability
-- Responsive crop preserving face, headset and control room
-- Animated live clock, camera labels and audio meters
-- SEO, sitemap and robots.txt preserved
+Deploy all files and the assets folder together to GitHub Pages.
