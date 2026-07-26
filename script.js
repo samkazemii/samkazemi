@@ -78,8 +78,8 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   const again=document.getElementById('playAgain');
   if(!shell||!start)return;
 
-  const feedFiles=['assets/generated/cam1.jpg','assets/generated/audio.jpg','assets/generated/remote.jpg','assets/generated/preview.jpg'];
-  const operationArt={cam:'assets/generated/cam1.jpg',audio:'assets/generated/audio.jpg',remote:'assets/generated/remote.jpg',preview:'assets/generated/preview.jpg',live:'assets/generated/live.jpg',room:'assets/generated/control-room.jpg'};
+  const feedFiles=['game-cam1.jpg','game-audio.jpg','game-remote.jpg','game-preview.jpg'];
+  const operationArt={cam:'game-cam1.jpg',audio:'game-audio.jpg',remote:'game-remote.jpg',preview:'game-preview.jpg',live:'game-live.jpg',room:'game-control-room.jpg'};
   const sequence=['CAM1','AUDIO','REMOTE','PREVIEW','LIVE'];
   let step=0,seconds=30,interval=null,active=false,pending=false,selectedFeed=0,previewFeedIndex=1,remoteReady=false,audioReady=false;
   const setControls=enabled=>buttons.forEach((b,i)=>b.disabled=!enabled||pending||i!==step);
