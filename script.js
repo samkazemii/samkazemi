@@ -78,7 +78,8 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   const again=document.getElementById('playAgain');
   if(!shell||!start)return;
 
-  const feedFiles=['assets/feed-control-room.jpg','assets/feed-2.jpg','assets/feed-3.jpg','assets/feed-4.jpg'];
+  const feedFiles=['assets/generated/cam1.jpg','assets/generated/audio.jpg','assets/generated/remote.jpg','assets/generated/preview.jpg'];
+  const operationArt={cam:'assets/generated/cam1.jpg',audio:'assets/generated/audio.jpg',remote:'assets/generated/remote.jpg',preview:'assets/generated/preview.jpg',live:'assets/generated/live.jpg',room:'assets/generated/control-room.jpg'};
   const sequence=['CAM1','AUDIO','REMOTE','PREVIEW','LIVE'];
   let step=0,seconds=30,interval=null,active=false,pending=false,selectedFeed=0,previewFeedIndex=1,remoteReady=false,audioReady=false;
   const setControls=enabled=>buttons.forEach((b,i)=>b.disabled=!enabled||pending||i!==step);
@@ -106,7 +107,7 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   }
 
   function cameraOperation(){
-    pending=true;setControls(false);const order=[0,1,2,3].sort(()=>Math.random()-.5);selectedFeed=order[0];taskTitle.textContent='CHOOSE A CAMERA';taskText.textContent='Pick any source. The selected shot will immediately appear on the program monitor.';taskAction.innerHTML='<span class="task-hint">SELECT A MONITOR ABOVE</span>';sources.forEach(s=>s.disabled=false);message.textContent='CAMERA ROUTING';sub.textContent='Select a source from the monitor wall.';
+    pending=true;setControls(false);const order=[0,1,2,3].sort(()=>Math.random()-.5);selectedFeed=order[0];taskTitle.textContent='CHOOSE A CAMERA';taskText.textContent='Pick any source. The selected shot will immediately appear on the program monitor.';taskAction.innerHTML=`<div class="operation-visual"><img src="${operationArt.cam}" alt="Broadcast camera ready"><div><b>CAMERA ROUTING</b><span>Select one of the source monitors above.</span></div></div>`;sources.forEach(s=>s.disabled=false);message.textContent='CAMERA ROUTING';sub.textContent='Select a source from the monitor wall.';
     sources.forEach((s,i)=>s.classList.toggle('recommended',i===selectedFeed));
   }
   sources.forEach((source,index)=>source.addEventListener('click',()=>{
@@ -114,18 +115,18 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   }));
 
   function audioOperation(){
-    pending=true;setControls(false);taskTitle.textContent='SET AUDIO LEVEL';taskText.textContent='Move the fader into the green zone (62–78), then lock the level.';taskAction.innerHTML='<div class="audio-task"><input id="audioFader" type="range" min="0" max="100" value="30" aria-label="Audio level"><output id="audioValue">30</output><button type="button" id="lockAudio">LOCK LEVEL</button></div>';
+    pending=true;setControls(false);taskTitle.textContent='SET AUDIO LEVEL';taskText.textContent='Move the fader into the green zone (62–78), then lock the level.';taskAction.innerHTML=`<div class="operation-split"><img class="operation-image" src="${operationArt.audio}" alt="Broadcast audio mixer"><div class="audio-task"><input id="audioFader" type="range" min="0" max="100" value="30" aria-label="Audio level"><output id="audioValue">30</output><button type="button" id="lockAudio">LOCK LEVEL</button></div></div>`;
     const f=taskAction.querySelector('#audioFader'),o=taskAction.querySelector('#audioValue'),lock=taskAction.querySelector('#lockAudio');f.addEventListener('input',()=>{o.value=f.value;o.textContent=f.value;programMonitor.style.setProperty('--audio-level',f.value+'%')});lock.addEventListener('click',()=>{const v=Number(f.value);if(v>=62&&v<=78){audioReady=true;taskAction.innerHTML='<span class="operation-ok">AUDIO CLEAN</span>';completeStep(`Audio locked at ${v}%.`)}else failStep('Audio level must be inside the green zone.')});
   }
   function remoteOperation(){
-    pending=true;setControls(false);taskTitle.textContent='REMOTE GUEST LINK';taskText.textContent='Connect the guest and wait for video, audio and return-feed sync.';taskAction.innerHTML='<button class="connect-guest" id="connectGuest" type="button">CONNECT GUEST</button><div class="sync-state" id="syncState">OFFLINE</div>';
+    pending=true;setControls(false);taskTitle.textContent='REMOTE GUEST LINK';taskText.textContent='Connect the guest and wait for video, audio and return-feed sync.';taskAction.innerHTML=`<div class="operation-split"><img class="operation-image" src="${operationArt.remote}" alt="Remote guest connection"><div class="remote-actions"><button class="connect-guest" id="connectGuest" type="button">CONNECT GUEST</button><div class="sync-state" id="syncState">OFFLINE</div></div></div>`;
     const c=taskAction.querySelector('#connectGuest'),state=taskAction.querySelector('#syncState');c.addEventListener('click',()=>{c.disabled=true;state.textContent='HANDSHAKE…';message.textContent='CONNECTING REMOTE';let pct=0;const t=setInterval(()=>{pct+=25;state.textContent=`SYNC ${pct}%`;if(pct>=100){clearInterval(t);remoteReady=true;state.textContent='GUEST CONNECTED';setProgram(feedFiles[2]);completeStep('Remote guest connected and synchronized.')}},170)});
   }
   function previewOperation(){
     pending=true;setControls(false);previewFeedIndex=Math.floor(Math.random()*4);taskTitle.textContent='BUILD PREVIEW';taskText.textContent=`Load SOURCE ${previewFeedIndex+1} into preview before transmission.`;taskAction.innerHTML='<div class="preview-choices">'+feedFiles.map((src,i)=>`<button type="button" data-preview="${i}"><img src="${src}" alt="Source ${i+1}"><span>SOURCE ${i+1}</span></button>`).join('')+'</div>';taskAction.querySelectorAll('[data-preview]').forEach(btn=>btn.addEventListener('click',()=>{const i=Number(btn.dataset.preview);if(i!==previewFeedIndex){failStep('That is not the requested preview source.');return}setProgram(feedFiles[i]);taskAction.innerHTML='<span class="operation-ok">PREVIEW READY</span>';completeStep(`Source ${i+1} loaded in preview.`)}));
   }
   function liveOperation(){
-    pending=true;setControls(false);taskTitle.textContent='FINAL TAKE';taskText.textContent='Arm transmission, then take the show live.';taskAction.innerHTML='<div class="live-confirm"><button type="button" id="armLive">ARM TRANSMISSION</button><button type="button" id="takeLive" disabled>TAKE LIVE</button></div>';const arm=taskAction.querySelector('#armLive'),take=taskAction.querySelector('#takeLive');arm.addEventListener('click',()=>{arm.classList.add('armed');arm.textContent='ARMED';take.disabled=false;message.textContent='TRANSMISSION ARMED';sub.textContent='Final confirmation required.'});take.addEventListener('click',()=>{liveBug.classList.add('show');completeStep('Broadcast taken live.')});
+    pending=true;setControls(false);taskTitle.textContent='FINAL TAKE';taskText.textContent='Arm transmission, then take the show live.';taskAction.innerHTML=`<div class="operation-split"><img class="operation-image" src="${operationArt.live}" alt="On air broadcast sign"><div class="live-confirm"><button type="button" id="armLive">ARM TRANSMISSION</button><button type="button" id="takeLive" disabled>TAKE LIVE</button></div></div>`;const arm=taskAction.querySelector('#armLive'),take=taskAction.querySelector('#takeLive');arm.addEventListener('click',()=>{arm.classList.add('armed');arm.textContent='ARMED';take.disabled=false;message.textContent='TRANSMISSION ARMED';sub.textContent='Final confirmation required.'});take.addEventListener('click',()=>{liveBug.classList.add('show');completeStep('Broadcast taken live.')});
   }
   const operations={CAM1:cameraOperation,AUDIO:audioOperation,REMOTE:remoteOperation,PREVIEW:previewOperation,LIVE:liveOperation};
   buttons.forEach(btn=>btn.addEventListener('click',()=>{if(!active||pending)return;btn.classList.add('hit');setTimeout(()=>btn.classList.remove('hit'),180);const expected=sequence[step];if(btn.dataset.action!==expected){failStep('Wrong console control. Follow the current operation.');return}operations[expected]()}));
