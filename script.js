@@ -79,3 +79,22 @@ if (heroStage && heroSection && window.matchMedia('(max-width: 900px)').matches)
     heroStage.style.setProperty('--mobile-scroll-y', `${offset}px`);
   }, { passive: true });
 }
+
+
+// V7 live control-room HUD: clock, camera rotation and animated tally labels.
+const liveClock = document.getElementById('liveClock');
+const programFeed = document.getElementById('programFeed');
+const previewFeed = document.getElementById('previewFeed');
+const cameraFeeds = ['CAM 1','CAM 2','CAM 3','CAM 4','REMOTE'];
+let feedIndex = 0;
+function updateLiveClock(){
+  if (!liveClock) return;
+  liveClock.textContent = new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
+}
+updateLiveClock();
+setInterval(updateLiveClock,1000);
+setInterval(() => {
+  feedIndex = (feedIndex + 1) % cameraFeeds.length;
+  if (previewFeed) previewFeed.textContent = cameraFeeds[feedIndex];
+  setTimeout(() => { if (programFeed) programFeed.textContent = cameraFeeds[feedIndex]; }, 650);
+}, 3200);

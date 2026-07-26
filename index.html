@@ -4,27 +4,51 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#08090d" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="description" content="Sam Kazemi — TV Director, Broadcast Director and Live Production Specialist working across control rooms, vMix, live streaming and television production." />
   <meta name="keywords" content="Sam Kazemi, سام کاظمی, TV Director, Broadcast Director, vMix Operator, Live Production, Television Control Room" />
   <meta name="author" content="Sam Kazemi" />
   <meta property="og:title" content="Sam Kazemi — Broadcast Director" />
   <meta property="og:description" content="TV direction, live production, vMix and broadcast control-room workflows." />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content="profile" />
+  <meta property="og:site_name" content="Sam Kazemi Portfolio" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="https://samkazemii.github.io/samkazemi/" />
   <title>Sam Kazemi — Broadcast Director</title>
   <link rel="canonical" href="https://samkazemii.github.io/samkazemi/" />
   <meta property="og:image" content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" />
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <meta property="og:image:alt" content="Sam Kazemi in a television broadcast control room" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sam Kazemi — Broadcast Director" />
+  <meta name="twitter:description" content="TV direction, live production, vMix and broadcast control-room workflows." />
+  <meta name="twitter:image" content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" />
+  <link rel="stylesheet" href="styles.css?v=7" />
   <script type="application/ld+json">
   {
-    "@context":"https://schema.org",
-    "@type":"Person",
-    "name":"Sam Kazemi",
-    "alternateName":"سام کاظمی",
-    "url":"https://samkazemii.github.io/samkazemi/",
-    "sameAs":["https://www.linkedin.com/in/samkazemi"],
-    "jobTitle":"Broadcast Director",
-    "knowsAbout":["TV Direction","Live Production","vMix","Broadcast Control Room","Live Streaming"]
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://samkazemii.github.io/samkazemi/#website",
+        "url": "https://samkazemii.github.io/samkazemi/",
+        "name": "Sam Kazemi Portfolio",
+        "description": "Official portfolio of Sam Kazemi, Broadcast Director and Live Production Specialist.",
+        "inLanguage": ["en", "fa"],
+        "publisher": {"@id": "https://samkazemii.github.io/samkazemi/#person"}
+      },
+      {
+        "@type": "Person",
+        "@id": "https://samkazemii.github.io/samkazemi/#person",
+        "name": "Sam Kazemi",
+        "alternateName": "سام کاظمی",
+        "url": "https://samkazemii.github.io/samkazemi/",
+        "image": "https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg",
+        "sameAs": ["https://www.linkedin.com/in/samkazemi"],
+        "jobTitle": ["Broadcast Director", "TV Director", "Live Production Specialist"],
+        "knowsAbout": ["TV Direction", "Live Production", "vMix", "Broadcast Control Room", "Live Streaming", "After Effects"],
+        "mainEntityOfPage": {"@id": "https://samkazemii.github.io/samkazemi/#website"}
+      }
+    ]
   }
   </script>
 </head>
@@ -58,12 +82,27 @@
   <main id="top">
     <section class="hero hero-photo" aria-label="Sam Kazemi in a broadcast control room">
       <div class="hero-photo-stage" id="heroPhotoStage">
-        <img class="hero-photo-image" src="sam-control-room-hero.jpg?v=4" alt="Sam Kazemi wearing a broadcast headset inside a television control room" />
+        <img class="hero-photo-image" src="sam-control-room-hero.jpg?v=7" alt="Sam Kazemi wearing a broadcast headset inside a television control room" />
         <div class="hero-photo-vignette"></div>
         <div class="hero-photo-light light-one"></div>
         <div class="hero-photo-light light-two"></div>
         <div class="hero-photo-scan"></div>
         <div class="hero-photo-grain"></div>
+      </div>
+
+      <div class="hero-copy-overlay" aria-label="Sam Kazemi introduction">
+        <p class="hero-kicker"><span></span> LIVE BROADCAST DIRECTION</p>
+        <h1><small>SAM</small><strong>KAZEMI</strong></h1>
+        <p class="hero-role">TV DIRECTOR &amp; BROADCAST SPECIALIST</p>
+        <p class="hero-description">Director, producer and control-room operator creating confident live television, current-affairs programs and visual broadcast systems.</p>
+        <a class="hero-work-button" href="#work">VIEW MY WORK <b>→</b></a>
+      </div>
+
+      <div class="broadcast-hud" aria-hidden="true">
+        <div class="hud-program"><span>PROGRAM</span><b id="programFeed">CAM 1</b></div>
+        <div class="hud-preview"><span>PREVIEW</span><b id="previewFeed">CAM 3</b></div>
+        <div class="hud-audio"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="hud-clock" id="liveClock">00:00:00</div>
       </div>
 
       <a class="hero-hotspot" href="#work" aria-label="View Sam Kazemi's selected work"></a>
@@ -194,6 +233,6 @@
     <span>© <span id="year"></span> Sam Kazemi</span>
   </footer>
 
-  <script src="script.js?v=4"></script>
+  <script src="script.js?v=7"></script>
 </body>
 </html>
