@@ -1,4 +1,4 @@
--- Sam Kazemi Community Hub — Supabase Realtime setup
+-- Sam Kazemi Community Hub V18 — database, Realtime, secure admin moderation
 -- Run this entire file once in Supabase Dashboard > SQL Editor.
 
 create table if not exists public.community_messages (
@@ -9,9 +9,11 @@ create table if not exists public.community_messages (
   body text not null default '' check (char_length(body) <= 4000),
   reply_to bigint references public.community_messages(id) on delete set null,
   media jsonb not null default '[]'::jsonb,
-  is_ai boolean not null default false
+  is_ai boolean not null default false,
+  is_pinned boolean not null default false
 );
 
+alter table public.community_messages add column if not exists is_pinned boolean not null default false;
 alter table public.community_messages enable row level security;
 
 drop policy if exists "public can read community messages" on public.community_messages;
@@ -26,12 +28,28 @@ with check (
   char_length(display_name) between 2 and 32
   and char_length(body) <= 4000
   and jsonb_array_length(media) <= 3
+  and is_pinned = false
 );
 
+-- Only the verified owner may pin/unpin or delete messages.
+drop policy if exists "owner can update community messages" on public.community_messages;
+create policy "owner can update community messages"
+on public.community_messages for update to authenticated
+using (lower(coalesce(auth.jwt() ->> 'email','')) = 'sam.kazmi00990@gmail.com')
+with check (lower(coalesce(auth.jwt() ->> 'email','')) = 'sam.kazmi00990@gmail.com');
+
+drop policy if exists "owner can delete community messages" on public.community_messages;
+create policy "owner can delete community messages"
+on public.community_messages for delete to authenticated
+using (lower(coalesce(auth.jwt() ->> 'email','')) = 'sam.kazmi00990@gmail.com');
+
 grant select, insert on public.community_messages to anon, authenticated;
+grant update, delete on public.community_messages to authenticated;
 grant usage, select on sequence public.community_messages_id_seq to anon, authenticated;
 
--- Add the table to Realtime safely.
+-- Add full old-row data so realtime DELETE events include the message id.
+alter table public.community_messages replica identity full;
+
 do $$
 begin
   if not exists (
@@ -44,7 +62,6 @@ begin
   end if;
 end $$;
 
--- Public media bucket. Uploaded URLs are visible to everyone in the public chat.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'community-media',
@@ -67,3 +84,11 @@ drop policy if exists "public can upload community media" on storage.objects;
 create policy "public can upload community media"
 on storage.objects for insert to anon, authenticated
 with check (bucket_id = 'community-media');
+
+drop policy if exists "owner can delete community media" on storage.objects;
+create policy "owner can delete community media"
+on storage.objects for delete to authenticated
+using (
+  bucket_id = 'community-media'
+  and lower(coalesce(auth.jwt() ->> 'email','')) = 'sam.kazmi00990@gmail.com'
+);
