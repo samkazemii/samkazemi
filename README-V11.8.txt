@@ -6,7 +6,7 @@ FIXES
 - Text questions and one attached image/video/audio file can be sent to the AI for analysis.
 - A typing indicator and useful error handling were added.
 - The ugly SK:// label was changed to SK.
-- The floating email button now opens a Gmail compose window addressed to sam.kazmi@live.com.
+- The floating email button now opens a Gmail compose window addressed to sam.kazmi0090@gmail.com.
 - Existing keyboard/sound-pad protections from V11.7 remain in place.
 
 IMPORTANT

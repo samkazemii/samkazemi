@@ -1,6 +1,6 @@
--- V12.3 secure admin delete policy for the existing public.messages table.
+-- V13.0 secure admin delete policy for the existing public.messages table.
 -- Run once in Supabase Dashboard > SQL Editor.
--- IMPORTANT: First create/invite sam.kazmi@live.com in Authentication > Users.
+-- IMPORTANT: First create/invite sam.kazmi0090@gmail.com in Authentication > Users.
 
 alter table public.messages enable row level security;
 
@@ -23,7 +23,7 @@ with check (
 drop policy if exists "sam only delete messages" on public.messages;
 create policy "sam only delete messages" on public.messages
 for delete to authenticated
-using (lower(coalesce(auth.jwt() ->> 'email','')) = 'sam.kazmi@live.com');
+using (lower(coalesce(auth.jwt() ->> 'email','')) = 'sam.kazmi0090@gmail.com');
 
 grant select, insert on public.messages to anon, authenticated;
 grant delete on public.messages to authenticated;
@@ -37,5 +37,5 @@ create policy "sam only delete community media" on storage.objects
 for delete to authenticated
 using (
   bucket_id = 'community-media'
-  and lower(coalesce(auth.jwt() ->> 'email','')) = 'sam.kazmi@live.com'
+  and lower(coalesce(auth.jwt() ->> 'email','')) = 'sam.kazmi0090@gmail.com'
 );
