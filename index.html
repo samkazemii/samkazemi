@@ -344,6 +344,88 @@
 <p>Broadcast Director • Live Production • vMix</p>
 <span>© <span id="year"></span> Sam Kazemi</span>
 <p class="site-credit">Designed and developed by Sam Kazemi · Website design inquiries: <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=sam.kazmi%40live.com&amp;su=Website%20Design%20Inquiry" rel="noopener noreferrer" target="_blank">sam.kazmi@live.com</a></p></footer>
-<script src="language.js?v=1"></script><script src="script.js?v=13"></script>
+<!-- Community Hub + floating contact buttons (V11.5) -->
+<div class="floating-contact-stack" aria-label="Quick contact">
+  <a class="floating-contact telegram" href="https://t.me/samkazmi" target="_blank" rel="noopener noreferrer" aria-label="Telegram: @samkazmi" title="Telegram @samkazmi">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 3.3 18.8 19c-.2 1.1-.9 1.4-1.8.9l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.8 8.8-8c.4-.3-.1-.5-.6-.2L6.6 13l-4.7-1.5c-1-.3-1-1 .2-1.5L20.4 3c.9-.3 1.7.2 1.5.3Z"/></svg>
+  </a>
+  <a class="floating-contact email" href="mailto:sam.kazmi@live.com?subject=Hello%20Sam" aria-label="Email Sam Kazemi" title="sam.kazmi@live.com">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm9 7.2L20.4 7H3.6L12 12.2Zm0 2.3L3 8.9V17h18V8.9l-9 5.6Z"/></svg>
+  </a>
+</div>
+
+<button class="community-launcher" id="communityLauncher" type="button" aria-expanded="false" aria-controls="communityHub">
+  <span class="community-launcher-icon">⌁</span>
+  <span class="community-launcher-copy"><b data-community-i18n="hub">COMMUNITY HUB</b><small><i></i><span data-community-i18n="live">LIVE</span></small></span>
+</button>
+
+<section class="community-hub" id="communityHub" aria-hidden="true" aria-label="Community Hub">
+  <div class="community-scanlines" aria-hidden="true"></div>
+  <header class="community-header">
+    <div class="community-brand">
+      <span class="community-terminal">SK://</span>
+      <div><strong data-community-i18n="hub">COMMUNITY HUB</strong><small data-community-i18n="designed">Designed by Sam Kazemi</small></div>
+    </div>
+    <div class="community-header-actions">
+      <label class="ai-toggle" title="AI requires secure API configuration">
+        <input id="communityAiToggle" type="checkbox"/>
+        <span></span><b>AI</b>
+      </label>
+      <button id="communityMinimize" class="community-icon-button" type="button" aria-label="Minimize">—</button>
+      <button id="communityClose" class="community-icon-button" type="button" aria-label="Close">×</button>
+    </div>
+  </header>
+
+  <div class="community-statusbar">
+    <span><i class="status-dot"></i><b id="communityConnectionLabel" data-community-i18n="previewMode">PREVIEW MODE</b></span>
+    <span id="communityOnlineCount">3 <span data-community-i18n="online">online</span></span>
+  </div>
+
+  <div class="community-login" id="communityLogin">
+    <div class="community-login-glow"></div>
+    <span class="login-glyph">⌬</span>
+    <h3 data-community-i18n="joinTitle">Join the control-room community</h3>
+    <p data-community-i18n="joinText">Ask a production question, share a screenshot, and help other creators.</p>
+    <label><span data-community-i18n="displayName">Display name</span><input id="communityName" maxlength="32" autocomplete="name" placeholder="Your name"/></label>
+    <label><span data-community-i18n="email">Email</span><input id="communityEmail" type="email" autocomplete="email" placeholder="you@example.com"/></label>
+    <label class="community-consent"><input id="communityNotify" type="checkbox" checked/><span data-community-i18n="notifyConsent">Email me when someone replies to my message</span></label>
+    <button id="communityEnter" class="community-primary" type="button"><span data-community-i18n="enterHub">ENTER HUB</span> ↗</button>
+    <small id="communityLoginError" role="alert"></small>
+  </div>
+
+  <div class="community-room" id="communityRoom" hidden>
+    <aside class="community-users">
+      <div class="users-title"><span data-community-i18n="onlineNow">ONLINE NOW</span><b>03</b></div>
+      <ul>
+        <li><span class="avatar sam">SK</span><div><b>Sam</b><small data-community-i18n="host">Host</small></div><i></i></li>
+        <li><span class="avatar">AR</span><div><b>Arman</b><small>vMix</small></div><i></i></li>
+        <li><span class="avatar">LY</span><div><b>Leyla</b><small>Editor</small></div><i></i></li>
+      </ul>
+      <div class="room-code">ROOM<br/><b>#CONTROL-01</b></div>
+    </aside>
+
+    <div class="community-chat">
+      <div class="community-messages" id="communityMessages" aria-live="polite"></div>
+      <div class="community-reply" id="communityReply" hidden><span></span><button type="button" aria-label="Cancel reply">×</button></div>
+      <div class="community-attachments" id="communityAttachments"></div>
+      <form class="community-composer" id="communityComposer">
+        <div class="community-tools">
+          <label class="community-tool" title="Upload image or short video">
+            <input id="communityFile" type="file" accept="image/*,video/*" multiple hidden/>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </label>
+          <button class="community-tool" id="communityVoice" type="button" title="Record voice message">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Zm-6 9a6 6 0 0 0 12 0M12 18v3M8 21h8"/></svg>
+          </button>
+        </div>
+        <textarea id="communityInput" rows="1" maxlength="1200" data-community-placeholder-en="Write a message…" data-community-placeholder-fa="پیامتان را بنویسید…" placeholder="Write a message…"></textarea>
+        <button class="community-send" type="submit" aria-label="Send message"><span>➤</span></button>
+      </form>
+      <div class="community-footnote"><span>SHIFT + ENTER</span> <span data-community-i18n="newLine">new line</span><b id="communityModeNote" data-community-i18n="localNote">Messages are saved on this device in preview mode.</b></div>
+    </div>
+  </div>
+</section>
+
+<script src="language.js?v=1"></script><script src="script.js?v=13"></script><script src="community-config.js?v=1"></script><script src="community.js?v=1"></script>
 </body>
 </html>
