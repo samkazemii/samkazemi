@@ -16,6 +16,8 @@
       aiReady: 'AI MODE is ready. Ask a real question.',
       aiOff: 'Turn on AI MODE to receive an AI answer.',
       aiThinking: 'AI is thinking…',
+      aiListening: 'AI is transcribing the voice message…',
+      aiLooking: 'AI is analyzing the image or video…',
       aiError: 'AI could not answer right now. Please try again.',
       aiLogin: 'The AI service may ask you to sign in once before the first answer.'
     },
@@ -30,6 +32,8 @@
       aiReady: 'حالت هوش مصنوعی آماده است؛ سؤال واقعی‌تان را بپرسید.',
       aiOff: 'برای دریافت پاسخ هوش مصنوعی، AI MODE را روشن کنید.',
       aiThinking: 'هوش مصنوعی در حال فکر کردن است…',
+      aiListening: 'هوش مصنوعی در حال تشخیص و تبدیل صدا به متن است…',
+      aiLooking: 'هوش مصنوعی در حال بررسی عکس یا ویدئو است…',
       aiError: 'هوش مصنوعی فعلاً نتوانست پاسخ بدهد؛ دوباره امتحان کنید.',
       aiLogin: 'ممکن است سرویس هوش مصنوعی برای اولین پاسخ فقط یک‌بار از شما ورود بخواهد.'
     }
@@ -189,29 +193,90 @@
       : 'You are the AI assistant inside Sam Kazemi’s Community Hub. Give accurate, practical help with vMix, live television production, editing, After Effects, audio, and technical troubleshooting. Reply in the user’s language. Tailor every answer to the actual question and never repeat a canned response. Ask a clarifying question when needed. Be concise but useful.';
   }
 
-  async function askAI(text, mediaFiles){
+  function transcriptText(result){
+    if (typeof result === 'string') return result.trim();
+    return String(result?.text ?? result?.transcript ?? result?.output_text ?? '').trim();
+  }
+
+  async function transcribeAudio(audioFiles){
+    if (!audioFiles.length) return [];
+    if (!window.puter?.ai?.speech2txt) throw new Error('Speech recognition service did not load');
+    const transcripts = [];
+    for (const item of audioFiles.slice(0, 3)) {
+      const result = await window.puter.ai.speech2txt(item.file, {
+        response_format: 'text'
+      });
+      const transcript = transcriptText(result);
+      if (transcript) transcripts.push(transcript);
+    }
+    return transcripts;
+  }
+
+  function mediaInstruction(visualCount, audioTranscripts){
+    const parts = [];
+    if (visualCount) {
+      parts.push(lang === 'fa'
+        ? 'عکس یا ویدئوی پیوست‌شده را دقیق بررسی کن. جزئیات قابل مشاهده، خطاها، متن‌های روی تصویر و راه‌حل عملی را توضیح بده.'
+        : 'Carefully inspect the attached image or video. Explain visible details, errors, on-screen text, and practical fixes.');
+    }
+    if (audioTranscripts.length) {
+      parts.push(lang === 'fa'
+        ? `متن تشخیص‌داده‌شده از پیام صوتی:\n${audioTranscripts.map((x,i)=>`${i+1}. ${x}`).join('\n')}`
+        : `Transcribed voice message:\n${audioTranscripts.map((x,i)=>`${i+1}. ${x}`).join('\n')}`);
+    }
+    return parts.join('\n\n');
+  }
+
+  async function askAI(text, mediaFiles, onStage){
     if (!window.puter?.ai?.chat) throw new Error('AI library did not load');
-    const messages = [
-      {role:'system', content:systemPrompt()},
-      ...aiHistory.slice(-10),
-      {role:'user', content:text || (lang==='fa'?'این فایل را بررسی کن و راهنمایی دقیق بده.':'Analyze this file and give precise guidance.')}
-    ];
+
+    const audioFiles = mediaFiles.filter((x)=>x.file && x.type?.startsWith('audio'));
+    const visualFiles = mediaFiles.filter((x)=>x.file && (x.type?.startsWith('image') || x.type?.startsWith('video')));
+
+    let audioTranscripts = [];
+    if (audioFiles.length) {
+      onStage?.('listening');
+      audioTranscripts = await transcribeAudio(audioFiles);
+    }
+
+    const mediaContext = mediaInstruction(visualFiles.length, audioTranscripts);
+    const userText = [text, mediaContext].filter(Boolean).join('\n\n') ||
+      (lang === 'fa' ? 'فایل پیوست‌شده را تحلیل کن و پاسخ دقیق بده.' : 'Analyze the attached file and give a precise answer.');
+
     let result;
-    const firstMedia = mediaFiles.find((x)=>x.file)?.file;
-    if (firstMedia) {
-      result = await window.puter.ai.chat(
-        text || (lang==='fa'?'این فایل را بررسی کن و مشکل یا نکات مهم آن را بگو.':'Analyze this file and explain the important issues.'),
-        firstMedia,
-        {model:'gpt-5.4-nano', temperature:0.35, max_tokens:900}
-      );
+    if (visualFiles.length) {
+      onStage?.('looking');
+      // Puter accepts a File directly as visual context. Analyze up to three files
+      // one by one so every attachment receives a real model inspection.
+      const visualAnswers = [];
+      for (let i = 0; i < visualFiles.slice(0, 3).length; i++) {
+        const visual = visualFiles[i];
+        const visualPrompt = `${systemPrompt()}\n\n${userText}\n\n${lang === 'fa' ? `پیوست تصویری/ویدئویی شماره ${i+1} را بررسی کن.` : `Analyze visual attachment ${i+1}.`}`;
+        const visualResult = await window.puter.ai.chat(
+          visualPrompt,
+          visual.file,
+          {model:'gpt-5.4-nano', temperature:0.25, max_tokens:1000}
+        );
+        const visualAnswer = responseText(visualResult);
+        if (visualAnswer) visualAnswers.push(visualAnswer);
+      }
+      if (!visualAnswers.length) throw new Error('Empty visual analysis response');
+      result = visualAnswers.join('\n\n');
     } else {
+      onStage?.('thinking');
+      const messages = [
+        {role:'system', content:systemPrompt()},
+        ...aiHistory.slice(-10),
+        {role:'user', content:userText}
+      ];
       result = await window.puter.ai.chat(messages, {
-        model:'gpt-5.4-nano', temperature:0.35, max_tokens:900
+        model:'gpt-5.4-nano', temperature:0.3, max_tokens:1000
       });
     }
-    const answer = responseText(result);
+
+    const answer = typeof result === 'string' ? result.trim() : responseText(result);
     if (!answer) throw new Error('Empty AI response');
-    aiHistory.push({role:'user',content:text},{role:'assistant',content:answer});
+    aiHistory.push({role:'user',content:userText},{role:'assistant',content:answer});
     return answer;
   }
 
@@ -245,7 +310,9 @@
     render();
 
     try {
-      const answer = await askAI(text, sentFiles);
+      const answer = await askAI(text, sentFiles, (stage)=>{
+        $('#sk-ai-note').textContent = stage === 'listening' ? T().aiListening : stage === 'looking' ? T().aiLooking : T().aiThinking;
+      });
       msgs = msgs.filter((m)=>!m.typing);
       msgs.push({name:'AI Assistant',text:answer});
       localStorage.setItem('sk-community-messages-v3', JSON.stringify(msgs.map((m)=>({...m,media:[]}))));
