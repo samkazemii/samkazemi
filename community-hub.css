@@ -113,18 +113,25 @@ html[dir="rtl"] .sk-login label{text-align:right}html[dir="rtl"] .sk-users{borde
 }
 
 
-/* V18 — verified social dock, bulk moderation and final AI toggle */
-.sk-contact-btn.instagram{background:radial-gradient(circle at 30% 105%,#ffd600 0 24%,#ff7a00 25% 42%,#ff0169 58%,#d300c5 78%,#7638fa 100%)!important;border-color:rgba(255,255,255,.28)!important;box-shadow:0 10px 28px rgba(214,0,124,.28)!important}
-.sk-contact-btn.instagram:hover{transform:translateY(-3px) scale(1.04)!important;box-shadow:0 14px 36px rgba(214,0,124,.42)!important}
-.sk-contact-btn.instagram svg{fill:#fff!important}
-.sk-admin-toolbar{flex:0 0 auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 14px;border-bottom:1px solid rgba(93,255,226,.15);background:rgba(4,14,22,.96)}
-.sk-admin-toolbar[hidden]{display:none!important}.sk-admin-toolbar button{height:30px;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(255,255,255,.055);color:#dffcff;padding:0 10px;font:800 8px ui-monospace,monospace;letter-spacing:.06em;cursor:pointer}.sk-admin-toolbar button:hover:not(:disabled){border-color:var(--ch-cyan);background:rgba(93,255,226,.1)}.sk-admin-toolbar button:disabled{opacity:.35;cursor:not-allowed}.sk-admin-toolbar #sk-delete-selected,.sk-admin-toolbar #sk-delete-all{border-color:rgba(255,68,98,.45);color:#ff9aac}.sk-select-all{display:flex;align-items:center;gap:6px;color:#c5f9f1;font:800 8px ui-monospace,monospace;letter-spacing:.08em;cursor:pointer}.sk-select-all input{accent-color:#ff334f}#sk-selection-count{margin-right:auto;color:#6f929b;font:800 8px ui-monospace,monospace}
-.sk-msg{position:relative}.sk-msg-check{align-self:start;width:22px;height:34px;display:grid;place-items:center;cursor:pointer}.sk-msg-check input{position:absolute;opacity:0}.sk-msg-check span{width:14px;height:14px;border:1px solid rgba(255,255,255,.28);border-radius:4px;background:#08131b;box-shadow:inset 0 0 0 2px #08131b}.sk-msg-check input:checked+span{background:#ff334f;border-color:#ff7890;box-shadow:inset 0 0 0 2px #08131b,0 0 12px rgba(255,51,79,.45)}.sk-msg:has(.sk-msg-check){grid-template-columns:22px 34px 1fr}.sk-msg.mine:has(.sk-msg-check){grid-template-columns:22px 1fr 34px}.sk-msg.mine:has(.sk-msg-check) .sk-msg-check{grid-column:1}.sk-msg.mine:has(.sk-msg-check) .sk-msg-avatar{grid-column:3}.sk-msg.mine:has(.sk-msg-check) .sk-msg-body{grid-column:2}.sk-msg.sk-selected{padding:6px;border-radius:14px;background:rgba(255,51,79,.07);outline:1px solid rgba(255,51,79,.26)}
-.sk-msg-actions{display:flex;gap:8px;align-items:center}.mine .sk-msg-actions{justify-content:flex-end}.sk-delete-btn{border:0;background:none;color:#ff7189;cursor:pointer;font-size:13px;padding:3px}
-/* The entire AI button is blue when on; the red circular knob travels left → right. */
-.sk-ai{display:flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important;min-width:118px!important;background:#101b24!important;border-color:rgba(255,255,255,.18)!important}
-.sk-ai-switch{order:0!important;width:34px!important;height:20px!important;flex-basis:34px!important;background:#293944!important}
-.sk-ai-switch:after{width:14px!important;height:14px!important;left:3px!important;top:3px!important;background:#ff334f!important;transform:translateX(0)!important}
-.sk-ai.sk-ai-on,.sk-ai:has(input:checked){background:linear-gradient(135deg,#087eff,#24c4ff)!important;border-color:#74dcff!important;box-shadow:0 0 18px rgba(17,151,255,.55),inset 0 1px rgba(255,255,255,.18)!important}
-.sk-ai input:checked~.sk-ai-switch{background:rgba(0,34,83,.5)!important}.sk-ai input:checked~.sk-ai-switch:after{transform:translateX(14px)!important;background:#ff304e!important}
-@media(max-width:700px){.sk-admin-toolbar{padding:7px;gap:5px}.sk-admin-toolbar button{padding:0 7px;font-size:7px}.sk-msg:has(.sk-msg-check){grid-template-columns:20px 30px 1fr}.sk-msg.mine:has(.sk-msg-check){grid-template-columns:20px 1fr 30px}.sk-ai-switch{width:32px!important;flex-basis:32px!important}.sk-ai input:checked~.sk-ai-switch:after{transform:translateX(12px)!important}}
+/* V18 rebuilt: Instagram dock + real admin bulk moderation */
+.sk-contact-btn.instagram{color:#ff65b3}
+.sk-contact-btn.instagram:hover{box-shadow:0 0 0 1px rgba(255,101,179,.35),0 12px 30px rgba(255,65,150,.22)}
+.sk-admin-toolbar{min-height:48px;padding:8px 14px;border-bottom:1px solid rgba(89,233,222,.2);display:flex;align-items:center;gap:12px;background:rgba(4,16,23,.94);font:700 10px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.06em;color:#b5d7df}
+.sk-admin-toolbar[hidden]{display:none!important}
+.sk-admin-toolbar>label{display:flex;align-items:center;gap:7px;cursor:pointer;color:#e5ffff}
+.sk-admin-toolbar>label input{accent-color:#62f4e6;width:15px;height:15px}
+.sk-admin-toolbar>span{opacity:.72;white-space:nowrap}
+.sk-admin-toolbar>div{margin-left:auto;display:flex;gap:8px}
+.sk-admin-toolbar button{border:1px solid rgba(142,195,205,.25);background:#0b1820;color:#d9f7fa;border-radius:9px;padding:8px 11px;font:700 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.05em;cursor:pointer}
+.sk-admin-toolbar button:hover{border-color:#63eee2;color:#fff}
+.sk-admin-toolbar button:disabled{opacity:.35;cursor:not-allowed}
+#sk-delete-selected,#sk-delete-all{border-color:rgba(255,76,105,.42);color:#ff8297}
+#sk-delete-all:hover,#sk-delete-selected:hover:not(:disabled){background:rgba(255,65,92,.12);border-color:#ff5b74}
+.sk-msg{position:relative}
+.sk-msg-select{align-self:flex-start;margin-top:12px;display:grid;place-items:center;cursor:pointer}
+.sk-msg-select input{position:absolute;opacity:0;pointer-events:none}
+.sk-msg-select span{width:16px;height:16px;border:1px solid rgba(174,226,231,.45);border-radius:4px;background:#07141b;display:grid;place-items:center}
+.sk-msg-select input:checked+span{background:#54eadf;border-color:#54eadf}
+.sk-msg-select input:checked+span:after{content:'✓';font-size:11px;color:#031217;font-weight:900}
+.sk-msg.sk-selected{background:rgba(72,225,214,.055);box-shadow:inset 3px 0 #4de8dc}
+@media(max-width:760px){.sk-admin-toolbar{align-items:flex-start;flex-wrap:wrap}.sk-admin-toolbar>div{width:100%;margin-left:0;display:grid;grid-template-columns:repeat(3,1fr)}.sk-admin-toolbar button{padding:9px 5px;font-size:8px}}
