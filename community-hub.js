@@ -5,8 +5,8 @@
   if (!panel || !launch) return;
 
   const I = {
-    en:{hub:'COMMUNITY HUB',designed:'Designed by Sam Kazemi',join:'Join the control-room community',desc:'Ask a production question, share a screenshot, and help other creators.',name:'Display name',email:'Email',notify:'Save my email on this device',enter:'ENTER HUB',placeholder:'Write a message…',reply:'REPLY',preview:'REALTIME',online:'CONNECTING…',err:'Please enter a valid name and email.',aiReady:'AI MODE is ready. Ask a real question.',aiOff:'Turn on AI MODE to receive an AI answer.',aiThinking:'AI is thinking…',aiListening:'AI is transcribing the voice message…',aiLooking:'AI is analyzing the image or video…',aiError:'AI could not answer right now. Please try again.',notConfigured:'Realtime is not configured yet. Add the Supabase URL and publishable key.',connectionError:'Could not connect to the realtime server.',sending:'Uploading and sending…'},
-    fa:{hub:'هاب کامیونیتی',designed:'طراحی‌شده توسط سام کاظمی',join:'به کامیونیتی اتاق فرمان بپیوندید',desc:'سؤال فنی بپرسید، اسکرین‌شات بفرستید و به تولیدکنندگان دیگر کمک کنید.',name:'نام نمایشی',email:'ایمیل',notify:'ایمیل من فقط روی این دستگاه ذخیره شود',enter:'ورود به هاب',placeholder:'پیامتان را بنویسید…',reply:'پاسخ',preview:'ارتباط زنده',online:'در حال اتصال…',err:'نام و ایمیل معتبر وارد کنید.',aiReady:'حالت هوش مصنوعی آماده است؛ سؤال واقعی‌تان را بپرسید.',aiOff:'برای دریافت پاسخ هوش مصنوعی، AI MODE را روشن کنید.',aiThinking:'هوش مصنوعی در حال فکر کردن است…',aiListening:'هوش مصنوعی در حال تبدیل صدا به متن است…',aiLooking:'هوش مصنوعی در حال بررسی عکس یا ویدئو است…',aiError:'هوش مصنوعی فعلاً نتوانست پاسخ بدهد؛ دوباره امتحان کنید.',notConfigured:'ارتباط زنده هنوز تنظیم نشده است. آدرس و کلید عمومی Supabase را وارد کنید.',connectionError:'اتصال به سرور زنده برقرار نشد.',sending:'در حال آپلود و ارسال…'}
+    en:{hub:'COMMUNITY HUB',designed:'Designed by Sam Kazemi',join:'Join the control-room community',desc:'Ask a production question, share a screenshot, and help other creators.',name:'Display name',email:'Email',notify:'Save my email on this device',enter:'ENTER HUB',placeholder:'Write a message…',reply:'REPLY',preview:'REALTIME',online:'CONNECTING…',err:'Please enter a valid name and email.',aiReady:'AI MODE is ready. Ask a real question.',aiOff:'Turn on AI MODE to receive an AI answer.',aiThinking:'AI is thinking…',aiListening:'AI is transcribing the voice message…',aiLooking:'AI is analyzing the image or video…',aiError:'AI could not answer right now. Please try again.',aiAuth:'Opening secure AI access…',aiAuthError:'AI access was not completed. Tap AI MODE again and allow the sign-in window.',notConfigured:'Realtime is not configured yet. Add the Supabase URL and publishable key.',connectionError:'Could not connect to the realtime server.',sending:'Uploading and sending…'},
+    fa:{hub:'هاب کامیونیتی',designed:'طراحی‌شده توسط سام کاظمی',join:'به کامیونیتی اتاق فرمان بپیوندید',desc:'سؤال فنی بپرسید، اسکرین‌شات بفرستید و به تولیدکنندگان دیگر کمک کنید.',name:'نام نمایشی',email:'ایمیل',notify:'ایمیل من فقط روی این دستگاه ذخیره شود',enter:'ورود به هاب',placeholder:'پیامتان را بنویسید…',reply:'پاسخ',preview:'ارتباط زنده',online:'در حال اتصال…',err:'نام و ایمیل معتبر وارد کنید.',aiReady:'حالت هوش مصنوعی آماده است؛ سؤال واقعی‌تان را بپرسید.',aiOff:'برای دریافت پاسخ هوش مصنوعی، AI MODE را روشن کنید.',aiThinking:'هوش مصنوعی در حال فکر کردن است…',aiListening:'هوش مصنوعی در حال تبدیل صدا به متن است…',aiLooking:'هوش مصنوعی در حال بررسی عکس یا ویدئو است…',aiError:'هوش مصنوعی فعلاً نتوانست پاسخ بدهد؛ دوباره امتحان کنید.',aiAuth:'در حال باز کردن دسترسی امن هوش مصنوعی…',aiAuthError:'ورود هوش مصنوعی کامل نشد. دوباره روی AI MODE بزنید و پنجره ورود را اجازه دهید.',notConfigured:'ارتباط زنده هنوز تنظیم نشده است. آدرس و کلید عمومی Supabase را وارد کنید.',connectionError:'اتصال به سرور زنده برقرار نشد.',sending:'در حال آپلود و ارسال…'}
   };
 
   let lang = document.documentElement.lang === 'fa' ? 'fa' : 'en';
@@ -151,19 +151,49 @@
     return result;
   }
 
+  async function waitForPuter(timeout=8000){
+    const started=Date.now();
+    while(Date.now()-started<timeout){
+      if(window.puter?.ai?.chat && window.puter?.auth) return window.puter;
+      await new Promise(r=>setTimeout(r,120));
+    }
+    throw new Error('AI library did not load');
+  }
+
+  async function enableAIFromUserGesture(){
+    const box=$('#sk-ai'),control=$('#sk-ai-control'),note=$('#sk-ai-note');
+    control?.classList.add('sk-ai-pending');
+    note.hidden=false;note.textContent=T().aiAuth;
+    try{
+      const p=await waitForPuter();
+      if(!p.auth.isSignedIn()) await p.auth.signIn({attempt_temp_user_creation:true});
+      box.checked=true;control?.classList.remove('sk-ai-pending');control?.classList.add('sk-ai-on');
+      note.textContent=T().aiReady;
+      localStorage.setItem('sk-ai-enabled','1');
+      return true;
+    }catch(err){
+      console.error('AI authentication failed',err);
+      box.checked=false;control?.classList.remove('sk-ai-pending','sk-ai-on');
+      note.textContent=T().aiAuthError;
+      localStorage.removeItem('sk-ai-enabled');
+      return false;
+    }
+  }
+
   function responseText(result){const c=result?.message?.content??result?.content??result;if(typeof c==='string')return c.trim();if(Array.isArray(c))return c.map(p=>typeof p==='string'?p:(p?.text||p?.content||'')).join('\n').trim();return String(c||'').trim();}
   function systemPrompt(){return lang==='fa'?'تو دستیار هوش مصنوعی Community Hub سام کاظمی هستی. در زمینه vMix، تولید زنده، تدوین، افترافکت، صدا و عیب‌یابی پاسخ دقیق و عملی بده. به زبان پیام کاربر جواب بده و جواب ثابت تکرار نکن.':'You are the AI assistant inside Sam Kazemi’s Community Hub. Give accurate practical help with vMix, live production, editing, After Effects, audio and troubleshooting. Reply in the user’s language and never use canned responses.';}
   function transcriptText(r){if(typeof r==='string')return r.trim();return String(r?.text??r?.transcript??r?.output_text??'').trim();}
-  async function transcribeAudio(items){if(!items.length)return[];if(!window.puter?.ai?.speech2txt)throw new Error('Speech service did not load');const out=[];for(const x of items.slice(0,3)){const r=await puter.ai.speech2txt(x.file,{response_format:'text'});const t=transcriptText(r);if(t)out.push(t);}return out;}
+  async function transcribeAudio(items){if(!items.length)return[];const p=await waitForPuter();if(!p.ai?.speech2txt)throw new Error('Speech service did not load');const out=[];for(const x of items.slice(0,3)){const r=await p.ai.speech2txt(x.file,{response_format:'text'});const t=transcriptText(r);if(t)out.push(t);}return out;}
   async function askAI(text,media,onStage){
-    if(!window.puter?.ai?.chat)throw new Error('AI library did not load');
+    const p=await waitForPuter();
+    if(!p.auth.isSignedIn()) throw new Error('AI authentication required');
     const audio=media.filter(x=>x.type?.startsWith('audio')),visual=media.filter(x=>x.type?.startsWith('image')||x.type?.startsWith('video'));
     let transcripts=[];if(audio.length){onStage('listening');transcripts=await transcribeAudio(audio);}
     const transcriptBlock=transcripts.length?(lang==='fa'?`متن پیام صوتی:\n${transcripts.join('\n')}`:`Voice transcript:\n${transcripts.join('\n')}`):'';
     const userText=[text,transcriptBlock].filter(Boolean).join('\n\n')||(lang==='fa'?'فایل پیوست را تحلیل کن.':'Analyze the attachment.');
     let answer='';
-    if(visual.length){onStage('looking');const answers=[];for(const v of visual.slice(0,3)){const r=await puter.ai.chat(`${systemPrompt()}\n\n${userText}`,v.file,{model:'gpt-5.4-nano',temperature:.25,max_tokens:1000});const a=responseText(r);if(a)answers.push(a);}answer=answers.join('\n\n');}
-    else{onStage('thinking');const r=await puter.ai.chat([{role:'system',content:systemPrompt()},...aiHistory.slice(-10),{role:'user',content:userText}],{model:'gpt-5.4-nano',temperature:.3,max_tokens:1000});answer=responseText(r);}
+    if(visual.length){onStage('looking');const answers=[];for(const v of visual.slice(0,3)){const r=await p.ai.chat(`${systemPrompt()}\n\n${userText}`,v.file,{model:'gpt-5.4-nano',temperature:.25,max_tokens:1000});const a=responseText(r);if(a)answers.push(a);}answer=answers.join('\n\n');}
+    else{onStage('thinking');const r=await p.ai.chat([{role:'system',content:systemPrompt()},...aiHistory.slice(-10),{role:'user',content:userText}],{model:'gpt-5.4-nano',temperature:.3,max_tokens:1000});answer=responseText(r);}
     if(!answer)throw new Error('Empty AI response'); aiHistory.push({role:'user',content:userText},{role:'assistant',content:answer});return answer;
   }
 
@@ -197,12 +227,32 @@
 
   $('#sk-message').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#sk-form').requestSubmit();}};
   $('#sk-message').oninput=e=>{e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,110)+'px';};
-  $('#sk-ai').onchange=e=>{const n=$('#sk-ai-note');n.hidden=!e.target.checked;n.textContent=e.target.checked?T().aiReady:T().aiOff;};
+  $('#sk-ai').onchange=async e=>{
+    const n=$('#sk-ai-note'),control=$('#sk-ai-control');
+    if(e.target.checked){
+      e.target.checked=false;
+      await enableAIFromUserGesture();
+    }else{
+      control?.classList.remove('sk-ai-on','sk-ai-pending');
+      n.hidden=false;n.textContent=T().aiOff;
+      localStorage.removeItem('sk-ai-enabled');
+    }
+  };
   $('#sk-voice').onclick=async()=>{
     if(recorder?.state==='recording'){recorder.stop();return;}
     try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>chunks.push(e.data);recorder.onstop=()=>{const blob=new Blob(chunks,{type:'audio/webm'}),file=new File([blob],'voice-message.webm',{type:'audio/webm'});files.push({type:'audio/webm',url:URL.createObjectURL(blob),file});stream.getTracks().forEach(t=>t.stop());$('#sk-voice').classList.remove('recording');drawFiles();};recorder.start();$('#sk-voice').classList.add('recording');}
     catch{alert(lang==='fa'?'دسترسی میکروفون داده نشد.':'Microphone permission was not granted.');}
   };
 
+  (async()=>{
+    const box=$('#sk-ai'),control=$('#sk-ai-control');
+    box.checked=false;control?.classList.remove('sk-ai-on','sk-ai-pending');
+    try{
+      const p=await waitForPuter(3500);
+      if(localStorage.getItem('sk-ai-enabled')==='1' && p.auth.isSignedIn()){
+        box.checked=true;control?.classList.add('sk-ai-on');
+      }
+    }catch{}
+  })();
   localize();render();connectRealtime();
 })();

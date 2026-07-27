@@ -23,7 +23,7 @@
 <meta content="Sam Kazemi — Broadcast Director" name="twitter:title"/>
 <meta content="TV direction, live production, vMix and broadcast control-room workflows." name="twitter:description"/>
 <meta content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" name="twitter:image"/>
-<link href="styles.css?v=13" rel="stylesheet"/><link href="community-hub.css?v=16" rel="stylesheet"/>
+<link href="styles.css?v=13" rel="stylesheet"/><link href="community-hub.css?v=17" rel="stylesheet"/>
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -353,7 +353,7 @@
 </div>
 <button id="sk-community-launcher" type="button" aria-controls="sk-community-panel" aria-expanded="false"><span class="sk-launch-icon">⌁</span><span class="sk-launch-copy"><strong data-ch="hub">COMMUNITY HUB</strong><small><i class="sk-live-dot"></i> LIVE</small></span></button>
 <section id="sk-community-panel" aria-hidden="true">
-<header class="sk-ch-header"><div class="sk-ch-brand"><span class="sk-ch-terminal">SK</span><div><strong data-ch="hub">COMMUNITY HUB</strong><small data-ch="designed">Designed by Sam Kazemi</small></div></div><div class="sk-ch-actions"><label class="sk-ai"><input id="sk-ai" type="checkbox"> AI</label><button class="sk-icon-btn" id="sk-min" type="button">—</button><button class="sk-icon-btn" id="sk-close" type="button">×</button></div></header>
+<header class="sk-ch-header"><div class="sk-ch-brand"><span class="sk-ch-terminal">SK</span><div><strong data-ch="hub">COMMUNITY HUB</strong><small data-ch="designed">Designed by Sam Kazemi</small></div></div><div class="sk-ch-actions"><label class="sk-ai" id="sk-ai-control" title="AI MODE"><input id="sk-ai" type="checkbox"><span class="sk-ai-led" aria-hidden="true"></span><span class="sk-ai-switch" aria-hidden="true"></span><span class="sk-ai-label">AI MODE</span></label><button class="sk-icon-btn" id="sk-min" type="button">—</button><button class="sk-icon-btn" id="sk-close" type="button">×</button></div></header>
 <div class="sk-ch-status"><span><i class="sk-live-dot"></i><b data-ch="preview">DEMO MODE</b></span><span id="sk-online-count" data-ch="online">CONNECTING…</span></div>
 <div class="sk-login" id="sk-login"><h3 data-ch="join">Join the control-room community</h3><p data-ch="desc">Ask a production question, share a screenshot, and help other creators.</p><label><span data-ch="name">Display name</span><input id="sk-name" maxlength="32" autocomplete="name"></label><label><span data-ch="email">Email</span><input id="sk-email" type="email" autocomplete="email"></label><label class="sk-consent"><input type="checkbox" checked><span data-ch="notify">Email me when someone replies</span></label><button class="sk-primary" id="sk-enter" type="button" data-ch="enter">ENTER HUB</button><small class="sk-error" id="sk-login-error"></small></div>
 <div class="sk-room" id="sk-room" hidden><aside class="sk-users"><h4>ONLINE NOW</h4><ul id="sk-online-users"></ul></aside><div class="sk-chat"><div class="sk-messages" id="sk-messages"></div><div class="sk-reply-preview" id="sk-reply-preview" hidden><span id="sk-reply-text"></span><button id="sk-cancel-reply" type="button">×</button></div><div class="sk-attachment-preview" id="sk-attachments"></div><div class="sk-ai-note" id="sk-ai-note" hidden></div><form class="sk-composer" id="sk-form"><div class="sk-tools"><label class="sk-tool" title="Upload"><input id="sk-file" type="file" accept="image/*,video/*,audio/*,.mp3,.wav,.m4a,.ogg,.webm" multiple hidden>＋</label><button class="sk-tool" id="sk-voice" type="button" title="Voice">●</button></div><textarea id="sk-message" rows="1" maxlength="1200" placeholder="Write a message…"></textarea><button class="sk-send" type="submit">➤</button></form><div class="sk-note" id="sk-connection-note">CONNECTING TO REALTIME…</div></div></div>
@@ -361,6 +361,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js?v=1"></script>
 <script src="https://js.puter.com/v2/"></script>
-<script src="community-hub.js?v=20"></script>
+<script src="community-hub.js?v=21"></script>
 </body>
 </html>
