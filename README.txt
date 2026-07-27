@@ -8,15 +8,3 @@ The Live Director Challenge now includes:
 - CUT, FADE, and MERGE transitions
 
 For GitHub Pages, upload every file in this folder at the repository root.
-
-V11.5 COMMUNITY HUB ADDITION
-- Floating cyberpunk glass Community Hub on every page position
-- English/Persian interface switching with the website language
-- Email/name entry, reply threads, local message history
-- Screenshot/image, short-video and voice-message composer preview
-- AI mode switch with secure integration placeholder (no private key exposed)
-- Floating Telegram button: https://t.me/samkazmi
-- Floating email button: sam.kazmi@live.com
-- No existing website sections were intentionally redesigned
-
-IMPORTANT: GitHub Pages is static. The included hub starts in honest Preview Mode. For real multi-user chat, notifications and AI, follow SUPABASE-SETUP.md.
