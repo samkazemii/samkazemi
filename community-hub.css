@@ -2,7 +2,7 @@
 #sk-contact-dock,#sk-community-launcher,#sk-community-panel{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 #sk-contact-dock{position:fixed!important;left:max(14px,env(safe-area-inset-left))!important;bottom:max(18px,env(safe-area-inset-bottom))!important;z-index:2147483000!important;display:flex!important;flex-direction:column!important;gap:10px!important}
 .sk-contact-btn{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:rgba(5,13,22,.92);border:1px solid rgba(255,255,255,.17);box-shadow:0 12px 35px rgba(0,0,0,.48);backdrop-filter:blur(16px);transition:.2s;position:relative}
-.sk-contact-btn:hover{transform:translateY(-3px) scale(1.04)}.sk-contact-btn svg{width:22px;height:22px;fill:currentColor}.sk-contact-btn.telegram{color:#58c8ff}.sk-contact-btn.email{color:#ffd36e}
+.sk-contact-btn:hover{transform:translateY(-3px) scale(1.04)}.sk-contact-btn svg{width:22px;height:22px;fill:currentColor}.sk-contact-btn.telegram{color:#58c8ff}.sk-contact-btn.instagram{color:#ff5ca8}.sk-contact-btn.email{color:#ffd36e}
 #sk-community-launcher{position:fixed!important;right:max(16px,env(safe-area-inset-right))!important;bottom:max(18px,env(safe-area-inset-bottom))!important;z-index:2147483000!important;display:flex!important;align-items:center!important;gap:12px!important;padding:9px 14px 9px 9px!important;border:1px solid rgba(93,255,226,.48)!important;border-radius:16px!important;color:var(--ch-text)!important;background:linear-gradient(135deg,rgba(7,23,33,.97),rgba(3,9,16,.97))!important;box-shadow:0 16px 48px rgba(0,0,0,.58),0 0 30px rgba(93,255,226,.12)!important;cursor:pointer!important;backdrop-filter:blur(18px)!important}
 #sk-community-launcher .sk-launch-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--ch-cyan),var(--ch-blue));color:#031115;font:900 22px/1 monospace;box-shadow:0 0 22px rgba(93,255,226,.35)}
 #sk-community-launcher strong{display:block;font-size:11px;letter-spacing:.13em;white-space:nowrap}#sk-community-launcher small{display:flex;align-items:center;gap:6px;margin-top:6px;color:var(--ch-cyan);font:800 9px/1 monospace;letter-spacing:.16em}.sk-live-dot{width:7px;height:7px;border-radius:50%;background:var(--ch-cyan);box-shadow:0 0 10px var(--ch-cyan);animation:skpulse 1.4s infinite}@keyframes skpulse{50%{opacity:.3;transform:scale(.7)}}
@@ -113,25 +113,8 @@ html[dir="rtl"] .sk-login label{text-align:right}html[dir="rtl"] .sk-users{borde
 }
 
 
-/* V18 rebuilt: Instagram dock + real admin bulk moderation */
-.sk-contact-btn.instagram{color:#ff65b3}
-.sk-contact-btn.instagram:hover{box-shadow:0 0 0 1px rgba(255,101,179,.35),0 12px 30px rgba(255,65,150,.22)}
-.sk-admin-toolbar{min-height:48px;padding:8px 14px;border-bottom:1px solid rgba(89,233,222,.2);display:flex;align-items:center;gap:12px;background:rgba(4,16,23,.94);font:700 10px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.06em;color:#b5d7df}
-.sk-admin-toolbar[hidden]{display:none!important}
-.sk-admin-toolbar>label{display:flex;align-items:center;gap:7px;cursor:pointer;color:#e5ffff}
-.sk-admin-toolbar>label input{accent-color:#62f4e6;width:15px;height:15px}
-.sk-admin-toolbar>span{opacity:.72;white-space:nowrap}
-.sk-admin-toolbar>div{margin-left:auto;display:flex;gap:8px}
-.sk-admin-toolbar button{border:1px solid rgba(142,195,205,.25);background:#0b1820;color:#d9f7fa;border-radius:9px;padding:8px 11px;font:700 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.05em;cursor:pointer}
-.sk-admin-toolbar button:hover{border-color:#63eee2;color:#fff}
-.sk-admin-toolbar button:disabled{opacity:.35;cursor:not-allowed}
-#sk-delete-selected,#sk-delete-all{border-color:rgba(255,76,105,.42);color:#ff8297}
-#sk-delete-all:hover,#sk-delete-selected:hover:not(:disabled){background:rgba(255,65,92,.12);border-color:#ff5b74}
-.sk-msg{position:relative}
-.sk-msg-select{align-self:flex-start;margin-top:12px;display:grid;place-items:center;cursor:pointer}
-.sk-msg-select input{position:absolute;opacity:0;pointer-events:none}
-.sk-msg-select span{width:16px;height:16px;border:1px solid rgba(174,226,231,.45);border-radius:4px;background:#07141b;display:grid;place-items:center}
-.sk-msg-select input:checked+span{background:#54eadf;border-color:#54eadf}
-.sk-msg-select input:checked+span:after{content:'✓';font-size:11px;color:#031217;font-weight:900}
-.sk-msg.sk-selected{background:rgba(72,225,214,.055);box-shadow:inset 3px 0 #4de8dc}
-@media(max-width:760px){.sk-admin-toolbar{align-items:flex-start;flex-wrap:wrap}.sk-admin-toolbar>div{width:100%;margin-left:0;display:grid;grid-template-columns:repeat(3,1fr)}.sk-admin-toolbar button{padding:9px 5px;font-size:8px}}
+/* V18 clean — admin bulk moderation on the original working messages table */
+.sk-admin-bulk{display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 14px;border-bottom:1px solid rgba(93,255,226,.18);background:rgba(5,15,24,.92)}
+.sk-admin-bulk[hidden]{display:none!important}.sk-admin-bulk label{display:flex;align-items:center;gap:8px;color:#dffcff;font:850 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em}.sk-admin-bulk small{color:#718791;font:750 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace}.sk-admin-bulk>div{margin-left:auto;display:flex;gap:8px}.sk-admin-bulk button{height:30px;padding:0 11px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#dffcff;font:850 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;cursor:pointer}.sk-admin-bulk button:last-child,.sk-admin-bulk #sk-delete-selected{border-color:rgba(255,78,109,.55);color:#ff8096}.sk-admin-bulk button:disabled{opacity:.35;cursor:not-allowed}
+.sk-msg{position:relative}.sk-msg-check{align-self:flex-start;margin:7px 1px 0 0;cursor:pointer}.sk-msg-check input{position:absolute;opacity:0;pointer-events:none}.sk-msg-check span{display:block;width:15px;height:15px;border-radius:4px;border:1px solid rgba(255,255,255,.28);background:#07131c}.sk-msg-check input:checked+span{border-color:#5dffe2;background:linear-gradient(135deg,#5dffe2,#52a7ff);box-shadow:0 0 12px rgba(93,255,226,.3)}.sk-msg-check input:checked+span:after{content:'✓';display:grid;place-items:center;color:#031115;font:950 11px/14px sans-serif}.sk-msg.sk-selected{background:rgba(93,255,226,.035);outline:1px solid rgba(93,255,226,.18);border-radius:14px}
+@media(max-width:700px){.sk-admin-bulk{flex-wrap:wrap;gap:7px;padding:8px}.sk-admin-bulk>div{width:100%;margin-left:0}.sk-admin-bulk button{flex:1;padding:0 6px;font-size:7px}}
