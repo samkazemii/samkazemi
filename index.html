@@ -23,7 +23,7 @@
 <meta content="Sam Kazemi — Broadcast Director" name="twitter:title"/>
 <meta content="TV direction, live production, vMix and broadcast control-room workflows." name="twitter:description"/>
 <meta content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" name="twitter:image"/>
-<link href="styles.css?v=13" rel="stylesheet"/><link href="community-hub.css?v=17" rel="stylesheet"/>
+<link href="styles.css?v=13" rel="stylesheet"/><link href="community-hub.css?v=16" rel="stylesheet"/>
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -184,7 +184,6 @@
 <div class="sound-pad-topbar">
 <span>TOUCH / CLICK ENABLED</span>
 <b aria-live="polite" id="soundPadStatus">READY</b>
-<button class="sound-keyboard-toggle" id="soundKeyboardToggle" type="button" aria-pressed="false"><span class="sound-keyboard-dot"></span><span id="soundKeyboardToggleText">KEYBOARD MODE OFF</span></button>
 </div>
 <div aria-hidden="true" class="sound-pad-display">
 <span id="soundPadNote">—</span>
@@ -199,7 +198,7 @@
 <button class="note-pad note-la" data-frequency="440.00" data-key="H" data-note="LA" type="button"><span>LA</span><small>لا</small><kbd>H</kbd></button>
 <button class="note-pad note-si" data-frequency="493.88" data-key="J" data-note="SI" type="button"><span>SI</span><small>سی</small><kbd>J</kbd></button>
 </div>
-<p class="sound-pad-help" id="soundPadHelp">Keyboard notes are disabled by default. Turn on Keyboard Mode only when you want to play.</p>
+<p class="sound-pad-help">You can also use keyboard keys A–J.</p>
 </div>
 </section>
 <section aria-labelledby="vmixLabTitle" class="section vmix-lab" id="vmix-lab">
@@ -345,20 +344,21 @@
 <p>Broadcast Director • Live Production • vMix</p>
 <span>© <span id="year"></span> Sam Kazemi</span>
 <p class="site-credit">Designed and developed by Sam Kazemi · Website design inquiries: <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=sam.kazmi%40live.com&amp;su=Website%20Design%20Inquiry" rel="noopener noreferrer" target="_blank">sam.kazmi@live.com</a></p></footer>
-<script src="language.js?v=1"></script><script src="script.js?v=14"></script>
+<script src="language.js?v=1"></script><script src="script.js?v=13"></script>
 
 <!-- V11.6 fixed floating Community Hub -->
 <div id="sk-contact-dock" aria-label="Quick contact">
 <a class="sk-contact-btn telegram" href="https://t.me/samkazmi" target="_blank" rel="noopener" aria-label="Telegram @samkazmi"><svg viewBox="0 0 24 24"><path d="M21.9 3.3 18.8 19c-.2 1.1-.9 1.4-1.8.9l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.8 8.8-8c.4-.3-.1-.5-.6-.2L6.6 13l-4.7-1.5c-1-.3-1-1 .2-1.5L20.4 3c.9-.3 1.7.2 1.5.3Z"/></svg></a>
-<a class="sk-contact-btn email" href="mailto:sam.kazmi@live.com?subject=Hello%20Sam" aria-label="Email Sam"><svg viewBox="0 0 24 24"><path d="M3 5h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm9 7.2L20.4 7H3.6L12 12.2Zm0 2.3L3 8.9V17h18V8.9l-9 5.6Z"/></svg></a>
+<a class="sk-contact-btn email" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=sam.kazmi%40live.com&amp;su=Hello%20Sam" target="_blank" rel="noopener noreferrer" aria-label="Email Sam"><svg viewBox="0 0 24 24"><path d="M3 5h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm9 7.2L20.4 7H3.6L12 12.2Zm0 2.3L3 8.9V17h18V8.9l-9 5.6Z"/></svg></a>
 </div>
 <button id="sk-community-launcher" type="button" aria-controls="sk-community-panel" aria-expanded="false"><span class="sk-launch-icon">⌁</span><span class="sk-launch-copy"><strong data-ch="hub">COMMUNITY HUB</strong><small><i class="sk-live-dot"></i> LIVE</small></span></button>
 <section id="sk-community-panel" aria-hidden="true">
-<header class="sk-ch-header"><div class="sk-ch-brand"><span class="sk-ch-terminal">SK://</span><div><strong data-ch="hub">COMMUNITY HUB</strong><small data-ch="designed">Designed by Sam Kazemi</small></div></div><div class="sk-ch-actions"><label class="sk-ai" title="AI assistant demo"><input id="sk-ai" type="checkbox"><span class="sk-ai-switch"></span><span class="sk-ai-label">AI MODE</span></label><button class="sk-icon-btn" id="sk-min" type="button">—</button><button class="sk-icon-btn" id="sk-close" type="button">×</button></div></header>
+<header class="sk-ch-header"><div class="sk-ch-brand"><span class="sk-ch-terminal">SK</span><div><strong data-ch="hub">COMMUNITY HUB</strong><small data-ch="designed">Designed by Sam Kazemi</small></div></div><div class="sk-ch-actions"><label class="sk-ai"><input id="sk-ai" type="checkbox"> AI</label><button class="sk-icon-btn" id="sk-min" type="button">—</button><button class="sk-icon-btn" id="sk-close" type="button">×</button></div></header>
 <div class="sk-ch-status"><span><i class="sk-live-dot"></i><b data-ch="preview">DEMO MODE</b></span><span data-ch="online">3 ONLINE</span></div>
 <div class="sk-login" id="sk-login"><h3 data-ch="join">Join the control-room community</h3><p data-ch="desc">Ask a production question, share a screenshot, and help other creators.</p><label><span data-ch="name">Display name</span><input id="sk-name" maxlength="32" autocomplete="name"></label><label><span data-ch="email">Email</span><input id="sk-email" type="email" autocomplete="email"></label><label class="sk-consent"><input type="checkbox" checked><span data-ch="notify">Email me when someone replies</span></label><button class="sk-primary" id="sk-enter" type="button" data-ch="enter">ENTER HUB</button><small class="sk-error" id="sk-login-error"></small></div>
 <div class="sk-room" id="sk-room" hidden><aside class="sk-users"><h4>ONLINE NOW</h4><ul><li><span class="sk-avatar">SK</span><div><b>Sam</b><small>Host</small></div></li><li><span class="sk-avatar">AR</span><div><b>Arman</b><small>vMix</small></div></li><li><span class="sk-avatar">LY</span><div><b>Leyla</b><small>Editor</small></div></li></ul></aside><div class="sk-chat"><div class="sk-messages" id="sk-messages"></div><div class="sk-reply-preview" id="sk-reply-preview" hidden><span id="sk-reply-text"></span><button id="sk-cancel-reply" type="button">×</button></div><div class="sk-attachment-preview" id="sk-attachments"></div><div class="sk-ai-note" id="sk-ai-note" hidden></div><form class="sk-composer" id="sk-form"><div class="sk-tools"><label class="sk-tool" title="Upload"><input id="sk-file" type="file" accept="image/*,video/*" multiple hidden>＋</label><button class="sk-tool" id="sk-voice" type="button" title="Voice">●</button></div><textarea id="sk-message" rows="1" maxlength="1200" placeholder="Write a message…"></textarea><button class="sk-send" type="submit">➤</button></form><div class="sk-note">SHIFT + ENTER · LOCAL DEMO</div></div></div>
 </section>
-<script src="community-hub.js?v=17"></script>
+<script src="https://js.puter.com/v2/"></script>
+<script src="community-hub.js?v=18"></script>
 </body>
 </html>
