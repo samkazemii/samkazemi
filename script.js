@@ -182,3 +182,40 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     if(pad){e.preventDefault();play(pad)}
   });
 })();
+
+// V9.4 vMix preview/program switching game
+(()=>{
+  const shell=document.getElementById('vmixShell');
+  if(!shell)return;
+  const record=document.getElementById('vmixRecord');
+  const recordText=record.querySelector('span');
+  const clock=document.getElementById('vmixClock');
+  const inputs=[...shell.querySelectorAll('.vmix-input')];
+  const previewImage=document.getElementById('previewImage');
+  const previewEmpty=document.getElementById('previewEmpty');
+  const previewLabel=document.getElementById('previewLabel');
+  const programImage=document.getElementById('vmixProgramImage');
+  const programScreen=document.getElementById('vmixProgramScreen');
+  const programLabel=document.getElementById('programLabel');
+  const merge=document.getElementById('vmixMerge');
+  const step=document.getElementById('vmixStep');
+  const message=document.getElementById('vmixMessage');
+  const reset=document.getElementById('vmixReset');
+  let recording=false,selected=null,seconds=0,timer=null,taken=false;
+  const time=()=>{const h=String(Math.floor(seconds/3600)).padStart(2,'0'),m=String(Math.floor(seconds%3600/60)).padStart(2,'0'),s=String(seconds%60).padStart(2,'0');clock.textContent=`${h}:${m}:${s}`};
+  const setMessage=(n,text)=>{step.textContent=`STEP ${n} OF 3`;message.textContent=text};
+  function toggleRecord(){
+    recording=!recording;record.classList.toggle('recording',recording);recordText.textContent=recording?'STOP RECORD':'START RECORD';
+    if(recording){clearInterval(timer);timer=setInterval(()=>{seconds++;time()},1000);setMessage(2,'Choose an input for the Preview monitor.');}
+    else{clearInterval(timer);if(!taken)setMessage(1,'Start recording to begin.');}
+  }
+  inputs.forEach(btn=>btn.addEventListener('click',()=>{
+    if(!recording){setMessage(1,'Start recording first.');record.animate([{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(5px)'},{transform:'translateX(0)'}],{duration:260});return;}
+    inputs.forEach(x=>x.classList.remove('selected'));btn.classList.add('selected');selected={src:btn.dataset.src,name:btn.dataset.name};previewImage.src=selected.src;previewLabel.textContent=selected.name;previewEmpty.textContent='READY IN PREVIEW';merge.disabled=false;taken=false;shell.classList.remove('completed');setMessage(3,'Press MERGE to take Preview to Program.');
+  }));
+  merge.addEventListener('click',()=>{
+    if(!recording||!selected)return;programImage.src=selected.src;programLabel.textContent=selected.name;programScreen.classList.remove('merge-flash');void programScreen.offsetWidth;programScreen.classList.add('merge-flash');taken=true;merge.disabled=true;shell.classList.add('completed');setMessage('3','Broadcast successful — input is now live on Program.');step.textContent='COMPLETE';message.textContent='Perfect merge. The selected source is now on Program.';
+  });
+  function resetGame(){clearInterval(timer);recording=false;selected=null;seconds=0;taken=false;time();record.classList.remove('recording');recordText.textContent='START RECORD';inputs.forEach(x=>x.classList.remove('selected'));previewImage.src='game-preview.jpg';previewLabel.textContent='SELECT INPUT';previewEmpty.textContent='CHOOSE AN INPUT';programImage.src='game-control-room.jpg';programLabel.textContent='OFF AIR';merge.disabled=true;shell.classList.remove('completed');setMessage(1,'Start recording to begin.');}
+  record.addEventListener('click',toggleRecord);reset.addEventListener('click',resetGame);
+})();
