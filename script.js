@@ -132,3 +132,53 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   buttons.forEach(btn=>btn.addEventListener('click',()=>{if(!active||pending)return;btn.classList.add('hit');setTimeout(()=>btn.classList.remove('hit'),180);const expected=sequence[step];if(btn.dataset.action!==expected){failStep('Wrong console control. Follow the current operation.');return}operations[expected]()}));
   start.addEventListener('click',begin);again.addEventListener('click',begin);
 })();
+
+
+// V9.3 Sound Pad — self-contained Web Audio synth, no external audio files.
+(() => {
+  const pads=[...document.querySelectorAll('.note-pad')];
+  const display=document.querySelector('.sound-pad-display');
+  const noteOut=document.getElementById('soundPadNote');
+  const status=document.getElementById('soundPadStatus');
+  if(!pads.length||!display||!noteOut)return;
+  let audioCtx=null;
+  const keyMap=new Map(pads.map(p=>[p.dataset.key.toLowerCase(),p]));
+
+  function context(){
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function play(pad){
+    const ctx=context();
+    const now=ctx.currentTime;
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    const filter=ctx.createBiquadFilter();
+    osc.type='triangle';
+    osc.frequency.setValueAtTime(Number(pad.dataset.frequency),now);
+    filter.type='lowpass'; filter.frequency.setValueAtTime(1800,now);
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(.28,now+.015);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.55);
+    osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    osc.start(now); osc.stop(now+.58);
+
+    const color=getComputedStyle(pad).getPropertyValue('--pad').trim();
+    display.style.setProperty('--pad-color',color);
+    display.style.setProperty('--pad-glow',color);
+    noteOut.textContent=pad.dataset.note;
+    if(status) status.textContent=`PLAYING ${pad.dataset.note}`;
+    pad.classList.add('active'); display.classList.add('playing');
+    clearTimeout(pad._releaseTimer);
+    pad._releaseTimer=setTimeout(()=>{pad.classList.remove('active');display.classList.remove('playing');if(status)status.textContent='READY'},180);
+  }
+  pads.forEach(pad=>{
+    pad.addEventListener('pointerdown',e=>{e.preventDefault();play(pad)});
+  });
+  window.addEventListener('keydown',e=>{
+    if(e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;
+    const pad=keyMap.get(e.key.toLowerCase());
+    if(pad){e.preventDefault();play(pad)}
+  });
+})();
