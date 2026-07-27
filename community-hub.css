@@ -64,3 +64,50 @@ html[dir="rtl"] .sk-login label{text-align:right}html[dir="rtl"] .sk-users{borde
 .sk-admin-modal[hidden]{display:none!important}.sk-admin-modal{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 20%,rgba(29,255,210,.12),transparent 38%),rgba(0,4,8,.78);backdrop-filter:blur(18px)}
 .sk-admin-card{position:relative;width:min(430px,100%);overflow:hidden;border:1px solid rgba(93,255,226,.34);border-radius:25px;padding:32px;background:linear-gradient(160deg,rgba(13,24,35,.98),rgba(5,12,20,.98));box-shadow:0 35px 100px rgba(0,0,0,.72),0 0 55px rgba(93,255,226,.08);text-align:left}.sk-admin-card:before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,var(--ch-cyan),transparent)}.sk-admin-close{position:absolute;right:16px;top:14px;width:34px;height:34px;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);color:#fff;font-size:20px;cursor:pointer}.sk-admin-emblem{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#aaffef,var(--ch-cyan) 42%,#178e9e 100%);box-shadow:0 0 35px rgba(93,255,226,.25);margin-bottom:22px}.sk-admin-emblem span{width:20px;height:24px;border:3px solid #031115;border-radius:6px;position:relative}.sk-admin-emblem span:before{content:"";position:absolute;width:12px;height:10px;border:3px solid #031115;border-bottom:0;border-radius:10px 10px 0 0;left:1px;top:-12px}.sk-admin-kicker{margin:0 0 8px;color:var(--ch-cyan);font:850 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.18em}.sk-admin-card h3{margin:0;font-size:30px;letter-spacing:-.04em}.sk-admin-copy{margin:12px 0 22px;color:#9eb2bd;font-size:13px;line-height:1.7}.sk-admin-email-label{display:block;margin-bottom:8px;color:#80949e;font:800 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em}.sk-admin-email-wrap{height:48px;display:flex;align-items:center;gap:10px;padding:0 13px;border:1px solid rgba(255,255,255,.13);border-radius:13px;background:rgba(0,5,10,.52)}.sk-admin-email-wrap span{color:var(--ch-cyan)}.sk-admin-email-wrap input{flex:1;min-width:0;border:0!important;background:transparent!important;color:#dffcff!important;padding:0!important;outline:0;font-size:13px}.sk-admin-card #sk-admin-login,.sk-admin-card #sk-admin-logout{width:100%;height:48px;margin-top:12px;border:0;border-radius:13px;background:linear-gradient(100deg,var(--ch-cyan),#6eb7ff);color:#031115;font-weight:950;letter-spacing:.07em;display:flex;align-items:center;justify-content:space-between;padding:0 17px;cursor:pointer;box-shadow:0 12px 30px rgba(52,197,216,.17)}.sk-admin-card #sk-admin-logout{justify-content:center;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12)}#sk-admin-status{display:block;min-height:18px;margin-top:13px;color:#a4f8e9;font-size:11px;line-height:1.5}.sk-admin-footnote{margin:18px 0 0;padding-top:15px;border-top:1px solid rgba(255,255,255,.08);color:#60747e;font:700 9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em}
 @media(max-width:700px){.sk-ch-header{height:auto;min-height:74px;flex-basis:auto;align-items:flex-start;padding:13px 12px}.sk-ch-actions{max-width:62%;flex-wrap:wrap;justify-content:flex-end}.sk-ai-studio-btn,.sk-voice-ai-btn,.sk-admin-btn{height:34px;padding:0 9px;font-size:9px}.sk-admin-card{padding:26px 20px;border-radius:22px}.sk-admin-card h3{font-size:27px}}
+
+/* V17 — AI MODE toggle: full-blue ON state with a red sliding knob */
+.sk-ai{
+  min-width:116px!important;
+  overflow:hidden;
+  border-color:rgba(255,255,255,.16)!important;
+  background:rgba(255,255,255,.04)!important;
+  transition:background .24s ease,border-color .24s ease,box-shadow .24s ease!important;
+}
+.sk-ai-led{display:none!important}
+.sk-ai-switch{
+  order:0;
+  width:32px!important;
+  height:18px!important;
+  flex:0 0 32px;
+  background:#263844!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)!important;
+}
+.sk-ai-switch:after{
+  width:12px!important;
+  height:12px!important;
+  left:3px!important;
+  top:3px!important;
+  background:#8497a1!important;
+  box-shadow:0 1px 4px rgba(0,0,0,.45);
+  transition:transform .24s cubic-bezier(.2,.8,.2,1),background .24s ease,box-shadow .24s ease!important;
+}
+.sk-ai.sk-ai-on,.sk-ai:has(input:checked){
+  border-color:#56e8ff!important;
+  background:linear-gradient(135deg,#15bff3,#3289ff)!important;
+  box-shadow:0 0 10px rgba(58,194,255,.72),0 0 25px rgba(36,136,255,.35),inset 0 0 15px rgba(255,255,255,.12)!important;
+}
+.sk-ai input:checked~.sk-ai-switch{background:rgba(0,61,122,.38)!important}
+.sk-ai input:checked~.sk-ai-switch:after{
+  transform:translateX(14px)!important;
+  background:#ff334f!important;
+  box-shadow:0 0 8px rgba(255,42,76,.95),0 0 14px rgba(255,42,76,.55)!important;
+}
+.sk-ai.sk-ai-on .sk-ai-label,.sk-ai:has(input:checked) .sk-ai-label{
+  color:#fff!important;
+  text-shadow:0 1px 6px rgba(0,0,0,.35)!important;
+}
+@media(max-width:700px){
+  .sk-ai{min-width:104px!important}
+  .sk-ai-switch{width:30px!important;flex-basis:30px}
+  .sk-ai input:checked~.sk-ai-switch:after{transform:translateX(12px)!important}
+}
