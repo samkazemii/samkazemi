@@ -5,8 +5,8 @@
 
   const ADMIN_EMAIL='sam.kazmi0090@gmail.com';
   const I={
-    en:{hub:'COMMUNITY HUB',designed:'Designed by Sam Kazemi',join:'Join the control-room community',desc:'Ask a production question, share a screenshot, and help other creators.',name:'Display name',email:'Email',notify:'Save my email on this device',enter:'ENTER HUB',placeholder:'Write a message…',reply:'REPLY',preview:'REALTIME',online:'CONNECTING…',err:'Please enter a valid name and email.',aiReady:'LOCAL AI ONLINE — open AI Studio or start talking.',aiOff:'AI MODE is off.',aiThinking:'Local AI is building a response…',aiListening:'VOICE AI IS LISTENING…',aiSpeaking:'VOICE AI IS SPEAKING…',aiError:'AI could not answer. Try a shorter, clearer request.',notConfigured:'Realtime is not configured. Add the real Supabase publishable key.',connectionError:'Could not connect to the realtime server.',sending:'Uploading and sending…',deleteConfirm:'Delete this message for everyone?',deleted:'Message deleted.',adminRequired:'Secure admin login is required.'},
-    fa:{hub:'هاب کامیونیتی',designed:'طراحی‌شده توسط سام کاظمی',join:'به کامیونیتی اتاق فرمان بپیوندید',desc:'سؤال فنی بپرسید، اسکرین‌شات بفرستید و به تولیدکنندگان دیگر کمک کنید.',name:'نام نمایشی',email:'ایمیل',notify:'ایمیل من فقط روی این دستگاه ذخیره شود',enter:'ورود به هاب',placeholder:'پیامتان را بنویسید…',reply:'پاسخ',preview:'ارتباط زنده',online:'در حال اتصال…',err:'نام و ایمیل معتبر وارد کنید.',aiReady:'هوش مصنوعی محلی روشن است؛ AI Studio را باز کن یا با آن حرف بزن.',aiOff:'AI MODE خاموش است.',aiThinking:'هوش مصنوعی محلی در حال ساخت پاسخ است…',aiListening:'هوش مصنوعی در حال شنیدن است…',aiSpeaking:'هوش مصنوعی در حال صحبت است…',aiError:'هوش مصنوعی نتوانست پاسخ بدهد؛ درخواست را کوتاه‌تر و روشن‌تر بگو.',notConfigured:'ارتباط زنده تنظیم نیست؛ کلید Publishable واقعی Supabase را وارد کن.',connectionError:'اتصال به سرور زنده برقرار نشد.',sending:'در حال آپلود و ارسال…',deleteConfirm:'این پیام برای همه حذف شود؟',deleted:'پیام حذف شد.',adminRequired:'ورود امن مدیر لازم است.'}
+    en:{hub:'COMMUNITY HUB',designed:'Designed by Sam Kazemi',join:'Join the control-room community',desc:'Ask a production question, share a screenshot, and help other creators.',name:'Display name',email:'Email',notify:'Save my email on this device',enter:'ENTER HUB',placeholder:'Write a message…',reply:'REPLY',preview:'REALTIME',online:'CONNECTING…',err:'Please enter a valid name and email.',aiReady:'SK AI ONLINE — natural conversation and voice are ready.',aiOff:'AI MODE is off.',aiThinking:'SK AI is thinking…',aiListening:'VOICE AI IS LISTENING…',aiSpeaking:'VOICE AI IS SPEAKING…',aiError:'AI could not answer. Try a shorter, clearer request.',notConfigured:'Realtime is not configured. Add the real Supabase publishable key.',connectionError:'Could not connect to the realtime server.',sending:'Uploading and sending…',deleteConfirm:'Delete this message for everyone?',deleted:'Message deleted.',adminRequired:'Secure admin login is required.'},
+    fa:{hub:'هاب کامیونیتی',designed:'طراحی‌شده توسط سام کاظمی',join:'به کامیونیتی اتاق فرمان بپیوندید',desc:'سؤال فنی بپرسید، اسکرین‌شات بفرستید و به تولیدکنندگان دیگر کمک کنید.',name:'نام نمایشی',email:'ایمیل',notify:'ایمیل من فقط روی این دستگاه ذخیره شود',enter:'ورود به هاب',placeholder:'پیامتان را بنویسید…',reply:'پاسخ',preview:'ارتباط زنده',online:'در حال اتصال…',err:'نام و ایمیل معتبر وارد کنید.',aiReady:'هوش مصنوعی واقعی آماده است؛ بنویس یا با آن حرف بزن.',aiOff:'AI MODE خاموش است.',aiThinking:'هوش مصنوعی در حال فکر کردن است…',aiListening:'هوش مصنوعی در حال شنیدن است…',aiSpeaking:'هوش مصنوعی در حال صحبت است…',aiError:'هوش مصنوعی نتوانست پاسخ بدهد؛ درخواست را کوتاه‌تر و روشن‌تر بگو.',notConfigured:'ارتباط زنده تنظیم نیست؛ کلید Publishable واقعی Supabase را وارد کن.',connectionError:'اتصال به سرور زنده برقرار نشد.',sending:'در حال آپلود و ارسال…',deleteConfirm:'این پیام برای همه حذف شود؟',deleted:'پیام حذف شد.',adminRequired:'ورود امن مدیر لازم است.'}
   };
 
   let lang=document.documentElement.lang==='fa'?'fa':'en';
@@ -68,34 +68,22 @@
   function detectLang(text){return/[\u0600-\u06ff]/.test(text)?'fa':/[çğıöşüİ]/i.test(text)?'tr':'en';}
   function clean(text){return text.replace(/\s+/g,' ').trim();}
   const aiMemory=[];
-  function remember(role,text){aiMemory.push({role,text:clean(text)});if(aiMemory.length>12)aiMemory.splice(0,aiMemory.length-12);}
-  function conversationalAI(text, l){
-    const q=clean(text||''), lower=q.toLowerCase();
-    const fa=l==='fa';
-    const recent=aiMemory.slice(-4).map(x=>x.text).join(' ');
-    if(/^(سلام|درود|هی|hello|hi|hey)\b/i.test(q)) return fa?'سلام! من اینجام 😊 امروز دوست داری درباره چی حرف بزنیم؟':'Hey! I’m here 😊 What would you like to talk about?';
-    if(/خوبی|چطوری|حالت چطوره|how are you/i.test(lower)) return fa?'خوبم، مرسی که پرسیدی. تو چطوری؟ چه خبر؟':'I’m good, thanks for asking. How are you doing?';
-    if(/اسمت چیه|تو کی هستی|who are you/i.test(lower)) return fa?'من دستیار هوشمند Community Hub هستم؛ برای گفت‌وگوی معمولی، ایده‌پردازی و کمک فنی کنارتم.':'I’m the Community Hub assistant — here for normal conversation, ideas, and technical help.';
-    if(/مرسی|ممنون|دمت گرم|thank/i.test(lower)) return fa?'خواهش می‌کنم 🌱 خوشحالم به کارت اومد.':'You’re welcome 🌱 Glad that helped.';
-    if(/خداحافظ|فعلا|بای|bye/i.test(lower)) return fa?'فعلاً! هر وقت خواستی برگرد، من اینجام.':'See you! I’ll be here when you’re back.';
-    if(/چه خبر|چی کار میکنی|چیکار میکنی/i.test(lower)) return fa?'اینجا منتظرم باهات حرف بزنم یا روی ایده‌هات کار کنیم. تو بگو امروز ذهنت درگیر چیه؟':'I’m here, ready to chat or work through an idea with you. What’s on your mind today?';
-    if(/غمگین|ناراحت|خسته|حال ندارم|استرس|anxious|sad|tired/i.test(lower)) return fa?'می‌فهمم. دوست داری فقط حرف بزنی، یا با هم یک راه‌حل عملی پیدا کنیم؟':'I hear you. Do you want to just talk, or work out a practical next step together?';
-    if(/خوشحال|عالی|هیجان|happy|excited/i.test(lower)) return fa?'چه خوب 😄 چی باعثش شده؟':'Nice 😄 What happened?';
-    if(/^(آره|بله|نه|نه بابا|yes|no)$/i.test(q) && recent) return fa?'باشه، یکم بیشتر برام بگو تا دقیق‌تر همراهت باشم.':'Got it — tell me a little more so I can follow you properly.';
-    if(q.endsWith('?')||q.endsWith('؟')) return fa?`سؤال خوبیه. برداشت من اینه که درباره «${q.replace(/[؟?]+$/,'')}» می‌پرسی. جواب دقیقش به جزئیات بستگی داره؛ مهم‌ترین نکته‌ای که باید روشن کنیم اینه: هدفت بیشتر فهمیدن موضوعه یا رسیدن به یک نتیجه عملی؟`:`Good question. It sounds like you’re asking about “${q.replace(/[?]+$/,'')}”. The best answer depends on context — are you mainly trying to understand it, or make a practical decision?`;
-    return fa?`فهمیدم. درباره «${q}» می‌تونیم خیلی طبیعی جلو بریم. از کدوم بخشش شروع کنیم؟`:`I get you. We can talk through “${q}” naturally. Which part should we start with?`;
-  }
-  function localAI(text,action='auto'){
-    const q=clean(text||''),l=detectLang(q);if(!q)return l==='fa'?'هرچی تو ذهنت هست بگو؛ من گوش می‌دم.':'Say whatever is on your mind — I’m listening.';
-    const lower=q.toLowerCase();
-    let out='';
-    if(action==='summary'||/خلاصه|summar|özet/.test(lower)){const parts=q.split(/[.!؟?\n]+/).map(clean).filter(Boolean).slice(0,3);out=l==='fa'?`خلاصه:\n• ${parts.join('\n• ')}`:`Summary:\n• ${parts.join('\n• ')}`;}
-    else if(action==='rewrite'||/حرفه‌ای|بازنویسی|rewrite|professional/.test(lower)){out=l==='fa'?`نسخه روان‌تر و حرفه‌ای‌تر:\n\n${q.replace(/میخوام|می‌خوام/g,'قصد دارم')}`:`A smoother, more professional version:\n\n${q.charAt(0).toUpperCase()+q.slice(1)}`;}
-    else if(action==='translate'||/ترجمه|translate|çevir/.test(lower)){out=l==='fa'?`زبان مقصد رو هم بگو؛ مثلاً «به انگلیسی ترجمه کن».`:`Tell me the target language too, for example: “Translate this to Persian.”`;}
-    else if(action==='script'||/سناریو|script|ویدیو|video/.test(lower)){out=l==='fa'?`برای «${q}» این ساختار خوبه: شروع کوتاه و جذاب، معرفی مسئله، سه بخش اصلی، یک نقطه اوج، و پایان با دعوت روشن به واکنش.`:`For “${q}”, use a short hook, introduce the problem, cover three main beats, land a strong payoff, and end with a clear call to action.`;}
-    else if(action==='ideas'||/ایده|idea|fikir/.test(lower)){out=l==='fa'?`برای «${q}» چند مسیر خوب داریم: پشت‌صحنه، قبل و بعد، اشتباه رایج و راه‌حل، چالش زمان‌دار، یا مقایسه دو روش. کدوم سبک بیشتر به کارت میاد؟`:`For “${q}”, good directions include behind-the-scenes, before-and-after, common mistake plus fix, a timed challenge, or a two-method comparison. Which style fits you best?`;}
-    else out=conversationalAI(q,l);
-    remember('user',q);remember('assistant',out);return out;
+  function remember(role,text){aiMemory.push({role,content:clean(text)});if(aiMemory.length>16)aiMemory.splice(0,aiMemory.length-16);}
+  async function askAI(text,action='auto'){
+    const q=clean(text||'');
+    if(!q)throw new Error(lang==='fa'?'پیامی برای هوش مصنوعی وارد نشده.':'No AI prompt was provided.');
+    if(!supabase)throw new Error(T().notConfigured);
+    const response=await fetch(`${cfg.url}/functions/v1/sk-ai-chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':cfg.key,'Authorization':`Bearer ${cfg.key}`},
+      body:JSON.stringify({message:q,action,language:detectLang(q),history:aiMemory.slice(-12)})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||data.message||`AI request failed (${response.status})`);
+    const answer=clean(data.answer||'');
+    if(!answer)throw new Error(lang==='fa'?'پاسخ خالی از سرور دریافت شد.':'The AI returned an empty response.');
+    remember('user',q);remember('assistant',answer);
+    return answer;
   }
 
   function aiEnabled(){return $('#sk-ai').checked;}
@@ -107,30 +95,41 @@
   $('#sk-ai-studio-open').onclick=openStudio;$('#sk-ai-studio-close').onclick=closeStudio;
   let studioAction='auto';
   document.querySelectorAll('[data-ai-action]').forEach(b=>b.onclick=()=>{studioAction=b.dataset.aiAction;document.querySelectorAll('[data-ai-action]').forEach(x=>x.classList.toggle('active',x===b));});
-  $('#sk-ai-studio-run').onclick=()=>{const input=$('#sk-ai-studio-input').value.trim();$('#sk-ai-studio-output').textContent=T().aiThinking;setTimeout(()=>{lastAIOutput=localAI(input,studioAction);$('#sk-ai-studio-output').textContent=lastAIOutput;},180);};
+  $('#sk-ai-studio-run').onclick=async()=>{const input=$('#sk-ai-studio-input').value.trim();if(!input)return;$('#sk-ai-studio-output').textContent=T().aiThinking;try{lastAIOutput=await askAI(input,studioAction);$('#sk-ai-studio-output').textContent=lastAIOutput;}catch(err){console.error(err);$('#sk-ai-studio-output').textContent=err.message||T().aiError;}};
   $('#sk-ai-studio-speak').onclick=()=>speak(lastAIOutput||$('#sk-ai-studio-output').textContent);
 
-  function chooseVoice(locale){const voices=speechSynthesis.getVoices?.()||[];const wanted=locale.toLowerCase();return voices.find(v=>v.lang?.toLowerCase()===wanted)||voices.find(v=>v.lang?.toLowerCase().startsWith(wanted.split('-')[0]))||null;}
-  function speak(text){
-    if(!('speechSynthesis'in window)||!text)return;
-    speechSynthesis.cancel();
-    const detected=detectLang(text),locale=detected==='fa'?'fa-IR':detected==='tr'?'tr-TR':'en-US';
-    const u=new SpeechSynthesisUtterance(text.replace(/[•*_#]/g,' '));
-    u.lang=locale;u.rate=detected==='fa'?0.88:0.96;u.pitch=1;
-    const voice=chooseVoice(locale);if(voice)u.voice=voice;
-    u.onstart=()=>{$('#sk-voice-ai').classList.add('speaking');$('#sk-ai-note').textContent=T().aiSpeaking;};
-    u.onend=()=>{$('#sk-voice-ai').classList.remove('speaking');$('#sk-ai-note').textContent=T().aiReady;if(voiceRestart&&voiceActive)setTimeout(startRecognition,300);};
-    u.onerror=()=>{$('#sk-voice-ai').classList.remove('speaking');$('#sk-ai-note').textContent=detected==='fa'?'صدای فارسی روی این دستگاه نصب نیست؛ پاسخ متنی آماده است.':'A compatible system voice is not available; the text response is ready.';};
-    speechSynthesis.speak(u);
+  let currentAudio=null;
+  async function speak(text){
+    if(!text)return;
+    try{
+      if(currentAudio){currentAudio.pause();currentAudio.src='';currentAudio=null;}
+      if('speechSynthesis'in window)speechSynthesis.cancel();
+      $('#sk-voice-ai').classList.add('speaking');$('#sk-ai-note').textContent=T().aiSpeaking;
+      const response=await fetch(`${cfg.url}/functions/v1/sk-ai-tts`,{
+        method:'POST',headers:{'Content-Type':'application/json','apikey':cfg.key,'Authorization':`Bearer ${cfg.key}`},
+        body:JSON.stringify({text,language:detectLang(text)})
+      });
+      if(!response.ok){const e=await response.json().catch(()=>({}));throw new Error(e.error||'Voice service unavailable');}
+      const blob=await response.blob();
+      const url=URL.createObjectURL(blob);currentAudio=new Audio(url);
+      currentAudio.onended=()=>{URL.revokeObjectURL(url);currentAudio=null;$('#sk-voice-ai').classList.remove('speaking');$('#sk-ai-note').textContent=T().aiReady;if(voiceRestart&&voiceActive)setTimeout(startRecognition,350);};
+      currentAudio.onerror=()=>{URL.revokeObjectURL(url);currentAudio=null;$('#sk-voice-ai').classList.remove('speaking');$('#sk-ai-note').textContent=T().aiError;};
+      await currentAudio.play();
+    }catch(err){
+      console.error('AI voice',err);$('#sk-voice-ai').classList.remove('speaking');
+      $('#sk-ai-note').textContent=lang==='fa'?'صدای هوش مصنوعی در دسترس نیست؛ پاسخ متنی آماده است.':'AI voice is unavailable; the text response is ready.';
+      if(voiceRestart&&voiceActive)setTimeout(startRecognition,500);
+    }
   }
+
   if('speechSynthesis'in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}
   function buildRecognition(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;const r=new SR();r.continuous=false;r.interimResults=true;r.lang=lang==='fa'?'fa-IR':'en-US';r.onstart=()=>{$('#sk-voice-ai').classList.add('listening');$('#sk-ai-note').textContent=T().aiListening;};r.onresult=e=>{let final='';for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)final+=e.results[i][0].transcript;if(final)handleVoicePrompt(final.trim());};r.onerror=e=>{console.warn('Speech recognition',e.error);if(e.error!=='aborted'){$('#sk-ai-note').textContent=lang==='fa'?'تشخیص صدا در این مرورگر در دسترس نیست؛ از تایپ استفاده کن.':'Speech recognition is unavailable in this browser; use typing instead.';}stopVoice(false);};r.onend=()=>{$('#sk-voice-ai').classList.remove('listening');if(voiceActive&&!speechSynthesis.speaking)setTimeout(startRecognition,350);};return r;}
   function startRecognition(){if(!voiceActive)return;if(!recognition)recognition=buildRecognition();if(!recognition){alert(lang==='fa'?'مرورگر شما تشخیص گفتار را پشتیبانی نمی‌کند. Chrome روی Android بهترین پشتیبانی را دارد.':'Your browser does not support speech recognition. Chrome on Android usually works best.');stopVoice(false);return;}try{recognition.lang=lang==='fa'?'fa-IR':'en-US';recognition.start();}catch{}}
-  function stopVoice(cancelSpeech=true){voiceActive=false;voiceRestart=false;$('#sk-voice-ai').classList.remove('active','listening','speaking');$('#sk-voice-ai').setAttribute('aria-pressed','false');try{recognition?.abort();}catch{}if(cancelSpeech&&'speechSynthesis'in window)speechSynthesis.cancel();if(aiEnabled())$('#sk-ai-note').textContent=T().aiReady;}
-  async function handleVoicePrompt(text){if(!text)return;voiceRestart=true;$('#sk-message').value=text;const answer=localAI(text);lastAIOutput=answer;$('#sk-ai-note').textContent=T().aiThinking;try{if(user&&supabase){await insertMessage({name:user.name,body:text,reply:null,media:[]});await insertMessage({name:'SK AI',body:answer,reply:null,media:[],isAI:true,originClient:'sk-local-ai'});}else{$('#sk-ai-studio-input').value=text;$('#sk-ai-studio-output').textContent=answer;openStudio();}$('#sk-voice-ai').classList.add('speaking');speak(answer);}catch(err){console.error(err);$('#sk-ai-note').textContent=T().aiError;}}
+  function stopVoice(cancelSpeech=true){voiceActive=false;voiceRestart=false;$('#sk-voice-ai').classList.remove('active','listening','speaking');$('#sk-voice-ai').setAttribute('aria-pressed','false');try{recognition?.abort();}catch{}if(cancelSpeech&&'speechSynthesis'in window)speechSynthesis.cancel();if(cancelSpeech&&currentAudio){currentAudio.pause();currentAudio.src='';currentAudio=null;}if(aiEnabled())$('#sk-ai-note').textContent=T().aiReady;}
+  async function handleVoicePrompt(text){if(!text)return;voiceRestart=true;$('#sk-message').value=text;$('#sk-ai-note').textContent=T().aiThinking;try{const answer=await askAI(text);lastAIOutput=answer;if(user&&supabase){await insertMessage({name:user.name,body:text,reply:null,media:[]});await insertMessage({name:'SK AI',body:answer,reply:null,media:[],isAI:true,originClient:'sk-gemini'});}else{$('#sk-ai-studio-input').value=text;$('#sk-ai-studio-output').textContent=answer;openStudio();}await speak(answer);}catch(err){console.error(err);$('#sk-ai-note').textContent=err.message||T().aiError;}}
   $('#sk-voice-ai').onclick=()=>{if(!aiEnabled()){$('#sk-ai').checked=true;localStorage.setItem('sk-ai-enabled','1');updateAIUI();}voiceActive=!voiceActive;$('#sk-voice-ai').classList.toggle('active',voiceActive);$('#sk-voice-ai').setAttribute('aria-pressed',String(voiceActive));if(voiceActive)startRecognition();else stopVoice();};
 
-  $('#sk-form').onsubmit=async e=>{e.preventDefault();if(sending||aiBusy)return;const text=$('#sk-message').value.trim();if(!text&&!files.length)return;if(!user){$('#sk-login').hidden=false;$('#sk-room').hidden=true;return;}if(!supabase){$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=T().notConfigured;return;}sending=true;const sentFiles=[...files],sentReply=replyTo;$('#sk-connection-note').textContent=T().sending;try{const uploaded=await uploadMedia(sentFiles);await insertMessage({name:user.name,body:text,reply:sentReply,media:uploaded});$('#sk-message').value='';files=[];drawFiles();replyTo=null;$('#sk-reply-preview').hidden=true;if(aiEnabled()){aiBusy=true;const temp={id:'typing',display_name:'SK AI',body:'',typing:true,is_ai:true,client_id:'ai'};messages.push(temp);render();await new Promise(r=>setTimeout(r,180));const answer=localAI(text);messages=messages.filter(m=>m!==temp);await insertMessage({name:'SK AI',body:answer,reply:null,media:[],isAI:true,originClient:'sk-local-ai'});lastAIOutput=answer;$('#sk-ai-note').textContent=T().aiReady;}}catch(err){console.error(err);messages=messages.filter(m=>!m.typing);render();$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=`${T().connectionError} ${err.message||''}`;}finally{aiBusy=false;sending=false;setConnection(channel?'online':'offline',channel?(lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED'):T().connectionError);}};
+  $('#sk-form').onsubmit=async e=>{e.preventDefault();if(sending||aiBusy)return;const text=$('#sk-message').value.trim();if(!text&&!files.length)return;if(!user){$('#sk-login').hidden=false;$('#sk-room').hidden=true;return;}if(!supabase){$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=T().notConfigured;return;}sending=true;const sentFiles=[...files],sentReply=replyTo;$('#sk-connection-note').textContent=T().sending;try{const uploaded=await uploadMedia(sentFiles);await insertMessage({name:user.name,body:text,reply:sentReply,media:uploaded});$('#sk-message').value='';files=[];drawFiles();replyTo=null;$('#sk-reply-preview').hidden=true;if(aiEnabled()){aiBusy=true;const temp={id:'typing',display_name:'SK AI',body:'',typing:true,is_ai:true,client_id:'ai'};messages.push(temp);render();const answer=await askAI(text);messages=messages.filter(m=>m!==temp);await insertMessage({name:'SK AI',body:answer,reply:null,media:[],isAI:true,originClient:'sk-gemini'});lastAIOutput=answer;$('#sk-ai-note').textContent=T().aiReady;}}catch(err){console.error(err);messages=messages.filter(m=>!m.typing);render();$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=`${T().connectionError} ${err.message||''}`;}finally{aiBusy=false;sending=false;setConnection(channel?'online':'offline',channel?(lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED'):T().connectionError);}};
   $('#sk-message').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#sk-form').requestSubmit();}};$('#sk-message').oninput=e=>{e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,110)+'px';};
   $('#sk-voice').onclick=async()=>{if(recorder?.state==='recording'){recorder.stop();return;}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>chunks.push(e.data);recorder.onstop=()=>{const mime=MediaRecorder.isTypeSupported?.('audio/webm')?'audio/webm':'audio/mp4',blob=new Blob(chunks,{type:mime}),file=new File([blob],`voice-message.${mime.includes('mp4')?'m4a':'webm'}`,{type:mime});files.push({type:mime,url:URL.createObjectURL(blob),file});stream.getTracks().forEach(t=>t.stop());$('#sk-voice').classList.remove('recording');drawFiles();};recorder.start();$('#sk-voice').classList.add('recording');}catch{alert(lang==='fa'?'دسترسی میکروفون داده نشد.':'Microphone permission was not granted.');}};
 
