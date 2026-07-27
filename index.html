@@ -209,53 +209,60 @@
 
     <section class="section vmix-lab" id="vmix-lab" aria-labelledby="vmixLabTitle">
       <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> VMIX SWITCHING LAB</p>
-        <h2 id="vmixLabTitle">Preview it. Merge it.<br>Take it live.</h2>
-        <p class="game-intro">Choose an input—or upload your own photo or video—load it into Preview, start recording and use MERGE to send it to Program.</p>
+        <p class="eyebrow"><span></span> LIVE DIRECTOR CHALLENGE</p>
+        <h2 id="vmixLabTitle">Build the shot.<br>Beat the clock.</h2>
+        <p class="game-intro">You have two minutes: choose or upload media, place it inside a broadcast frame, load Preview, start Record, then MERGE it to Program.</p>
       </div>
 
-      <div class="vmix-console reveal" id="vmixConsole">
+      <div class="vmix-console vmix-v10 reveal" id="vmixConsole">
+        <div class="challenge-topbar">
+          <div><b>LIVE SWITCHING TEST</b><span id="vmixStep">PRESS START</span></div>
+          <button type="button" id="vmixStart" class="challenge-start">START 2:00</button>
+          <div class="challenge-clock" id="vmixClock" aria-live="polite">02:00</div>
+        </div>
+
         <div class="vmix-toolbar">
-          <div class="vmix-brand"><b>vMix</b><span>SIMPLIFIED CONTROL</span></div>
-          <button type="button" class="record-control" id="vmixRecord"><i></i><span>START RECORD</span></button>
+          <div class="vmix-brand"><b>vMix</b><span>DIRECTOR SIM</span></div>
+          <button type="button" class="record-control" id="vmixRecord" disabled><i></i><span>START RECORD</span></button>
           <div class="record-time" id="vmixRecordTime">00:00</div>
         </div>
 
         <div class="vmix-screens">
           <div class="vmix-screen preview-screen" id="vmixPreviewScreen">
-            <div class="screen-header"><span>PREVIEW</span><b id="vmixPreviewName">CAM 1</b></div>
-            <div class="screen-picture" id="vmixPreviewPicture">
-              <img id="vmixPreviewImage" src="game-cam1.jpg" alt="Preview source" hidden>
-              <video id="vmixPreviewVideo" src="vmix-control-live.mp4" muted loop autoplay playsinline preload="auto" aria-label="Preview video source"></video>
-            </div>
+            <div class="screen-header"><span>PREVIEW</span><b id="vmixPreviewName">EMPTY</b></div>
+            <div class="screen-picture frame-full" id="vmixPreviewPicture"><div class="media-host" id="vmixPreviewHost"><span class="screen-empty">SELECT MEDIA</span></div><div class="frame-overlay"><b id="previewHeadline">LIVE</b><small>BREAKING COVERAGE</small></div></div>
           </div>
-          <button type="button" class="merge-control" id="vmixMerge" aria-label="Merge preview into program"><span>MERGE</span><b>→</b></button>
+          <button type="button" class="merge-control" id="vmixMerge" disabled aria-label="Merge preview into program"><span>MERGE</span><b>→</b></button>
           <div class="vmix-screen program-screen" id="vmixProgramScreen">
             <div class="screen-header"><span>PROGRAM</span><b id="vmixProgramName">STANDBY</b></div>
-            <div class="screen-picture" id="vmixProgramPicture">
-              <img id="vmixProgramImage" src="game-control-room.jpg" alt="Program output">
-              <video id="vmixProgramVideo" muted loop playsinline preload="metadata" aria-label="Program video output"></video>
-            </div>
+            <div class="screen-picture frame-full" id="vmixProgramPicture"><div class="media-host" id="vmixProgramHost"><span class="screen-empty">OFF AIR</span></div><div class="frame-overlay"><b>LIVE</b><small>ON PROGRAM</small></div></div>
             <div class="live-bug" id="vmixLiveBug"><i></i>LIVE</div>
           </div>
         </div>
 
-        <div class="vmix-inputs" role="group" aria-label="vMix source inputs">
-          <button type="button" class="vmix-input active" data-name="CONTROL ROOM" data-type="video" data-src="vmix-control-live.mp4"><span>1</span><video src="vmix-control-live.mp4" muted loop autoplay playsinline preload="metadata" aria-label="Control room video input"></video><b>CONTROL ROOM</b></button>
-          <button type="button" class="vmix-input" data-name="LIVE EVENT" data-type="video" data-src="vmix-event-live.mp4"><span>2</span><video src="vmix-event-live.mp4" muted loop autoplay playsinline preload="metadata" aria-label="Live event video input"></video><b>LIVE EVENT</b></button>
-          <button type="button" class="vmix-input" data-name="STUDIO" data-type="image" data-src="game-preview.jpg"><span>3</span><img src="game-preview.jpg" alt="Studio input"><b>STUDIO</b></button>
-          <button type="button" class="vmix-input" data-name="REMOTE" data-type="image" data-src="game-remote.jpg"><span>4</span><img src="game-remote.jpg" alt="Remote guest input"><b>REMOTE</b></button>
-          <label class="vmix-upload" for="vmixUpload">
-            <input id="vmixUpload" type="file" accept="image/*,video/*">
-            <span>＋</span><b>UPLOAD MEDIA</b><small>PHOTO OR VIDEO</small>
-          </label>
+        <div class="director-workflow">
+          <div class="workflow-block">
+            <h3>1. Choose media</h3>
+            <div class="vmix-inputs compact-inputs" role="group" aria-label="Source inputs">
+              <button type="button" class="vmix-input" data-name="GAMING CAM" data-type="video" data-src="vmix-cam-stage.mp4"><span>1</span><video src="vmix-cam-stage.mp4" muted loop autoplay playsinline preload="metadata"></video><b>GAMING CAM</b></button>
+              <button type="button" class="vmix-input" data-name="CONTROL ROOM" data-type="video" data-src="vmix-cam-control.mp4"><span>2</span><video src="vmix-cam-control.mp4" muted loop autoplay playsinline preload="metadata"></video><b>CONTROL ROOM</b></button>
+              <label class="vmix-upload" for="vmixUpload"><input id="vmixUpload" type="file" accept="image/*,video/*"><span>＋</span><b>UPLOAD FILE</b><small id="uploadName">PHOTO OR VIDEO</small></label>
+            </div>
+          </div>
+
+          <div class="workflow-block">
+            <h3>2. Put it in a frame</h3>
+            <div class="frame-options" role="group" aria-label="Broadcast frame">
+              <button type="button" data-frame="frame-full" class="active">FULL SCREEN</button>
+              <button type="button" data-frame="frame-breaking">BREAKING NEWS</button>
+              <button type="button" data-frame="frame-gaming">GAMING LIVE</button>
+            </div>
+            <button type="button" id="vmixLoadPreview" class="load-preview" disabled>LOAD TO PREVIEW</button>
+          </div>
         </div>
 
-        <div class="vmix-statusbar">
-          <span id="vmixStatus" aria-live="polite">SELECT AN INPUT</span>
-          <button type="button" id="vmixReset">RESET</button>
-        </div>
-        <div class="vmix-success" id="vmixSuccess" aria-live="polite"><b>Broadcast Successful</b><span>Preview is now live on Program.</span></div>
+        <div class="vmix-statusbar"><span id="vmixStatus" aria-live="polite">PRESS START TO BEGIN</span><button type="button" id="vmixReset">RESET</button></div>
+        <div class="vmix-success" id="vmixSuccess" aria-live="polite"><b>Broadcast Successful</b><span>You made Program live before the deadline.</span></div>
       </div>
     </section>
 

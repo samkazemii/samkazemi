@@ -1,12 +1,6 @@
-SAM KAZEMI — CINEMATIC V9.2 FLAT
+Sam Kazemi Portfolio V10 — Live Director Challenge
 
-این نسخه هیچ پوشه‌ای ندارد.
-همه فایل‌ها و عکس‌ها کنار index.html هستند.
+Upload all files from this ZIP directly to the root of your GitHub Pages repository.
+Do not upload the containing folder.
 
-برای GitHub Pages:
-1) ZIP را Extract کنید.
-2) همه فایل‌ها را با هم انتخاب کنید.
-3) همه را در ریشه مخزن GitHub آپلود کنید.
-4) مطمئن شوید index.html در صفحه اصلی مخزن دیده می‌شود، نه داخل پوشه.
-
-مهم: هیچ فایل تصویری را تغییرنام ندهید.
+The game runs entirely in the visitor's browser. Uploaded photo/video files are not sent to a server and are removed when the page closes.

@@ -183,108 +183,33 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   });
 })();
 
-// V9.8 simplified vMix switching game with two built-in video feeds and local upload
+// V10 two-minute live director challenge
 (()=>{
-  const consoleEl=document.getElementById('vmixConsole');
-  if(!consoleEl)return;
-  const inputs=[...consoleEl.querySelectorAll('.vmix-input')];
-  const upload=document.getElementById('vmixUpload');
-  const previewImage=document.getElementById('vmixPreviewImage');
-  const previewVideo=document.getElementById('vmixPreviewVideo');
-  const previewName=document.getElementById('vmixPreviewName');
-  const programImage=document.getElementById('vmixProgramImage');
-  const programVideo=document.getElementById('vmixProgramVideo');
-  const programName=document.getElementById('vmixProgramName');
-  const programScreen=document.getElementById('vmixProgramScreen');
-  const merge=document.getElementById('vmixMerge');
-  const record=document.getElementById('vmixRecord');
-  const recordTime=document.getElementById('vmixRecordTime');
-  const status=document.getElementById('vmixStatus');
-  const success=document.getElementById('vmixSuccess');
-  const reset=document.getElementById('vmixReset');
-  let selected={name:'CONTROL ROOM',type:'video',src:'vmix-control-live.mp4',button:inputs[0]};
-  let recording=false,seconds=0,timer=null,uploadedUrl=null;
-
-  function showMedia(image,video,source){
-    video.pause();
-    if(source.type==='video'){
-      image.hidden=true;
-      video.hidden=false;
-      if(video.src!==source.src)video.src=source.src;
-      video.currentTime=0;
-      video.play().catch(()=>{});
-    }else{
-      video.hidden=true;
-      video.removeAttribute('src');
-      video.load();
-      image.hidden=false;
-      image.src=source.src;
-    }
-  }
-  function pick(source){
-    selected=source;
-    inputs.forEach(x=>x.classList.toggle('active',x===source.button));
-    showMedia(previewImage,previewVideo,source);
-    previewName.textContent=source.name;
-    status.textContent=`${source.name} LOADED IN PREVIEW`;
-    success.classList.remove('show');
-  }
-  function sourceFromButton(input){
-    return {name:input.dataset.name,type:input.dataset.type||'image',src:input.dataset.src,button:input};
-  }
-  function formatTime(value){return `${String(Math.floor(value/60)).padStart(2,'0')}:${String(value%60).padStart(2,'0')}`}
-  function toggleRecord(){
-    recording=!recording;
-    record.classList.toggle('recording',recording);
-    record.querySelector('span').textContent=recording?'STOP RECORD':'START RECORD';
-    status.textContent=recording?'RECORDING STARTED':'RECORDING STOPPED';
-    if(recording){timer=setInterval(()=>{seconds++;recordTime.textContent=formatTime(seconds)},1000)}
-    else{clearInterval(timer);timer=null}
-  }
-  function takeLive(){
-    if(!selected)return;
-    programScreen.classList.add('transitioning');
-    status.textContent='MERGING PREVIEW TO PROGRAM…';
-    success.classList.remove('show');
-    setTimeout(()=>{
-      showMedia(programImage,programVideo,selected);
-      programName.textContent=selected.name;
-      programScreen.classList.remove('transitioning');
-      programScreen.classList.add('on-air');
-      status.textContent=`${selected.name} IS LIVE`;
-      success.classList.add('show');
-    },320);
-  }
-  function resetAll(){
-    if(timer)clearInterval(timer);
-    recording=false;seconds=0;timer=null;
-    record.classList.remove('recording');
-    record.querySelector('span').textContent='START RECORD';
-    recordTime.textContent='00:00';
-    showMedia(programImage,programVideo,{type:'image',src:'game-control-room.jpg'});
-    programName.textContent='STANDBY';
-    programScreen.classList.remove('on-air','transitioning');
-    success.classList.remove('show');
-    pick(sourceFromButton(inputs[0]));
-    status.textContent='SELECT AN INPUT OR UPLOAD MEDIA';
-  }
-  inputs.forEach(input=>input.addEventListener('click',()=>pick(sourceFromButton(input))));
-  upload.addEventListener('change',()=>{
-    const file=upload.files&&upload.files[0];
-    if(!file)return;
-    if(!file.type.startsWith('image/')&&!file.type.startsWith('video/')){
-      status.textContent='PLEASE CHOOSE A PHOTO OR VIDEO';
-      upload.value='';
-      return;
-    }
-    if(uploadedUrl)URL.revokeObjectURL(uploadedUrl);
-    uploadedUrl=URL.createObjectURL(file);
-    const type=file.type.startsWith('video/')?'video':'image';
-    const cleanName=file.name.replace(/\.[^.]+$/,'').slice(0,18).toUpperCase()||'UPLOAD';
-    pick({name:cleanName,type,src:uploadedUrl,button:null});
-    status.textContent=`${type==='video'?'VIDEO':'PHOTO'} READY IN PREVIEW`;
-  });
-  record.addEventListener('click',toggleRecord);
-  merge.addEventListener('click',takeLive);
-  reset.addEventListener('click',resetAll);
+  const root=document.getElementById('vmixConsole'); if(!root)return;
+  const $=id=>document.getElementById(id);
+  const inputs=[...root.querySelectorAll('.vmix-input')];
+  const frameButtons=[...root.querySelectorAll('[data-frame]')];
+  const startBtn=$('vmixStart'), clock=$('vmixClock'), step=$('vmixStep'), upload=$('vmixUpload'), uploadName=$('uploadName');
+  const loadBtn=$('vmixLoadPreview'), record=$('vmixRecord'), merge=$('vmixMerge'), reset=$('vmixReset');
+  const previewHost=$('vmixPreviewHost'), programHost=$('vmixProgramHost'), previewPicture=$('vmixPreviewPicture'), programPicture=$('vmixProgramPicture');
+  const previewName=$('vmixPreviewName'), programName=$('vmixProgramName'), status=$('vmixStatus'), success=$('vmixSuccess'), recordTime=$('vmixRecordTime');
+  const programScreen=$('vmixProgramScreen');
+  let running=false, timeLeft=120, challengeTimer=null, recordTimer=null, recordSeconds=0, recording=false;
+  let selected=null, previewSource=null, frame='frame-full', uploadedUrl=null, finished=false;
+  const fmt=n=>`${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;
+  const play=v=>{const p=v.play(); if(p&&p.catch)p.catch(()=>{});};
+  function render(host,source){ host.innerHTML=''; if(!source){host.innerHTML='<span class="screen-empty">EMPTY</span>';return;} const el=document.createElement(source.type==='video'?'video':'img'); el.src=source.src; el.alt=source.name; if(source.type==='video'){el.muted=true;el.loop=true;el.autoplay=true;el.playsInline=true;el.controls=false; host.appendChild(el);play(el);} else host.appendChild(el); }
+  function setFrame(el,name){el.classList.remove('frame-full','frame-breaking','frame-gaming');el.classList.add(name);}
+  function setStatus(text,stage){status.textContent=text;step.textContent=stage||text;}
+  function begin(){ if(running)return; running=true;finished=false;timeLeft=120;clock.textContent='02:00';root.classList.remove('danger','failed');startBtn.disabled=true; inputs.forEach(b=>b.disabled=false); upload.disabled=false; setStatus('CHOOSE A VIDEO OR UPLOAD YOUR OWN','STEP 1 · MEDIA'); challengeTimer=setInterval(()=>{timeLeft--;clock.textContent=fmt(timeLeft); if(timeLeft<=30)root.classList.add('danger'); if(timeLeft===60)setStatus('ONE MINUTE LEFT — BUILD THE SHOT','60 SECONDS'); if(timeLeft===10)setStatus('TEN SECONDS — TAKE IT LIVE!','FINAL 10'); if(timeLeft<=0)fail();},1000); }
+  function choose(source,button){ if(!running||finished)return; selected=source; inputs.forEach(b=>b.classList.toggle('active',b===button)); loadBtn.disabled=false; render(previewHost,source); previewName.textContent=`${source.name} · NOT LOADED`; setStatus('CHOOSE A FRAME, THEN LOAD TO PREVIEW','STEP 2 · FRAME'); }
+  inputs.forEach(b=>b.addEventListener('click',()=>choose({name:b.dataset.name,type:b.dataset.type,src:b.dataset.src},b)));
+  frameButtons.forEach(b=>b.addEventListener('click',()=>{ if(!running)return; frame=b.dataset.frame;frameButtons.forEach(x=>x.classList.toggle('active',x===b));setFrame(previewPicture,frame); if(selected)setStatus('FRAME READY — LOAD TO PREVIEW','STEP 3 · PREVIEW'); }));
+  upload.addEventListener('change',()=>{ const file=upload.files&&upload.files[0]; if(!file)return; const isVideo=file.type.startsWith('video/'), isImage=file.type.startsWith('image/'); if(!isVideo&&!isImage){setStatus('THAT FILE IS NOT A PHOTO OR VIDEO','UPLOAD ERROR');upload.value='';return;} if(file.size>200*1024*1024){setStatus('FILE TOO LARGE — MAX 200 MB','UPLOAD ERROR');upload.value='';return;} if(uploadedUrl)URL.revokeObjectURL(uploadedUrl); uploadedUrl=URL.createObjectURL(file); uploadName.textContent=file.name.slice(0,24); choose({name:file.name.replace(/\.[^.]+$/,'').toUpperCase().slice(0,20),type:isVideo?'video':'image',src:uploadedUrl},null); });
+  loadBtn.addEventListener('click',()=>{if(!running||!selected)return;previewSource={...selected};setFrame(previewPicture,frame);render(previewHost,previewSource);previewName.textContent=previewSource.name;record.disabled=false;setStatus('PREVIEW READY — START RECORD','STEP 4 · RECORD');});
+  record.addEventListener('click',()=>{if(!previewSource||finished)return; recording=!recording;record.classList.toggle('recording',recording);record.querySelector('span').textContent=recording?'RECORDING':'START RECORD'; if(recording){merge.disabled=false;setStatus('RECORDING — PRESS MERGE TO GO LIVE','STEP 5 · MERGE');recordTimer=setInterval(()=>{recordSeconds++;recordTime.textContent=fmt(recordSeconds)},1000);}else{clearInterval(recordTimer);recordTimer=null;merge.disabled=true;setStatus('RECORD STOPPED — START IT AGAIN','STEP 4 · RECORD');}});
+  merge.addEventListener('click',()=>{if(!recording||!previewSource||finished)return;merge.disabled=true;programScreen.classList.add('transitioning');setStatus('MERGING TO PROGRAM…','TAKING LIVE');setTimeout(()=>{setFrame(programPicture,frame);render(programHost,previewSource);programName.textContent=previewSource.name;programScreen.classList.remove('transitioning');programScreen.classList.add('on-air');success.classList.add('show');finished=true;clearInterval(challengeTimer);root.classList.remove('danger');clock.textContent=fmt(timeLeft);setStatus(`LIVE WITH ${fmt(timeLeft)} LEFT`,'ON AIR · SUCCESS');},550);});
+  function fail(){finished=true;running=false;clearInterval(challengeTimer);clearInterval(recordTimer);root.classList.add('failed');clock.textContent='00:00';record.disabled=true;merge.disabled=true;loadBtn.disabled=true;setStatus('TIME EXPIRED — RESET AND TRY AGAIN','OFF AIR · FAILED');}
+  function resetAll(){clearInterval(challengeTimer);clearInterval(recordTimer);running=false;finished=false;recording=false;timeLeft=120;recordSeconds=0;selected=null;previewSource=null;frame='frame-full';root.classList.remove('danger','failed');startBtn.disabled=false;clock.textContent='02:00';recordTime.textContent='00:00';record.classList.remove('recording');record.querySelector('span').textContent='START RECORD';record.disabled=true;merge.disabled=true;loadBtn.disabled=true;success.classList.remove('show');programScreen.classList.remove('on-air','transitioning');inputs.forEach(b=>{b.classList.remove('active');b.disabled=true});frameButtons.forEach((b,i)=>b.classList.toggle('active',i===0));upload.disabled=true;upload.value='';uploadName.textContent='PHOTO OR VIDEO';previewName.textContent='EMPTY';programName.textContent='STANDBY';previewHost.innerHTML='<span class="screen-empty">SELECT MEDIA</span>';programHost.innerHTML='<span class="screen-empty">OFF AIR</span>';setFrame(previewPicture,'frame-full');setFrame(programPicture,'frame-full');setStatus('PRESS START TO BEGIN','PRESS START');}
+  startBtn.addEventListener('click',begin);reset.addEventListener('click',resetAll);window.addEventListener('beforeunload',()=>{if(uploadedUrl)URL.revokeObjectURL(uploadedUrl)});resetAll();
 })();
