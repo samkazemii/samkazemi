@@ -1,29 +1,30 @@
-<!doctype html>
-<html lang="en" dir="ltr">
+<!DOCTYPE html>
+
+<html dir="ltr" lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#08090d" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
-  <meta name="description" content="Sam Kazemi — TV Director, Broadcast Director and Live Production Specialist working across control rooms, vMix, live streaming and television production." />
-  <meta name="keywords" content="Sam Kazemi, سام کاظمی, TV Director, Broadcast Director, vMix Operator, Live Production, Television Control Room" />
-  <meta name="author" content="Sam Kazemi" />
-  <meta property="og:title" content="Sam Kazemi — Broadcast Director" />
-  <meta property="og:description" content="TV direction, live production, vMix and broadcast control-room workflows." />
-  <meta property="og:type" content="profile" />
-  <meta property="og:site_name" content="Sam Kazemi Portfolio" />
-  <meta property="og:locale" content="en_US" />
-  <meta property="og:url" content="https://samkazemii.github.io/samkazemi/" />
-  <title>Sam Kazemi — Broadcast Director</title>
-  <link rel="canonical" href="https://samkazemii.github.io/samkazemi/" />
-  <meta property="og:image" content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" />
-  <meta property="og:image:alt" content="Sam Kazemi in a television broadcast control room" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Sam Kazemi — Broadcast Director" />
-  <meta name="twitter:description" content="TV direction, live production, vMix and broadcast control-room workflows." />
-  <meta name="twitter:image" content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" />
-  <link rel="stylesheet" href="styles.css?v=9" />
-  <script type="application/ld+json">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="#08090d" name="theme-color"/>
+<meta content="index, follow, max-image-preview:large" name="robots"/>
+<meta content="Sam Kazemi — TV Director, Broadcast Director and Live Production Specialist working across control rooms, vMix, live streaming and television production." name="description"/>
+<meta content="Sam Kazemi, سام کاظمی, TV Director, Broadcast Director, vMix Operator, Live Production, Television Control Room" name="keywords"/>
+<meta content="Sam Kazemi" name="author"/>
+<meta content="Sam Kazemi — Broadcast Director" property="og:title"/>
+<meta content="TV direction, live production, vMix and broadcast control-room workflows." property="og:description"/>
+<meta content="profile" property="og:type"/>
+<meta content="Sam Kazemi Portfolio" property="og:site_name"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="https://samkazemii.github.io/samkazemi/" property="og:url"/>
+<title>Sam Kazemi — Broadcast Director</title>
+<link href="https://samkazemii.github.io/samkazemi/" rel="canonical"/>
+<meta content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" property="og:image"/>
+<meta content="Sam Kazemi in a television broadcast control room" property="og:image:alt"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Sam Kazemi — Broadcast Director" name="twitter:title"/>
+<meta content="TV direction, live production, vMix and broadcast control-room workflows." name="twitter:description"/>
+<meta content="https://samkazemii.github.io/samkazemi/sam-control-room-hero.jpg" name="twitter:image"/>
+<link href="styles.css?v=13" rel="stylesheet"/>
+<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@graph": [
@@ -54,315 +55,295 @@
   </script>
 </head>
 <body class="is-loading">
-  <div class="boot-loader" id="bootLoader" aria-live="polite">
-    <div class="boot-grid"></div>
-    <div class="boot-panel">
-      <div class="boot-logo">SK</div>
-      <p class="boot-status" id="bootStatus">INITIALIZING CONTROL ROOM...</p>
-      <div class="boot-progress"><span id="bootProgress"></span></div>
-      <div class="boot-meta"><span>VMIX SYSTEM</span><span id="bootPercent">0%</span></div>
-    </div>
-  </div>
-  <div class="noise"></div>
-  <div class="cursor-glow" id="cursorGlow"></div>
-
-  <header class="site-header">
-    <a class="brand" href="#top" aria-label="Sam Kazemi home">
-      <span class="brand-mark">SK</span>
-      <span class="brand-text">SAM KAZEMI</span>
-    </a>
-    <nav class="nav" aria-label="Primary navigation">
-      <a href="#game">Game</a>
-      <a href="#expertise">Expertise</a>
-      <a href="#about">About</a>
-      <a href="#skills">Skills</a>
-      <a class="nav-cta" href="https://www.linkedin.com/in/samkazemi" target="_blank" rel="noreferrer">LinkedIn ↗</a>
-    </nav>
-  </header>
-
-  <main id="top">
-    <section class="hero hero-photo" aria-label="Sam Kazemi in a broadcast control room">
-      <div class="hero-photo-stage" id="heroPhotoStage">
-        <img class="hero-photo-image" src="sam-control-room-hero.jpg?v=9" alt="Sam Kazemi wearing a broadcast headset inside a television control room" />
-        <div class="hero-photo-vignette"></div>
-        <div class="hero-photo-light light-one"></div>
-        <div class="hero-photo-light light-two"></div>
-        <div class="hero-photo-scan"></div>
-        <div class="hero-photo-grain"></div>
-      </div>
-
-      <div class="hero-copy-overlay" aria-label="Sam Kazemi introduction">
-        <p class="hero-kicker"><span></span> LIVE BROADCAST DIRECTION</p>
-        <h1><small>SAM</small><strong>KAZEMI</strong></h1>
-        <p class="hero-role">TV DIRECTOR &amp; BROADCAST SPECIALIST</p>
-        <p class="hero-description">Director, producer and control-room operator creating confident live television, current-affairs programs and visual broadcast systems.</p>
-        <a class="hero-work-button" href="#game">ENTER CONTROL ROOM <b>→</b></a>
-      </div>
-
-      <div class="broadcast-hud" aria-hidden="true">
-        <div class="hud-program"><span>PROGRAM</span><b id="programFeed">CAM 1</b></div>
-        <div class="hud-preview"><span>PREVIEW</span><b id="previewFeed">CAM 3</b></div>
-        <div class="hud-audio"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="hud-clock" id="liveClock">00:00:00</div>
-      </div>
-
-      <a class="hero-hotspot" href="#game" aria-label="Play Sam Kazemi control room challenge"></a>
-      <div class="hero-live-badge"><i></i> LIVE CONTROL ROOM</div>
-      <a class="hero-enter" href="#game"><span>START CHALLENGE</span><b>↓</b></a>
-    </section>
-
-    <section class="ticker" aria-label="Skills ticker">
-      <div class="ticker-track">
-        <span>TV DIRECTION</span><b>✦</b><span>LIVE PRODUCTION</span><b>✦</b><span>vMIX</span><b>✦</b><span>BROADCAST DESIGN</span><b>✦</b><span>CONTROL ROOM</span><b>✦</b><span>VISUAL STORYTELLING</span><b>✦</b>
-        <span>TV DIRECTION</span><b>✦</b><span>LIVE PRODUCTION</span><b>✦</b><span>vMIX</span><b>✦</b><span>BROADCAST DESIGN</span><b>✦</b><span>CONTROL ROOM</span><b>✦</b><span>VISUAL STORYTELLING</span><b>✦</b>
-      </div>
-    </section>
-
-    <section class="section control-game" id="game" aria-labelledby="gameTitle">
-      <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> CONTROL ROOM CHALLENGE</p>
-        <h2 id="gameTitle">Can you take the show live<br>in 30 seconds?</h2>
-        <p class="game-intro">Follow the cue on the program monitor and press the correct control. One wrong move resets the sequence.</p>
-      </div>
-
-      <div class="game-shell reveal" id="gameShell">
-        <div class="game-topbar">
-          <div class="game-status"><i></i><span id="gameStatus">STANDBY</span></div>
-          <div class="game-progress-label">STEP <b id="stepCount">0</b>/5</div>
-          <div class="game-timer" aria-label="Time remaining"><span id="gameTimer">30</span><small>SEC</small></div>
-        </div>
-
-        <div class="monitor-wall" aria-label="Broadcast monitor wall">
-          <button class="mini-monitor source-monitor" type="button" data-source="0" disabled><span>CAM 1</span><img src="game-cam1.jpg" alt="Camera 1 source" /></button>
-          <button class="mini-monitor source-monitor" type="button" data-source="1" disabled><span>AUDIO</span><img src="game-audio.jpg" alt="Broadcast audio console" /></button>
-          <div class="program-monitor" id="programMonitor">
-            <span class="monitor-label">PROGRAM</span>
-            <img class="program-feed" id="programImage" src="game-cam1.jpg" alt="Current program feed" />
-            <div class="program-shade"></div>
-            <div class="program-message" id="programMessage">PRESS START TO BEGIN</div>
-            <div class="program-sub" id="programSub">You have 30 seconds to complete the broadcast sequence.</div>
-            <div class="live-bug" id="liveBug">LIVE</div>
-          </div>
-          <button class="mini-monitor source-monitor" type="button" data-source="2" disabled><span>REMOTE</span><img src="game-remote.jpg" alt="Remote guest video call" /></button>
-          <button class="mini-monitor source-monitor" type="button" data-source="3" disabled><span>PREVIEW</span><img src="game-preview.jpg" alt="Multiview preview monitor" /></button>
-        </div>
-
-        <div class="game-task" id="gameTask" aria-live="polite">
-          <div class="task-copy"><small>CURRENT OPERATION</small><strong id="taskTitle">Console offline</strong><p id="taskText">Start the broadcast to receive your first cue.</p></div>
-          <div class="task-action" id="taskAction"><span class="standby-mark">STANDBY</span></div>
-        </div>
-        <div class="event-log" id="eventLog" aria-label="Broadcast event log"><span>00:00 — System ready.</span></div>
-
-        <div class="console-panel">
-          <div class="console-lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="game-controls" id="gameControls">
-            <button type="button" class="game-button cam" data-action="CAM1" disabled><span>1</span>CAM 1</button>
-            <button type="button" class="game-button audio" data-action="AUDIO" disabled><span>♪</span>AUDIO</button>
-            <button type="button" class="game-button remote" data-action="REMOTE" disabled><span>R</span>REMOTE</button>
-            <button type="button" class="game-button preview" data-action="PREVIEW" disabled><span>P</span>PREVIEW</button>
-            <button type="button" class="game-button live" data-action="LIVE" disabled><span>●</span>GO LIVE</button>
-          </div>
-          <button type="button" class="game-start" id="gameStart">START BROADCAST</button>
-        </div>
-
-        <div class="game-result" id="gameResult" role="dialog" aria-live="assertive" aria-hidden="true">
-          <div class="result-card">
-            <p class="result-kicker" id="resultKicker">ACCESS GRANTED</p>
-            <h3 id="resultTitle">Broadcast Successful</h3>
-            <p id="resultEnglish">You are now a good friend of Sam Kazemi.</p>
-            <p class="result-fa" id="resultPersian" lang="fa" dir="rtl">خب، تو الان دوست خوب سام هستی ❤️</p>
-            <button type="button" id="playAgain">PLAY AGAIN</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-    <section class="section sound-pad" id="sound-pad" aria-labelledby="soundPadTitle">
-      <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> LIVE SOUND PAD</p>
-        <h2 id="soundPadTitle">Play a clean seven-note<br>broadcast melody.</h2>
-        <p class="game-intro">Tap the pads to play Do, Re, Mi, Fa, Sol, La and Si. Every note lights up with its own color.</p>
-      </div>
-
-      <div class="sound-pad-shell reveal">
-        <div class="sound-pad-topbar">
-          <span>TOUCH / CLICK ENABLED</span>
-          <b id="soundPadStatus" aria-live="polite">READY</b>
-        </div>
-        <div class="sound-pad-display" aria-hidden="true">
-          <span id="soundPadNote">—</span>
-          <small>WEB AUDIO SYNTH</small>
-        </div>
-        <div class="sound-pad-grid" role="group" aria-label="Musical note touch pad">
-          <button type="button" class="note-pad note-do" data-frequency="261.63" data-note="DO" data-key="A"><span>DO</span><small>دُ</small><kbd>A</kbd></button>
-          <button type="button" class="note-pad note-re" data-frequency="293.66" data-note="RE" data-key="S"><span>RE</span><small>رِ</small><kbd>S</kbd></button>
-          <button type="button" class="note-pad note-mi" data-frequency="329.63" data-note="MI" data-key="D"><span>MI</span><small>می</small><kbd>D</kbd></button>
-          <button type="button" class="note-pad note-fa" data-frequency="349.23" data-note="FA" data-key="F"><span>FA</span><small>فا</small><kbd>F</kbd></button>
-          <button type="button" class="note-pad note-sol" data-frequency="392.00" data-note="SOL" data-key="G"><span>SOL</span><small>سُل</small><kbd>G</kbd></button>
-          <button type="button" class="note-pad note-la" data-frequency="440.00" data-note="LA" data-key="H"><span>LA</span><small>لا</small><kbd>H</kbd></button>
-          <button type="button" class="note-pad note-si" data-frequency="493.88" data-note="SI" data-key="J"><span>SI</span><small>سی</small><kbd>J</kbd></button>
-        </div>
-        <p class="sound-pad-help">You can also use keyboard keys A–J.</p>
-      </div>
-    </section>
-
-    <section class="section vmix-lab" id="vmix-lab" aria-labelledby="vmixLabTitle">
-      <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> LIVE DIRECTOR CHALLENGE</p>
-        <h2 id="vmixLabTitle">Build the shot.<br>Beat the clock.</h2>
-        <p class="game-intro">You have two minutes: choose or upload media, build the shot, start Record, then take it to Program with CUT, FADE, or MERGE.</p>
-      </div>
-
-      <div class="vmix-console vmix-v10 reveal" id="vmixConsole">
-        <div class="challenge-topbar">
-          <div><b>LIVE SWITCHING TEST</b><span id="vmixStep">PRESS START</span></div>
-          <button type="button" id="vmixStart" class="challenge-start">START 2:00</button>
-          <div class="challenge-clock" id="vmixClock" aria-live="polite">02:00</div>
-        </div>
-
-        <div class="vmix-toolbar">
-          <div class="vmix-brand"><b>vMix</b><span>DIRECTOR SIM</span></div>
-          <button type="button" class="record-control" id="vmixRecord" disabled><i></i><span>START RECORD</span></button>
-          <div class="record-time" id="vmixRecordTime">00:00</div>
-        </div>
-
-        <div class="vmix-screens">
-          <div class="vmix-screen preview-screen" id="vmixPreviewScreen">
-            <div class="screen-header"><span>PREVIEW</span><b id="vmixPreviewName">EMPTY</b></div>
-            <div class="screen-picture frame-full" id="vmixPreviewPicture"><div class="media-host" id="vmixPreviewHost"><span class="screen-empty">SELECT MEDIA</span></div><div class="frame-overlay"><b id="previewHeadline">LIVE</b><small>BREAKING COVERAGE</small></div></div>
-          </div>
-          <div class="transition-controls" role="group" aria-label="Transition controls">
-            <button type="button" class="transition-control cut" data-transition="cut" disabled>CUT</button>
-            <button type="button" class="transition-control fade" data-transition="fade" disabled>FADE</button>
-            <button type="button" class="transition-control merge" data-transition="merge" disabled>MERGE</button>
-          </div>
-          <div class="vmix-screen program-screen" id="vmixProgramScreen">
-            <div class="screen-header"><span>PROGRAM</span><b id="vmixProgramName">STANDBY</b></div>
-            <div class="screen-picture frame-full" id="vmixProgramPicture"><div class="media-host" id="vmixProgramHost"><span class="screen-empty">OFF AIR</span></div><div class="frame-overlay"><b>LIVE</b><small>ON PROGRAM</small></div></div>
-            <div class="live-bug" id="vmixLiveBug"><i></i>LIVE</div>
-          </div>
-        </div>
-
-        <div class="director-workflow director-workflow-v12">
-          <div class="workflow-block media-library-block">
-            <h3>1. Media Inputs</h3>
-            <p class="workflow-help">Click any input at any time. It goes straight to Preview. Then use CUT, FADE or MERGE to send it to Program.</p>
-            <div class="vmix-inputs compact-inputs" role="group" aria-label="Source inputs">
-              <button type="button" class="vmix-input" data-name="SUNSET LIVE" data-type="video" data-src="vmix-sunset.mp4"><span>1</span><video src="vmix-sunset.mp4" muted loop autoplay playsinline preload="metadata"></video><b>SUNSET LIVE</b></button>
-              <button type="button" class="vmix-input" data-name="PODCAST CAM" data-type="video" data-src="vmix-podcast.mp4"><span>2</span><video src="vmix-podcast.mp4" muted loop autoplay playsinline preload="metadata"></video><b>PODCAST CAM</b></button>
-              <label class="vmix-upload" for="vmixUpload" id="vmixUploadCard">
-                <input id="vmixUpload" type="file" accept="image/*,video/mp4,video/webm,video/ogg,.mov,.m4v">
-                <div class="upload-preview" id="uploadPreview"><span>＋</span></div>
-                <b>UPLOAD INPUT</b><small id="uploadName">PHOTO OR VIDEO</small>
-              </label>
-            </div>
-          </div>
-
-          <div class="workflow-block shot-designer-block">
-            <h3>2. Shot Designer</h3>
-            <p class="workflow-help">Build the frame yourself — nothing is forced onto the media.</p>
-            <div class="template-grid" role="group" aria-label="Shot templates">
-              <button type="button" class="template-btn active" data-template="clean">CLEAN</button>
-              <button type="button" class="template-btn" data-template="lower-third">LOWER THIRD</button>
-              <button type="button" class="template-btn" data-template="news">NEWS</button>
-              <button type="button" class="template-btn" data-template="gaming">GAMING</button>
-              <button type="button" class="template-btn" data-template="interview">INTERVIEW</button>
-              <button type="button" class="template-btn" data-template="cinema">CINEMA</button>
-            </div>
-            <div class="designer-controls">
-              <label>Fit
+<div aria-live="polite" class="boot-loader" id="bootLoader">
+<div class="boot-grid"></div>
+<div class="boot-panel">
+<div class="boot-logo">SK</div>
+<p class="boot-status" id="bootStatus">INITIALIZING CONTROL ROOM...</p>
+<div class="boot-progress"><span id="bootProgress"></span></div>
+<div class="boot-meta"><span>VMIX SYSTEM</span><span id="bootPercent">0%</span></div>
+</div>
+</div>
+<div class="noise"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<header class="site-header">
+<a aria-label="Sam Kazemi home" class="brand" href="#top">
+<span class="brand-mark">SK</span>
+<span class="brand-text">SAM KAZEMI</span>
+</a><div aria-label="Language selector" class="language-switcher" role="group">
+<button aria-label="نمایش سایت به زبان فارسی" class="language-button" data-lang="fa" title="فارسی" type="button">
+<img alt="پرچم شیر و خورشید ایران" src="flag-lion-sun.svg"/>
+<span>فارسی</span>
+</button>
+<button aria-label="View website in English" class="language-button active" data-lang="en" title="English" type="button">
+<img alt="United States flag" src="flag-usa.svg"/>
+<span>English</span>
+</button>
+</div>
+<nav aria-label="Primary navigation" class="nav">
+<a href="#game">Game</a>
+<a href="#expertise">Expertise</a>
+<a href="#about">About</a>
+<a href="#skills">Skills</a>
+<a class="nav-cta" href="https://www.linkedin.com/in/samkazemi" rel="noreferrer" target="_blank">LinkedIn ↗</a>
+</nav>
+</header>
+<main id="top">
+<section aria-label="Sam Kazemi in a broadcast control room" class="hero hero-photo">
+<div class="hero-photo-stage" id="heroPhotoStage">
+<img alt="Sam Kazemi wearing a broadcast headset inside a television control room" class="hero-photo-image" src="sam-control-room-hero.jpg?v=9"/>
+<div class="hero-photo-vignette"></div>
+<div class="hero-photo-light light-one"></div>
+<div class="hero-photo-light light-two"></div>
+<div class="hero-photo-scan"></div>
+<div class="hero-photo-grain"></div>
+</div>
+<div aria-label="Sam Kazemi introduction" class="hero-copy-overlay">
+<p class="hero-kicker"><span></span> LIVE BROADCAST DIRECTION</p>
+<h1><small>SAM</small><strong>KAZEMI</strong></h1>
+<p class="hero-role">TV DIRECTOR &amp; BROADCAST SPECIALIST</p>
+<p class="hero-description">Director, producer and control-room operator creating confident live television, current-affairs programs and visual broadcast systems.</p>
+<a class="hero-work-button" href="#game">ENTER CONTROL ROOM <b>→</b></a>
+</div>
+<div aria-hidden="true" class="broadcast-hud">
+<div class="hud-program"><span>PROGRAM</span><b id="programFeed">CAM 1</b></div>
+<div class="hud-preview"><span>PREVIEW</span><b id="previewFeed">CAM 3</b></div>
+<div class="hud-audio"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="hud-clock" id="liveClock">00:00:00</div>
+</div>
+<a aria-label="Play Sam Kazemi control room challenge" class="hero-hotspot" href="#game"></a>
+<div class="hero-live-badge"><i></i> LIVE CONTROL ROOM</div>
+<a class="hero-enter" href="#game"><span>START CHALLENGE</span><b>↓</b></a>
+</section>
+<section aria-label="Skills ticker" class="ticker">
+<div class="ticker-track">
+<span>TV DIRECTION</span><b>✦</b><span>LIVE PRODUCTION</span><b>✦</b><span>vMIX</span><b>✦</b><span>BROADCAST DESIGN</span><b>✦</b><span>CONTROL ROOM</span><b>✦</b><span>VISUAL STORYTELLING</span><b>✦</b>
+<span>TV DIRECTION</span><b>✦</b><span>LIVE PRODUCTION</span><b>✦</b><span>vMIX</span><b>✦</b><span>BROADCAST DESIGN</span><b>✦</b><span>CONTROL ROOM</span><b>✦</b><span>VISUAL STORYTELLING</span><b>✦</b>
+</div>
+</section>
+<section aria-labelledby="gameTitle" class="section control-game" id="game">
+<div class="section-heading reveal">
+<p class="eyebrow"><span></span> CONTROL ROOM CHALLENGE</p>
+<h2 id="gameTitle">Can you take the show live<br/>in 30 seconds?</h2>
+<p class="game-intro">Follow the cue on the program monitor and press the correct control. One wrong move resets the sequence.</p>
+</div>
+<div class="game-shell reveal" id="gameShell">
+<div class="game-topbar">
+<div class="game-status"><i></i><span id="gameStatus">STANDBY</span></div>
+<div class="game-progress-label">STEP <b id="stepCount">0</b>/5</div>
+<div aria-label="Time remaining" class="game-timer"><span id="gameTimer">30</span><small>SEC</small></div>
+</div>
+<div aria-label="Broadcast monitor wall" class="monitor-wall">
+<button class="mini-monitor source-monitor" data-source="0" disabled="" type="button"><span>CAM 1</span><img alt="Camera 1 source" src="game-cam1.jpg"/></button>
+<button class="mini-monitor source-monitor" data-source="1" disabled="" type="button"><span>AUDIO</span><img alt="Broadcast audio console" src="game-audio.jpg"/></button>
+<div class="program-monitor" id="programMonitor">
+<span class="monitor-label">PROGRAM</span>
+<img alt="Current program feed" class="program-feed" id="programImage" src="game-cam1.jpg"/>
+<div class="program-shade"></div>
+<div class="program-message" id="programMessage">PRESS START TO BEGIN</div>
+<div class="program-sub" id="programSub">You have 30 seconds to complete the broadcast sequence.</div>
+<div class="live-bug" id="liveBug">LIVE</div>
+</div>
+<button class="mini-monitor source-monitor" data-source="2" disabled="" type="button"><span>REMOTE</span><img alt="Remote guest video call" src="game-remote.jpg"/></button>
+<button class="mini-monitor source-monitor" data-source="3" disabled="" type="button"><span>PREVIEW</span><img alt="Multiview preview monitor" src="game-preview.jpg"/></button>
+</div>
+<div aria-live="polite" class="game-task" id="gameTask">
+<div class="task-copy"><small>CURRENT OPERATION</small><strong id="taskTitle">Console offline</strong><p id="taskText">Start the broadcast to receive your first cue.</p></div>
+<div class="task-action" id="taskAction"><span class="standby-mark">STANDBY</span></div>
+</div>
+<div aria-label="Broadcast event log" class="event-log" id="eventLog"><span>00:00 — System ready.</span></div>
+<div class="console-panel">
+<div aria-hidden="true" class="console-lights"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="game-controls" id="gameControls">
+<button class="game-button cam" data-action="CAM1" disabled="" type="button"><span>1</span>CAM 1</button>
+<button class="game-button audio" data-action="AUDIO" disabled="" type="button"><span>♪</span>AUDIO</button>
+<button class="game-button remote" data-action="REMOTE" disabled="" type="button"><span>R</span>REMOTE</button>
+<button class="game-button preview" data-action="PREVIEW" disabled="" type="button"><span>P</span>PREVIEW</button>
+<button class="game-button live" data-action="LIVE" disabled="" type="button"><span>●</span>GO LIVE</button>
+</div>
+<button class="game-start" id="gameStart" type="button">START BROADCAST</button>
+</div>
+<div aria-hidden="true" aria-live="assertive" class="game-result" id="gameResult" role="dialog">
+<div class="result-card">
+<p class="result-kicker" id="resultKicker">ACCESS GRANTED</p>
+<h3 id="resultTitle">Broadcast Successful</h3>
+<p id="resultEnglish">You are now a good friend of Sam Kazemi.</p>
+<p class="result-fa" dir="rtl" id="resultPersian" lang="fa">خب، تو الان دوست خوب سام هستی ❤️</p>
+<button id="playAgain" type="button">PLAY AGAIN</button>
+</div>
+</div>
+</div>
+</section>
+<section aria-labelledby="soundPadTitle" class="section sound-pad" id="sound-pad">
+<div class="section-heading reveal">
+<p class="eyebrow"><span></span> LIVE SOUND PAD</p>
+<h2 id="soundPadTitle">Play a clean seven-note<br/>broadcast melody.</h2>
+<p class="game-intro">Tap the pads to play Do, Re, Mi, Fa, Sol, La and Si. Every note lights up with its own color.</p>
+</div>
+<div class="sound-pad-shell reveal">
+<div class="sound-pad-topbar">
+<span>TOUCH / CLICK ENABLED</span>
+<b aria-live="polite" id="soundPadStatus">READY</b>
+</div>
+<div aria-hidden="true" class="sound-pad-display">
+<span id="soundPadNote">—</span>
+<small>WEB AUDIO SYNTH</small>
+</div>
+<div aria-label="Musical note touch pad" class="sound-pad-grid" role="group">
+<button class="note-pad note-do" data-frequency="261.63" data-key="A" data-note="DO" type="button"><span>DO</span><small>دُ</small><kbd>A</kbd></button>
+<button class="note-pad note-re" data-frequency="293.66" data-key="S" data-note="RE" type="button"><span>RE</span><small>رِ</small><kbd>S</kbd></button>
+<button class="note-pad note-mi" data-frequency="329.63" data-key="D" data-note="MI" type="button"><span>MI</span><small>می</small><kbd>D</kbd></button>
+<button class="note-pad note-fa" data-frequency="349.23" data-key="F" data-note="FA" type="button"><span>FA</span><small>فا</small><kbd>F</kbd></button>
+<button class="note-pad note-sol" data-frequency="392.00" data-key="G" data-note="SOL" type="button"><span>SOL</span><small>سُل</small><kbd>G</kbd></button>
+<button class="note-pad note-la" data-frequency="440.00" data-key="H" data-note="LA" type="button"><span>LA</span><small>لا</small><kbd>H</kbd></button>
+<button class="note-pad note-si" data-frequency="493.88" data-key="J" data-note="SI" type="button"><span>SI</span><small>سی</small><kbd>J</kbd></button>
+</div>
+<p class="sound-pad-help">You can also use keyboard keys A–J.</p>
+</div>
+</section>
+<section aria-labelledby="vmixLabTitle" class="section vmix-lab" id="vmix-lab">
+<div class="section-heading reveal">
+<p class="eyebrow"><span></span> LIVE DIRECTOR CHALLENGE</p>
+<h2 id="vmixLabTitle">Build the shot.<br/>Beat the clock.</h2>
+<p class="game-intro">You have two minutes: choose or upload media, build the shot, start Record, then take it to Program with CUT, FADE, or MERGE.</p>
+</div>
+<div class="vmix-console vmix-v10 reveal" id="vmixConsole">
+<div class="challenge-topbar">
+<div><b>LIVE SWITCHING TEST</b><span id="vmixStep">PRESS START</span></div>
+<button class="challenge-start" id="vmixStart" type="button">START 2:00</button>
+<div aria-live="polite" class="challenge-clock" id="vmixClock">02:00</div>
+</div>
+<div class="vmix-toolbar">
+<div class="vmix-brand"><b>vMix</b><span>DIRECTOR SIM</span></div>
+<button class="record-control" disabled="" id="vmixRecord" type="button"><i></i><span>START RECORD</span></button>
+<div class="record-time" id="vmixRecordTime">00:00</div>
+</div>
+<div class="vmix-screens">
+<div class="vmix-screen preview-screen" id="vmixPreviewScreen">
+<div class="screen-header"><span>PREVIEW</span><b id="vmixPreviewName">EMPTY</b></div>
+<div class="screen-picture frame-full" id="vmixPreviewPicture"><div class="media-host" id="vmixPreviewHost"><span class="screen-empty">SELECT MEDIA</span></div><div class="frame-overlay"><b id="previewHeadline">LIVE</b><small>BREAKING COVERAGE</small></div></div>
+</div>
+<div aria-label="Transition controls" class="transition-controls" role="group">
+<button class="transition-control cut" data-transition="cut" disabled="" type="button">CUT</button>
+<button class="transition-control fade" data-transition="fade" disabled="" type="button">FADE</button>
+<button class="transition-control merge" data-transition="merge" disabled="" type="button">MERGE</button>
+</div>
+<div class="vmix-screen program-screen" id="vmixProgramScreen">
+<div class="screen-header"><span>PROGRAM</span><b id="vmixProgramName">STANDBY</b></div>
+<div class="screen-picture frame-full" id="vmixProgramPicture"><div class="media-host" id="vmixProgramHost"><span class="screen-empty">OFF AIR</span></div><div class="frame-overlay"><b>LIVE</b><small>ON PROGRAM</small></div></div>
+<div class="live-bug" id="vmixLiveBug"><i></i>LIVE</div>
+</div>
+</div>
+<div class="director-workflow director-workflow-v12">
+<div class="workflow-block media-library-block">
+<h3>1. Media Inputs</h3>
+<p class="workflow-help">Click any input at any time. It goes straight to Preview. Then use CUT, FADE or MERGE to send it to Program.</p>
+<div aria-label="Source inputs" class="vmix-inputs compact-inputs" role="group">
+<button class="vmix-input" data-name="SUNSET LIVE" data-src="vmix-sunset.mp4" data-type="video" type="button"><span>1</span><video autoplay="" loop="" muted="" playsinline="" preload="metadata" src="vmix-sunset.mp4"></video><b>SUNSET LIVE</b></button>
+<button class="vmix-input" data-name="PODCAST CAM" data-src="vmix-podcast.mp4" data-type="video" type="button"><span>2</span><video autoplay="" loop="" muted="" playsinline="" preload="metadata" src="vmix-podcast.mp4"></video><b>PODCAST CAM</b></button>
+<label class="vmix-upload" for="vmixUpload" id="vmixUploadCard">
+<input accept="image/*,video/mp4,video/webm,video/ogg,.mov,.m4v" id="vmixUpload" type="file"/>
+<div class="upload-preview" id="uploadPreview"><span>＋</span></div>
+<b>UPLOAD INPUT</b><small id="uploadName">PHOTO OR VIDEO</small>
+</label>
+</div>
+</div>
+<div class="workflow-block shot-designer-block">
+<h3>2. Shot Designer</h3>
+<p class="workflow-help">Build the frame yourself — nothing is forced onto the media.</p>
+<div aria-label="Shot templates" class="template-grid" role="group">
+<button class="template-btn active" data-template="clean" type="button">CLEAN</button>
+<button class="template-btn" data-template="lower-third" type="button">LOWER THIRD</button>
+<button class="template-btn" data-template="news" type="button">NEWS</button>
+<button class="template-btn" data-template="gaming" type="button">GAMING</button>
+<button class="template-btn" data-template="interview" type="button">INTERVIEW</button>
+<button class="template-btn" data-template="cinema" type="button">CINEMA</button>
+</div>
+<div class="designer-controls">
+<label>Fit
                 <select id="shotFit"><option value="contain">FIT</option><option value="cover">FILL</option></select>
-              </label>
-              <label>Zoom <output id="shotZoomOut">100%</output>
-                <input id="shotZoom" type="range" min="70" max="180" value="100">
-              </label>
-              <label>Horizontal <output id="shotXOut">0</output>
-                <input id="shotX" type="range" min="-50" max="50" value="0">
-              </label>
-              <label>Vertical <output id="shotYOut">0</output>
-                <input id="shotY" type="range" min="-50" max="50" value="0">
-              </label>
-              <label class="title-control">Title
-                <input id="shotTitle" type="text" maxlength="42" value="LIVE" placeholder="Type your title">
-              </label>
-              <label class="form-check"><input class="form-check-input" id="shotOverlay" type="checkbox"><span class="form-check-label">Show graphics overlay</span></label>
-            </div>
-            <button type="button" id="vmixResetShot" class="reset-shot">RESET SHOT</button>
-          </div>
-        </div>
-
-        <div class="vmix-statusbar"><span id="vmixStatus" aria-live="polite">PRESS START TO BEGIN</span><button type="button" id="vmixReset">RESET</button></div>
-        <div class="vmix-success" id="vmixSuccess" aria-live="polite"><b>Broadcast Successful</b><span id="vmixSuccessText">You made Program live before the deadline.</span></div>
-      </div>
-    </section>
-
-    <section class="section expertise" id="expertise">
-      <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> EXPERTISE</p>
-        <h2>Calm under pressure.<br>Sharp on every cue.</h2>
-      </div>
-
-      <div class="expertise-list">
-        <div class="expertise-item reveal">
-          <span>01</span><h3>Broadcast Direction</h3><p>Calling cameras, coordinating talent and shaping the rhythm of a live program.</p>
-        </div>
-        <div class="expertise-item reveal">
-          <span>02</span><h3>vMix Operations</h3><p>Inputs, overlays, triggers, audio buses, remote guests and dependable live workflows.</p>
-        </div>
-        <div class="expertise-item reveal">
-          <span>03</span><h3>Control-Room Production</h3><p>Turning complex technical setups into a clear, repeatable and fast production system.</p>
-        </div>
-        <div class="expertise-item reveal">
-          <span>04</span><h3>Visual Storytelling</h3><p>Graphics, pacing and framing that make important stories easier to understand and remember.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section skills" id="skills">
-      <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> CORE SKILLS</p>
-        <h2>Technical precision.<br>Editorial instinct.</h2>
-      </div>
-      <div class="skills-grid">
-        <article class="skill-card reveal" data-value="98"><div class="skill-ring"><span>98%</span></div><h3>vMix</h3><p>Live switching, triggers, overlays, audio buses and remote guests.</p></article>
-        <article class="skill-card reveal delay-1" data-value="97"><div class="skill-ring"><span>97%</span></div><h3>Broadcast Direction</h3><p>Timing, camera calls, talent coordination and live editorial decisions.</p></article>
-        <article class="skill-card reveal delay-2" data-value="95"><div class="skill-ring"><span>95%</span></div><h3>Live Production</h3><p>Reliable workflows for high-pressure, multi-source television programs.</p></article>
-        <article class="skill-card reveal" data-value="92"><div class="skill-ring"><span>92%</span></div><h3>After Effects</h3><p>Broadcast motion graphics, visualizers, titles and animated packages.</p></article>
-      </div>
-    </section>
-
-    <section class="section about" id="about">
-      <div class="about-card reveal">
-        <div class="about-photo"><img src="sam-about.jpg" alt="Sam Kazemi in a live television control room" loading="lazy" /></div>
-        <div class="about-copy">
-          <p class="eyebrow"><span></span> ABOUT</p>
-          <h2>I make complicated live productions feel simple.</h2>
-          <p>
+</label>
+<label>Zoom <output id="shotZoomOut">100%</output>
+<input id="shotZoom" max="180" min="70" type="range" value="100"/>
+</label>
+<label>Horizontal <output id="shotXOut">0</output>
+<input id="shotX" max="50" min="-50" type="range" value="0"/>
+</label>
+<label>Vertical <output id="shotYOut">0</output>
+<input id="shotY" max="50" min="-50" type="range" value="0"/>
+</label>
+<label class="title-control">Title
+                <input id="shotTitle" maxlength="42" placeholder="Type your title" type="text" value="LIVE"/>
+</label>
+<label class="form-check"><input class="form-check-input" id="shotOverlay" type="checkbox"/><span class="form-check-label">Show graphics overlay</span></label>
+</div>
+<button class="reset-shot" id="vmixResetShot" type="button">RESET SHOT</button>
+</div>
+</div>
+<div class="vmix-statusbar"><span aria-live="polite" id="vmixStatus">PRESS START TO BEGIN</span><button id="vmixReset" type="button">RESET</button></div>
+<div aria-live="polite" class="vmix-success" id="vmixSuccess"><b>Broadcast Successful</b><span id="vmixSuccessText">You made Program live before the deadline.</span></div>
+</div>
+</section>
+<section class="section expertise" id="expertise">
+<div class="section-heading reveal">
+<p class="eyebrow"><span></span> EXPERTISE</p>
+<h2>Calm under pressure.<br/>Sharp on every cue.</h2>
+</div>
+<div class="expertise-list">
+<div class="expertise-item reveal">
+<span>01</span><h3>Broadcast Direction</h3><p>Calling cameras, coordinating talent and shaping the rhythm of a live program.</p>
+</div>
+<div class="expertise-item reveal">
+<span>02</span><h3>vMix Operations</h3><p>Inputs, overlays, triggers, audio buses, remote guests and dependable live workflows.</p>
+</div>
+<div class="expertise-item reveal">
+<span>03</span><h3>Control-Room Production</h3><p>Turning complex technical setups into a clear, repeatable and fast production system.</p>
+</div>
+<div class="expertise-item reveal">
+<span>04</span><h3>Visual Storytelling</h3><p>Graphics, pacing and framing that make important stories easier to understand and remember.</p>
+</div>
+</div>
+</section>
+<section class="section skills" id="skills">
+<div class="section-heading reveal">
+<p class="eyebrow"><span></span> CORE SKILLS</p>
+<h2>Technical precision.<br/>Editorial instinct.</h2>
+</div>
+<div class="skills-grid">
+<article class="skill-card reveal" data-value="98"><div class="skill-ring"><span>98%</span></div><h3>vMix</h3><p>Live switching, triggers, overlays, audio buses and remote guests.</p></article>
+<article class="skill-card reveal delay-1" data-value="97"><div class="skill-ring"><span>97%</span></div><h3>Broadcast Direction</h3><p>Timing, camera calls, talent coordination and live editorial decisions.</p></article>
+<article class="skill-card reveal delay-2" data-value="95"><div class="skill-ring"><span>95%</span></div><h3>Live Production</h3><p>Reliable workflows for high-pressure, multi-source television programs.</p></article>
+<article class="skill-card reveal" data-value="92"><div class="skill-ring"><span>92%</span></div><h3>After Effects</h3><p>Broadcast motion graphics, visualizers, titles and animated packages.</p></article>
+</div>
+</section>
+<section class="section about" id="about">
+<div class="about-card reveal">
+<div class="about-photo"><img alt="Sam Kazemi in a live television control room" loading="lazy" src="sam-about.jpg"/></div>
+<div class="about-copy">
+<p class="eyebrow"><span></span> ABOUT</p>
+<h2>I make complicated live productions feel simple.</h2>
+<p>
             Sam Kazemi is a Broadcast Director specializing in live television production, technical directing and real-time broadcast workflows. His work includes control-room management, vMix production, live switching, broadcast graphics and the precise coordination required to keep a live program clear, reliable and engaging.
           </p>
-          <div class="about-fa" lang="fa" dir="rtl">
-            <h3>درباره من</h3>
-            <p>سام کاظمی، کارگردان پخش و متخصص تولید برنامه‌های زنده تلویزیونی است. فعالیت او بر مدیریت اتاق فرمان، کارگردانی فنی، تولید با vMix، سوئیچ زنده، گرافیک تلویزیونی و هماهنگی دقیق روند پخش متمرکز است؛ با هدف ساخت برنامه‌هایی روان، قابل اعتماد و جذاب برای مخاطب.</p>
-          </div>
-          <div class="about-links"><a class="text-link" href="https://mail.google.com/mail/?view=cm&fs=1&to=sam.kazmi%40live.com&su=Hello%20Sam" target="_blank" rel="noopener noreferrer">sam.kazmi@live.com <span>↗</span></a><a class="text-link" href="https://www.linkedin.com/in/samkazemi" target="_blank" rel="noreferrer">Connect on LinkedIn <span>↗</span></a></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="contact reveal">
-      <p class="eyebrow"><span></span> LET’S CREATE SOMETHING LIVE</p>
-      <h2>Good broadcasts don’t happen by accident.</h2>
-      <a class="btn btn-primary btn-large" href="https://mail.google.com/mail/?view=cm&fs=1&to=sam.kazmi%40live.com&su=Hello%20Sam" target="_blank" rel="noopener noreferrer">Email Sam ↗</a><p class="contact-email">sam.kazmi@live.com</p>
-    </section>
-  </main>
-
-  <footer>
-    <div class="brand"><span class="brand-mark">SK</span><span class="brand-text">SAM KAZEMI</span></div>
-    <p>Broadcast Director • Live Production • vMix</p>
-    <span>© <span id="year"></span> Sam Kazemi</span>
-  </footer>
-
-  <script src="script.js?v=12"></script>
+<div aria-hidden="true" class="about-fa" dir="rtl" lang="fa">
+<h3>درباره من</h3>
+<p>سام کاظمی، کارگردان پخش و متخصص تولید برنامه‌های زنده تلویزیونی است. فعالیت او بر مدیریت اتاق فرمان، کارگردانی فنی، تولید با vMix، سوئیچ زنده، گرافیک تلویزیونی و هماهنگی دقیق روند پخش متمرکز است؛ با هدف ساخت برنامه‌هایی روان، قابل اعتماد و جذاب برای مخاطب.</p>
+</div>
+<div class="about-links"><a class="text-link" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=sam.kazmi%40live.com&amp;su=Hello%20Sam" rel="noopener noreferrer" target="_blank">sam.kazmi@live.com <span>↗</span></a><a class="text-link" href="https://www.linkedin.com/in/samkazemi" rel="noreferrer" target="_blank">Connect on LinkedIn <span>↗</span></a></div>
+</div>
+</div>
+</section>
+<section class="contact reveal">
+<p class="eyebrow"><span></span> LET’S CREATE SOMETHING LIVE</p>
+<h2>Good broadcasts don’t happen by accident.</h2>
+<a class="btn btn-primary btn-large" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=sam.kazmi%40live.com&amp;su=Hello%20Sam" rel="noopener noreferrer" target="_blank">Email Sam ↗</a><p class="contact-email">sam.kazmi@live.com</p>
+</section>
+</main>
+<footer>
+<div class="brand"><span class="brand-mark">SK</span><span class="brand-text">SAM KAZEMI</span></div>
+<p>Broadcast Director • Live Production • vMix</p>
+<span>© <span id="year"></span> Sam Kazemi</span>
+<p class="site-credit">Designed and developed by Sam Kazemi · Website design inquiries: <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=sam.kazmi%40live.com&amp;su=Website%20Design%20Inquiry" rel="noopener noreferrer" target="_blank">sam.kazmi@live.com</a></p></footer>
+<script src="language.js?v=1"></script><script src="script.js?v=13"></script>
 </body>
 </html>

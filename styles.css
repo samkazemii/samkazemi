@@ -593,3 +593,28 @@ body.is-loading{overflow:hidden}
 .gfx-cinema{justify-content:center;align-items:center;text-align:center;padding:10%;background:linear-gradient(to bottom,rgba(0,0,0,.35),transparent 30%,transparent 70%,rgba(0,0,0,.5))}
 .gfx-cinema b{font-size:clamp(1.5rem,4vw,3.5rem);letter-spacing:.12em}.gfx-clean{display:none}
 @media(max-width:800px){.director-workflow-v12{grid-template-columns:1fr}.designer-controls{grid-template-columns:1fr}.designer-controls .title-control,.designer-controls .form-check{grid-column:auto}.media-library-block .compact-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}.vmix-upload{grid-column:1/-1}}
+
+/* ---------- Bilingual language controls ---------- */
+.language-switcher{display:flex;align-items:center;gap:8px;margin-left:auto;margin-right:16px;direction:ltr;position:relative;z-index:10}
+.language-button{width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(7,10,15,.76);display:grid;place-items:center;padding:3px;cursor:pointer;position:relative;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;overflow:visible}
+.language-button img{width:38px;height:38px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+.language-button span{position:absolute;top:54px;left:50%;transform:translateX(-50%);font-size:10px;line-height:1;color:#fff;background:#101722;border:1px solid rgba(255,255,255,.14);padding:4px 7px;border-radius:999px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.language-button:hover{transform:translateY(-2px);border-color:#38e896}.language-button:hover span{opacity:1}
+.language-button.active{border-color:#38e896;box-shadow:0 0 0 3px rgba(56,232,150,.16),0 0 22px rgba(56,232,150,.18)}
+html[dir="rtl"] body{font-family:Tahoma,"Segoe UI",Arial,sans-serif}
+html[dir="rtl"] .site-header,html[dir="rtl"] .hero-copy-overlay,html[dir="rtl"] .section-heading,html[dir="rtl"] .about-copy,html[dir="rtl"] .contact{text-align:right}
+html[dir="rtl"] .site-header{direction:rtl}
+html[dir="rtl"] .language-switcher{margin-left:16px;margin-right:auto;direction:ltr}
+html[dir="rtl"] .nav{direction:rtl}
+html[dir="rtl"] .hero-kicker,html[dir="rtl"] .eyebrow{justify-content:flex-start}
+html[dir="rtl"] .hero-work-button b,html[dir="rtl"] .text-link span{display:inline-block;transform:scaleX(-1)}
+html[dir="rtl"] .expertise-item,html[dir="rtl"] .skill-card,html[dir="rtl"] .workflow-block,html[dir="rtl"] .game-task{text-align:right}
+html[dir="rtl"] .designer-controls label,html[dir="rtl"] .workflow-help{direction:rtl;text-align:right}
+html[dir="rtl"] .vmix-statusbar,html[dir="rtl"] .challenge-topbar,html[dir="rtl"] .vmix-toolbar{direction:rtl}
+html[dir="rtl"] .transition-controls,html[dir="rtl"] .language-switcher{direction:ltr}
+html[dir="rtl"] input[type="text"]{text-align:right}
+.about-fa{display:none!important}
+.site-credit{width:100%;margin:14px 0 0;text-align:center;font-size:12px;color:rgba(255,255,255,.58);letter-spacing:.02em}
+.site-credit a{color:#7bf0b5;text-decoration:none}.site-credit a:hover{text-decoration:underline}
+@media(max-width:900px){.language-switcher{order:3;margin-left:8px;margin-right:0}.language-button{width:42px;height:42px}.language-button img{width:33px;height:33px}.site-header{flex-wrap:wrap}.nav{width:100%;order:4}.language-button span{display:none}}
+@media(max-width:560px){.language-switcher{gap:5px}.language-button{width:38px;height:38px}.language-button img{width:29px;height:29px}}
