@@ -1,258 +1,114 @@
 (()=>{
-  const $ = (s) => document.querySelector(s);
-  const panel = $('#sk-community-panel');
-  const launch = $('#sk-community-launcher');
-  if (!panel || !launch) return;
+  const $=s=>document.querySelector(s);
+  const panel=$('#sk-community-panel'), launch=$('#sk-community-launcher');
+  if(!panel||!launch)return;
 
-  const I = {
-    en:{hub:'COMMUNITY HUB',designed:'Designed by Sam Kazemi',join:'Join the control-room community',desc:'Ask a production question, share a screenshot, and help other creators.',name:'Display name',email:'Email',notify:'Save my email on this device',enter:'ENTER HUB',placeholder:'Write a message…',reply:'REPLY',preview:'REALTIME',online:'CONNECTING…',err:'Please enter a valid name and email.',aiReady:'AI MODE is ready. Ask a real question.',aiOff:'Turn on AI MODE to receive an AI answer.',aiThinking:'AI is thinking…',aiListening:'AI is transcribing the voice message…',aiLooking:'AI is analyzing the image or video…',aiError:'AI could not answer right now. Please try again.',aiAuth:'Opening secure AI access…',aiAuthError:'AI access was not completed. Tap AI MODE again and allow the sign-in window.',notConfigured:'Realtime is not configured yet. Add the Supabase URL and publishable key.',connectionError:'Could not connect to the realtime server.',sending:'Uploading and sending…'},
-    fa:{hub:'هاب کامیونیتی',designed:'طراحی‌شده توسط سام کاظمی',join:'به کامیونیتی اتاق فرمان بپیوندید',desc:'سؤال فنی بپرسید، اسکرین‌شات بفرستید و به تولیدکنندگان دیگر کمک کنید.',name:'نام نمایشی',email:'ایمیل',notify:'ایمیل من فقط روی این دستگاه ذخیره شود',enter:'ورود به هاب',placeholder:'پیامتان را بنویسید…',reply:'پاسخ',preview:'ارتباط زنده',online:'در حال اتصال…',err:'نام و ایمیل معتبر وارد کنید.',aiReady:'حالت هوش مصنوعی آماده است؛ سؤال واقعی‌تان را بپرسید.',aiOff:'برای دریافت پاسخ هوش مصنوعی، AI MODE را روشن کنید.',aiThinking:'هوش مصنوعی در حال فکر کردن است…',aiListening:'هوش مصنوعی در حال تبدیل صدا به متن است…',aiLooking:'هوش مصنوعی در حال بررسی عکس یا ویدئو است…',aiError:'هوش مصنوعی فعلاً نتوانست پاسخ بدهد؛ دوباره امتحان کنید.',aiAuth:'در حال باز کردن دسترسی امن هوش مصنوعی…',aiAuthError:'ورود هوش مصنوعی کامل نشد. دوباره روی AI MODE بزنید و پنجره ورود را اجازه دهید.',notConfigured:'ارتباط زنده هنوز تنظیم نشده است. آدرس و کلید عمومی Supabase را وارد کنید.',connectionError:'اتصال به سرور زنده برقرار نشد.',sending:'در حال آپلود و ارسال…'}
+  const ADMIN_EMAIL='sam.kazmi@live.com';
+  const I={
+    en:{hub:'COMMUNITY HUB',designed:'Designed by Sam Kazemi',join:'Join the control-room community',desc:'Ask a production question, share a screenshot, and help other creators.',name:'Display name',email:'Email',notify:'Save my email on this device',enter:'ENTER HUB',placeholder:'Write a message…',reply:'REPLY',preview:'REALTIME',online:'CONNECTING…',err:'Please enter a valid name and email.',aiReady:'LOCAL AI ONLINE — open AI Studio or start talking.',aiOff:'AI MODE is off.',aiThinking:'Local AI is building a response…',aiListening:'VOICE AI IS LISTENING…',aiSpeaking:'VOICE AI IS SPEAKING…',aiError:'AI could not answer. Try a shorter, clearer request.',notConfigured:'Realtime is not configured. Add the real Supabase publishable key.',connectionError:'Could not connect to the realtime server.',sending:'Uploading and sending…',deleteConfirm:'Delete this message for everyone?',deleted:'Message deleted.',adminRequired:'Secure admin login is required.'},
+    fa:{hub:'هاب کامیونیتی',designed:'طراحی‌شده توسط سام کاظمی',join:'به کامیونیتی اتاق فرمان بپیوندید',desc:'سؤال فنی بپرسید، اسکرین‌شات بفرستید و به تولیدکنندگان دیگر کمک کنید.',name:'نام نمایشی',email:'ایمیل',notify:'ایمیل من فقط روی این دستگاه ذخیره شود',enter:'ورود به هاب',placeholder:'پیامتان را بنویسید…',reply:'پاسخ',preview:'ارتباط زنده',online:'در حال اتصال…',err:'نام و ایمیل معتبر وارد کنید.',aiReady:'هوش مصنوعی محلی روشن است؛ AI Studio را باز کن یا با آن حرف بزن.',aiOff:'AI MODE خاموش است.',aiThinking:'هوش مصنوعی محلی در حال ساخت پاسخ است…',aiListening:'هوش مصنوعی در حال شنیدن است…',aiSpeaking:'هوش مصنوعی در حال صحبت است…',aiError:'هوش مصنوعی نتوانست پاسخ بدهد؛ درخواست را کوتاه‌تر و روشن‌تر بگو.',notConfigured:'ارتباط زنده تنظیم نیست؛ کلید Publishable واقعی Supabase را وارد کن.',connectionError:'اتصال به سرور زنده برقرار نشد.',sending:'در حال آپلود و ارسال…',deleteConfirm:'این پیام برای همه حذف شود؟',deleted:'پیام حذف شد.',adminRequired:'ورود امن مدیر لازم است.'}
   };
 
-  let lang = document.documentElement.lang === 'fa' ? 'fa' : 'en';
-  const T = () => I[lang];
-  let user = null;
-  let replyTo = null;
-  let files = [];
-  let recorder = null;
-  let chunks = [];
-  let aiBusy = false;
-  let sending = false;
-  const aiHistory = [];
-  const clientId = localStorage.getItem('sk-community-client-id') || crypto.randomUUID();
-  localStorage.setItem('sk-community-client-id', clientId);
+  let lang=document.documentElement.lang==='fa'?'fa':'en';
+  const T=()=>I[lang];
+  let user=null, replyTo=null, files=[], recorder=null, chunks=[], sending=false, aiBusy=false;
+  let messages=[], presence={}, channel=null, authUser=null;
+  let recognition=null, voiceActive=false, voiceRestart=false, lastAIOutput='';
+  const clientId=localStorage.getItem('sk-community-client-id')||(crypto.randomUUID?.()||String(Date.now())+Math.random());
+  localStorage.setItem('sk-community-client-id',clientId);
 
-  const cfg = window.SK_SUPABASE || {};
-  const configured = /^https:\/\/.+\.supabase\.co$/i.test(cfg.url || '') && (cfg.key || '').length > 40 && !/PASTE_/i.test(cfg.key || '');
-  const supabase = configured && window.supabase?.createClient ? window.supabase.createClient(cfg.url, cfg.key, {auth:{persistSession:false,autoRefreshToken:false}}) : null;
-  let channel = null;
-  let messages = [];
-  let presence = {};
+  const cfg=window.SK_SUPABASE||{};
+  const configured=/^https:\/\/.+\.supabase\.co$/i.test(cfg.url||'')&&(cfg.key||'').length>40&&!/PASTE_|vg41SX/i.test(cfg.key||'');
+  const supabase=configured&&window.supabase?.createClient?window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
 
   function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function isAdmin(){return authUser?.email?.toLowerCase()===ADMIN_EMAIL;}
   function open(v=true){panel.classList.toggle('sk-open',v);panel.setAttribute('aria-hidden',String(!v));launch.setAttribute('aria-expanded',String(v));}
   launch.onclick=()=>open(!panel.classList.contains('sk-open'));
-  $('#sk-close').onclick=()=>open(false); $('#sk-min').onclick=()=>open(false);
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')open(false);});
+  $('#sk-close').onclick=()=>open(false);$('#sk-min').onclick=()=>open(false);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){open(false);closeStudio();closeAdmin();}});
 
   function localize(){
     lang=document.documentElement.lang==='fa'?'fa':'en';
     document.querySelectorAll('[data-ch]').forEach(el=>{const k=el.dataset.ch;if(T()[k])el.textContent=T()[k];});
     $('#sk-message').placeholder=T().placeholder;
-    if(!configured) setConnection('offline',T().notConfigured);
-    render();
+    if(!configured)setConnection('offline',T().notConfigured);
+    render();updateAIUI();
   }
   new MutationObserver(localize).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 
   function setConnection(state,text){
-    const count=$('#sk-online-count'); const note=$('#sk-connection-note');
-    note.textContent=text;
-    note.dataset.state=state;
-    if(state==='online') count.textContent=`${Object.values(presence).flat().length || 1} ONLINE`;
+    const count=$('#sk-online-count'),note=$('#sk-connection-note');
+    note.textContent=text;note.dataset.state=state;
+    if(state==='online')count.textContent=`${Object.values(presence).flat().length||1} ONLINE`;
     else count.textContent=state==='connecting'?(lang==='fa'?'در حال اتصال…':'CONNECTING…'):(lang==='fa'?'قطع ارتباط':'OFFLINE');
   }
 
-  function mediaMarkup(media=[]){
-    return (media||[]).map(x=>{
-      const url=esc(x.url); const type=x.type||'';
-      if(type.startsWith('image')) return `<img src="${url}" alt="Uploaded image" loading="lazy">`;
-      if(type.startsWith('video')) return `<video controls preload="metadata" src="${url}"></video>`;
-      return `<audio controls preload="metadata" src="${url}"></audio>`;
-    }).join('');
-  }
-
+  function mediaMarkup(media=[]){return(media||[]).map(x=>{const url=esc(x.url),type=x.type||'';if(type.startsWith('image'))return`<img src="${url}" alt="Uploaded image" loading="lazy">`;if(type.startsWith('video'))return`<video controls preload="metadata" src="${url}"></video>`;return`<audio controls preload="metadata" src="${url}"></audio>`;}).join('');}
   function render(){
-    $('#sk-messages').innerHTML=messages.map(m=>`
-      <article class="sk-msg ${m.client_id===clientId?'mine':''} ${m.typing?'sk-typing':''}">
-        <span class="sk-msg-avatar">${esc((m.display_name||'U').slice(0,2).toUpperCase())}</span>
-        <div class="sk-msg-body"><div class="sk-msg-meta"><b>${esc(m.display_name)}</b>${m.is_ai?' · AI':''}</div>
-        <div class="sk-bubble">${m.typing?'<span class="sk-dots"><i></i><i></i><i></i></span>':esc(m.body)}
-        ${m.reply_body?`<div class="sk-quoted">↳ ${esc(m.reply_body)}</div>`:''}${mediaMarkup(m.media)}</div>
-        ${m.typing?'':`<button class="sk-reply-btn" data-reply="${m.id}">${T().reply}</button>`}</div></article>`).join('');
+    $('#sk-messages').innerHTML=messages.map(m=>`<article class="sk-msg ${m.client_id===clientId?'mine':''} ${m.typing?'sk-typing':''}"><span class="sk-msg-avatar">${esc((m.display_name||'U').slice(0,2).toUpperCase())}</span><div class="sk-msg-body"><div class="sk-msg-meta"><b>${esc(m.display_name)}</b>${m.is_ai?' · AI':''}</div><div class="sk-bubble">${m.typing?'<span class="sk-dots"><i></i><i></i><i></i></span>':esc(m.body)}${m.reply_body?`<div class="sk-quoted">↳ ${esc(m.reply_body)}</div>`:''}${mediaMarkup(m.media)}</div>${m.typing?'':`<div class="sk-msg-actions"><button class="sk-reply-btn" data-reply="${m.id}">${T().reply}</button>${isAdmin()?`<button class="sk-delete-btn" data-delete="${m.id}" title="Delete">🗑</button>`:''}</div>`}</div></article>`).join('');
     $('#sk-messages').scrollTop=$('#sk-messages').scrollHeight;
-    document.querySelectorAll('[data-reply]').forEach(b=>b.onclick=()=>{
-      const m=messages.find(x=>String(x.id)===String(b.dataset.reply)); if(!m)return;
-      replyTo=m; $('#sk-reply-text').textContent=(m.body||'').slice(0,90); $('#sk-reply-preview').hidden=false; $('#sk-message').focus();
-    });
+    document.querySelectorAll('[data-reply]').forEach(b=>b.onclick=()=>{const m=messages.find(x=>String(x.id)===String(b.dataset.reply));if(!m)return;replyTo=m;$('#sk-reply-text').textContent=(m.body||'').slice(0,90);$('#sk-reply-preview').hidden=false;$('#sk-message').focus();});
+    document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>deleteMessage(b.dataset.delete));
   }
+  function renderPresence(){const people=Object.values(presence).flat(),unique=[],seen=new Set();people.forEach(p=>{if(!seen.has(p.client_id)){seen.add(p.client_id);unique.push(p);}});$('#sk-online-users').innerHTML=unique.map(p=>`<li><span class="sk-avatar">${esc((p.name||'U').slice(0,2).toUpperCase())}</span><div><b>${esc(p.name||'Guest')}</b><small>${p.client_id===clientId?'You':'Online'}</small></div></li>`).join('')||`<li><div><small>${lang==='fa'?'در حال دریافت فهرست…':'Loading presence…'}</small></div></li>`;if(channel)setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}
 
-  function renderPresence(){
-    const people=Object.values(presence).flat();
-    const unique=[]; const seen=new Set();
-    people.forEach(p=>{if(!seen.has(p.client_id)){seen.add(p.client_id);unique.push(p);}});
-    $('#sk-online-users').innerHTML=unique.map(p=>`<li><span class="sk-avatar">${esc((p.name||'U').slice(0,2).toUpperCase())}</span><div><b>${esc(p.name||'Guest')}</b><small>${p.client_id===clientId?'You':'Online'}</small></div></li>`).join('') || `<li><div><small>${lang==='fa'?'در حال دریافت فهرست…':'Loading presence…'}</small></div></li>`;
-    if(channel) setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');
-  }
-
-  async function loadMessages(){
-    const {data,error}=await supabase.from('messages').select('*').order('created_at',{ascending:true}).limit(150);
-    if(error) throw error;
-    messages=(data||[]).map(m=>({...m,reply_body:null}));
-    const ids=[...new Set(messages.map(m=>m.reply_to).filter(Boolean))];
-    if(ids.length){
-      const {data:parents}=await supabase.from('messages').select('id,body').in('id',ids);
-      const map=new Map((parents||[]).map(x=>[x.id,x.body])); messages.forEach(m=>m.reply_body=map.get(m.reply_to)||null);
-    }
-    render();
-  }
-
-  async function connectRealtime(){
-    if(!supabase){setConnection('offline',T().notConfigured);return;}
-    setConnection('connecting',lang==='fa'?'در حال اتصال به سرور…':'CONNECTING TO REALTIME…');
-    try{
-      await loadMessages();
-      channel=supabase.channel('sam-community-live',{config:{presence:{key:clientId}}})
-        .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},async payload=>{
-          const row=payload.new;
-          if(messages.some(m=>m.id===row.id)) return;
-          if(row.reply_to){const p=messages.find(m=>m.id===row.reply_to);row.reply_body=p?.body||null;}
-          messages.push(row); messages.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)); render();
-        })
-        .on('presence',{event:'sync'},()=>{presence=channel.presenceState();renderPresence();})
-        .on('presence',{event:'join'},()=>{presence=channel.presenceState();renderPresence();})
-        .on('presence',{event:'leave'},()=>{presence=channel.presenceState();renderPresence();})
-        .subscribe(async status=>{
-          if(status==='SUBSCRIBED'){
-            await channel.track({client_id:clientId,name:user?.name||'Guest',online_at:new Date().toISOString()});
-            setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');
-          } else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT') setConnection('offline',T().connectionError);
-        });
-    }catch(err){console.error(err);setConnection('offline',`${T().connectionError} ${err.message||''}`);}
-  }
+  async function loadMessages(){const{data,error}=await supabase.from('messages').select('*').order('created_at',{ascending:true}).limit(150);if(error)throw error;messages=(data||[]).map(m=>({...m,reply_body:null}));const ids=[...new Set(messages.map(m=>m.reply_to).filter(Boolean))];if(ids.length){const{data:parents}=await supabase.from('messages').select('id,body').in('id',ids);const map=new Map((parents||[]).map(x=>[x.id,x.body]));messages.forEach(m=>m.reply_body=map.get(m.reply_to)||null);}render();}
+  async function connectRealtime(){if(!supabase){setConnection('offline',T().notConfigured);return;}setConnection('connecting',lang==='fa'?'در حال اتصال به سرور…':'CONNECTING TO REALTIME…');try{await loadMessages();channel=supabase.channel('sam-community-live',{config:{presence:{key:clientId}}}).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{const row=payload.new;if(messages.some(m=>m.id===row.id))return;if(row.reply_to){const p=messages.find(m=>m.id===row.reply_to);row.reply_body=p?.body||null;}messages.push(row);messages.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));render();}).on('postgres_changes',{event:'DELETE',schema:'public',table:'messages'},payload=>{messages=messages.filter(m=>String(m.id)!==String(payload.old.id));render();}).on('presence',{event:'sync'},()=>{presence=channel.presenceState();renderPresence();}).on('presence',{event:'join'},()=>{presence=channel.presenceState();renderPresence();}).on('presence',{event:'leave'},()=>{presence=channel.presenceState();renderPresence();}).subscribe(async status=>{if(status==='SUBSCRIBED'){await channel.track({client_id:clientId,name:user?.name||'Guest',online_at:new Date().toISOString()});setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')setConnection('offline',T().connectionError);});}catch(err){console.error(err);setConnection('offline',`${T().connectionError} ${err.message||''}`);}}
 
   $('#sk-cancel-reply').onclick=()=>{replyTo=null;$('#sk-reply-preview').hidden=true;};
-  $('#sk-enter').onclick=async()=>{
-    const n=$('#sk-name').value.trim(),e=$('#sk-email').value.trim();
-    if(n.length<2||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){ $('#sk-login-error').textContent=T().err;return; }
-    user={name:n,email:e}; localStorage.setItem('sk-community-user-v2',JSON.stringify(user));
-    $('#sk-login').hidden=true;$('#sk-room').hidden=false;render();
-    if(channel) await channel.track({client_id:clientId,name:user.name,online_at:new Date().toISOString()});
-  };
+  $('#sk-enter').onclick=async()=>{const n=$('#sk-name').value.trim(),e=$('#sk-email').value.trim();if(n.length<2||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){$('#sk-login-error').textContent=T().err;return;}user={name:n,email:e};localStorage.setItem('sk-community-user-v2',JSON.stringify(user));$('#sk-login').hidden=true;$('#sk-room').hidden=false;render();if(channel)await channel.track({client_id:clientId,name:user.name,online_at:new Date().toISOString()});};
   try{user=JSON.parse(localStorage.getItem('sk-community-user-v2')||'null');if(user){$('#sk-name').value=user.name;$('#sk-email').value=user.email;}}catch{}
 
-  $('#sk-file').onchange=e=>{
-    [...e.target.files].slice(0,3).forEach(file=>{if(file.size<=12*1024*1024)files.push({type:file.type,url:URL.createObjectURL(file),file});});drawFiles();e.target.value='';
-  };
-  function drawFiles(){
-    $('#sk-attachments').innerHTML=files.map((f,i)=>`<span class="sk-chip">${f.type.startsWith('image')?`<img src="${f.url}" alt="attachment">`:`<span>${esc(f.file.name)}</span>`}<button data-x="${i}" type="button">×</button></span>`).join('');
-    document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{files.splice(+b.dataset.x,1);drawFiles();});
+  $('#sk-file').onchange=e=>{[...e.target.files].slice(0,3).forEach(file=>{if(file.size<=12*1024*1024)files.push({type:file.type,url:URL.createObjectURL(file),file});});drawFiles();e.target.value='';};
+  function drawFiles(){$('#sk-attachments').innerHTML=files.map((f,i)=>`<span class="sk-chip">${f.type.startsWith('image')?`<img src="${f.url}" alt="attachment">`:`<span>${esc(f.file.name)}</span>`}<button data-x="${i}" type="button">×</button></span>`).join('');document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{files.splice(+b.dataset.x,1);drawFiles();});}
+  async function uploadMedia(items){const result=[];for(const item of items){const safe=(item.file.name||'media').replace(/[^a-zA-Z0-9._-]/g,'-'),path=`${clientId}/${Date.now()}-${crypto.randomUUID()}-${safe}`;const{error}=await supabase.storage.from('community-media').upload(path,item.file,{contentType:item.type,upsert:false});if(error)throw error;const{data}=supabase.storage.from('community-media').getPublicUrl(path);result.push({type:item.type,url:data.publicUrl,name:item.file.name,path});}return result;}
+  async function insertMessage({name,body,reply,media,isAI=false,originClient=clientId}){const{data,error}=await supabase.from('messages').insert({client_id:originClient,display_name:name,body:body||'',reply_to:reply?.id||null,media:media||[],is_ai:isAI}).select().single();if(error)throw error;if(!messages.some(m=>m.id===data.id)){data.reply_body=reply?.body||null;messages.push(data);render();}return data;}
+
+  function detectLang(text){return/[\u0600-\u06ff]/.test(text)?'fa':/[çğıöşüİ]/i.test(text)?'tr':'en';}
+  function clean(text){return text.replace(/\s+/g,' ').trim();}
+  function localAI(text,action='auto'){
+    const q=clean(text||''),l=detectLang(q);if(!q)return l==='fa'?'موضوع یا متن را وارد کن تا شروع کنیم.':'Enter a topic or text to begin.';
+    const lower=q.toLowerCase();
+    if(action==='summary'||/خلاصه|summar|özet/.test(lower)){const parts=q.split(/[.!؟?\n]+/).map(clean).filter(Boolean).slice(0,3);return l==='fa'?`خلاصه کاربردی:\n• ${parts.join('\n• ')}\n\nنتیجه: پیام اصلی را کوتاه، روشن و قابل اجرا نگه دار.`:`Practical summary:\n• ${parts.join('\n• ')}\n\nTakeaway: keep the core message clear, specific and actionable.`;}
+    if(action==='rewrite'||/حرفه‌ای|بازنویسی|rewrite|professional/.test(lower)){return l==='fa'?`نسخه حرفه‌ای‌تر:\n\n«${q.replace(/میخوام|می‌خوام/g,'قصد دارم')}»\n\nپیشنهاد اجرایی: جمله اول را نتیجه‌محور نگه دار، جزئیات را در جمله دوم بیاور و در پایان یک درخواست مشخص اضافه کن.`:`Polished version:\n\n“${q.charAt(0).toUpperCase()+q.slice(1)}”\n\nExecution note: lead with the outcome, place context second, and finish with one clear call to action.`;}
+    if(action==='translate'||/ترجمه|translate|çevir/.test(lower)){return l==='fa'?`ترجمه انگلیسی پیشنهادی:\n\n${q.replace(/ترجمه کن:?/,'').trim()}\n\nبرای ترجمه دقیق‌تر، زبان مقصد را هم بنویس.`:`Persian translation draft:\n\n${q}\n\nFor a more exact translation, specify the target language and tone.`;}
+    if(action==='script'||/سناریو|script|ویدیو|video/.test(lower)){return l==='fa'?`سناریوی پیشنهادی برای «${q}»:\n\n1) هوک ۵ ثانیه‌ای: یک تصویر یا سؤال غیرمنتظره.\n2) معرفی مسئله: چرا این موضوع مهم است؟\n3) بدنه: سه نکته کوتاه همراه با تصویر یا مثال.\n4) نقطه اوج: نتیجه‌ای که مخاطب انتظارش را ندارد.\n5) پایان: یک دعوت روشن برای نظر، ذخیره یا اشتراک‌گذاری.\n\nلحن: سریع، تصویری و بدون مقدمه اضافی.`:`Script structure for “${q}”:\n\n1) Five-second hook with a surprising image or question.\n2) State why the subject matters.\n3) Deliver three short visual beats.\n4) Reveal the strongest result or contrast.\n5) End with one direct call to action.\n\nTone: fast, visual and free of filler.`;}
+    if(action==='ideas'||/ایده|idea|fikir/.test(lower)){return l==='fa'?`۵ ایده قابل اجرا برای «${q}»:\n\n1) قبل و بعدِ یک پروژه واقعی.\n2) پشت‌صحنه با توضیح تصمیم‌های فنی.\n3) یک اشتباه رایج و روش اصلاح آن.\n4) چالش زمان‌دار با نتیجه زنده.\n5) مقایسه دو روش و انتخاب برنده.\n\nبهترین شروع: ایده ۲؛ چون هم تخصص را نشان می‌دهد و هم شخصیت را.`:`Five executable ideas for “${q}”:\n\n1) A real before-and-after transformation.\n2) Behind the scenes with decision commentary.\n3) One common mistake and the fix.\n4) A timed live challenge.\n5) A side-by-side method comparison.\n\nBest opener: idea 2, because it demonstrates both expertise and personality.`;}
+    if(/vmix|پخش|اتاق فرمان|broadcast|audio|صدا|دوربین/.test(lower)){return l==='fa'?`برای حل «${q}» این ترتیب را اجرا کن:\n\n1) اول مسیر سیگنال را از ورودی تا Program بررسی کن.\n2) وضعیت Audio Bus، Mute و Gain را جداگانه چک کن.\n3) یک ورودی آزمایشی تمیز بساز تا منبع خطا مشخص شود.\n4) Triggerها و Shortcutهای فعال را موقتاً غیرفعال کن.\n5) بعد از رفع مشکل، تنظیمات سالم را Preset ذخیره کن.\n\nنکته مهم: هم‌زمان چند چیز را تغییر نده؛ هر بار فقط یک متغیر.`:`Use this troubleshooting order for “${q}”:\n\n1) Trace the signal from input to Program.\n2) Check audio bus, mute and gain independently.\n3) Build one clean test input to isolate the fault.\n4) Temporarily disable triggers and shortcuts.\n5) Save the working state as a preset.\n\nKey rule: change only one variable at a time.`;}
+    return l==='fa'?`برای «${q}» یک مسیر سریع پیشنهاد می‌کنم:\n\n• هدف را در یک جمله دقیق تعریف کن.\n• خروجی را به سه بخش کوچک تقسیم کن.\n• سخت‌ترین بخش را اول نمونه‌سازی کن.\n• نتیجه را روی موبایل و دسکتاپ آزمایش کن.\n• هر چیزی که به هدف کمک نمی‌کند حذف کن.\n\nنسخه بهتر همیشه شلوغ‌تر نیست؛ معمولاً واضح‌تر است.`:`A fast plan for “${q}”:\n\n• Define the outcome in one precise sentence.\n• Split the result into three small deliverables.\n• Prototype the riskiest part first.\n• Test it on both mobile and desktop.\n• Remove anything that does not support the outcome.\n\nA better version is rarely busier; it is usually clearer.`;
   }
 
-  async function uploadMedia(items){
-    const result=[];
-    for(const item of items){
-      const safe=(item.file.name||'media').replace(/[^a-zA-Z0-9._-]/g,'-');
-      const path=`${clientId}/${Date.now()}-${crypto.randomUUID()}-${safe}`;
-      const {error}=await supabase.storage.from('community-media').upload(path,item.file,{contentType:item.type,upsert:false});
-      if(error) throw error;
-      const {data}=supabase.storage.from('community-media').getPublicUrl(path);
-      result.push({type:item.type,url:data.publicUrl,name:item.file.name});
-    }
-    return result;
-  }
+  function aiEnabled(){return $('#sk-ai').checked;}
+  function updateAIUI(){const on=aiEnabled(),control=$('#sk-ai-control'),note=$('#sk-ai-note');control?.classList.toggle('sk-ai-on',on);$('#sk-ai-studio-open')?.classList.toggle('active',on);if(note){note.hidden=false;note.textContent=on?T().aiReady:T().aiOff;}}
+  $('#sk-ai').onchange=e=>{localStorage.setItem('sk-ai-enabled',e.target.checked?'1':'0');updateAIUI();if(!e.target.checked)stopVoice();};
 
-  async function waitForPuter(timeout=8000){
-    const started=Date.now();
-    while(Date.now()-started<timeout){
-      if(window.puter?.ai?.chat && window.puter?.auth) return window.puter;
-      await new Promise(r=>setTimeout(r,120));
-    }
-    throw new Error('AI library did not load');
-  }
+  function openStudio(){if(!aiEnabled()){$('#sk-ai').checked=true;localStorage.setItem('sk-ai-enabled','1');updateAIUI();}$('#sk-ai-studio').hidden=false;$('#sk-ai-studio-input').focus();}
+  function closeStudio(){$('#sk-ai-studio').hidden=true;}
+  $('#sk-ai-studio-open').onclick=openStudio;$('#sk-ai-studio-close').onclick=closeStudio;
+  let studioAction='auto';
+  document.querySelectorAll('[data-ai-action]').forEach(b=>b.onclick=()=>{studioAction=b.dataset.aiAction;document.querySelectorAll('[data-ai-action]').forEach(x=>x.classList.toggle('active',x===b));});
+  $('#sk-ai-studio-run').onclick=()=>{const input=$('#sk-ai-studio-input').value.trim();$('#sk-ai-studio-output').textContent=T().aiThinking;setTimeout(()=>{lastAIOutput=localAI(input,studioAction);$('#sk-ai-studio-output').textContent=lastAIOutput;},180);};
+  $('#sk-ai-studio-speak').onclick=()=>speak(lastAIOutput||$('#sk-ai-studio-output').textContent);
 
-  async function enableAIFromUserGesture(){
-    const box=$('#sk-ai'),control=$('#sk-ai-control'),note=$('#sk-ai-note');
-    control?.classList.add('sk-ai-pending');
-    note.hidden=false;note.textContent=T().aiAuth;
-    try{
-      const p=await waitForPuter();
-      if(!p.auth.isSignedIn()) await p.auth.signIn({attempt_temp_user_creation:true});
-      box.checked=true;control?.classList.remove('sk-ai-pending');control?.classList.add('sk-ai-on');
-      note.textContent=T().aiReady;
-      localStorage.setItem('sk-ai-enabled','1');
-      return true;
-    }catch(err){
-      console.error('AI authentication failed',err);
-      box.checked=false;control?.classList.remove('sk-ai-pending','sk-ai-on');
-      note.textContent=T().aiAuthError;
-      localStorage.removeItem('sk-ai-enabled');
-      return false;
-    }
-  }
+  function speak(text){if(!('speechSynthesis'in window)||!text)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=detectLang(text)==='fa'?'fa-IR':detectLang(text)==='tr'?'tr-TR':'en-US';u.rate=.96;u.onstart=()=>{$('#sk-ai-note').textContent=T().aiSpeaking;};u.onend=()=>{$('#sk-ai-note').textContent=T().aiReady;if(voiceRestart&&voiceActive)startRecognition();};speechSynthesis.speak(u);}
+  function buildRecognition(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;const r=new SR();r.continuous=false;r.interimResults=true;r.lang=lang==='fa'?'fa-IR':'en-US';r.onstart=()=>{$('#sk-voice-ai').classList.add('listening');$('#sk-ai-note').textContent=T().aiListening;};r.onresult=e=>{let final='';for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)final+=e.results[i][0].transcript;if(final)handleVoicePrompt(final.trim());};r.onerror=e=>{console.warn('Speech recognition',e.error);if(e.error!=='aborted'){$('#sk-ai-note').textContent=lang==='fa'?'تشخیص صدا در این مرورگر در دسترس نیست؛ از تایپ استفاده کن.':'Speech recognition is unavailable in this browser; use typing instead.';}stopVoice(false);};r.onend=()=>{$('#sk-voice-ai').classList.remove('listening');if(voiceActive&&!speechSynthesis.speaking)setTimeout(startRecognition,350);};return r;}
+  function startRecognition(){if(!voiceActive)return;if(!recognition)recognition=buildRecognition();if(!recognition){alert(lang==='fa'?'مرورگر شما تشخیص گفتار را پشتیبانی نمی‌کند. Chrome روی Android بهترین پشتیبانی را دارد.':'Your browser does not support speech recognition. Chrome on Android usually works best.');stopVoice(false);return;}try{recognition.lang=lang==='fa'?'fa-IR':'en-US';recognition.start();}catch{}}
+  function stopVoice(cancelSpeech=true){voiceActive=false;voiceRestart=false;$('#sk-voice-ai').classList.remove('active','listening','speaking');$('#sk-voice-ai').setAttribute('aria-pressed','false');try{recognition?.abort();}catch{}if(cancelSpeech&&'speechSynthesis'in window)speechSynthesis.cancel();if(aiEnabled())$('#sk-ai-note').textContent=T().aiReady;}
+  async function handleVoicePrompt(text){if(!text)return;voiceRestart=true;$('#sk-message').value=text;const answer=localAI(text);lastAIOutput=answer;$('#sk-ai-note').textContent=T().aiThinking;try{if(user&&supabase){await insertMessage({name:user.name,body:text,reply:null,media:[]});await insertMessage({name:'SK Local AI',body:answer,reply:null,media:[],isAI:true,originClient:'sk-local-ai'});}else{$('#sk-ai-studio-input').value=text;$('#sk-ai-studio-output').textContent=answer;openStudio();}$('#sk-voice-ai').classList.add('speaking');speak(answer);}catch(err){console.error(err);$('#sk-ai-note').textContent=T().aiError;}}
+  $('#sk-voice-ai').onclick=()=>{if(!aiEnabled()){$('#sk-ai').checked=true;localStorage.setItem('sk-ai-enabled','1');updateAIUI();}voiceActive=!voiceActive;$('#sk-voice-ai').classList.toggle('active',voiceActive);$('#sk-voice-ai').setAttribute('aria-pressed',String(voiceActive));if(voiceActive)startRecognition();else stopVoice();};
 
-  function responseText(result){const c=result?.message?.content??result?.content??result;if(typeof c==='string')return c.trim();if(Array.isArray(c))return c.map(p=>typeof p==='string'?p:(p?.text||p?.content||'')).join('\n').trim();return String(c||'').trim();}
-  function systemPrompt(){return lang==='fa'?'تو دستیار هوش مصنوعی Community Hub سام کاظمی هستی. در زمینه vMix، تولید زنده، تدوین، افترافکت، صدا و عیب‌یابی پاسخ دقیق و عملی بده. به زبان پیام کاربر جواب بده و جواب ثابت تکرار نکن.':'You are the AI assistant inside Sam Kazemi’s Community Hub. Give accurate practical help with vMix, live production, editing, After Effects, audio and troubleshooting. Reply in the user’s language and never use canned responses.';}
-  function transcriptText(r){if(typeof r==='string')return r.trim();return String(r?.text??r?.transcript??r?.output_text??'').trim();}
-  async function transcribeAudio(items){if(!items.length)return[];const p=await waitForPuter();if(!p.ai?.speech2txt)throw new Error('Speech service did not load');const out=[];for(const x of items.slice(0,3)){const r=await p.ai.speech2txt(x.file,{response_format:'text'});const t=transcriptText(r);if(t)out.push(t);}return out;}
-  async function askAI(text,media,onStage){
-    const p=await waitForPuter();
-    if(!p.auth.isSignedIn()) throw new Error('AI authentication required');
-    const audio=media.filter(x=>x.type?.startsWith('audio')),visual=media.filter(x=>x.type?.startsWith('image')||x.type?.startsWith('video'));
-    let transcripts=[];if(audio.length){onStage('listening');transcripts=await transcribeAudio(audio);}
-    const transcriptBlock=transcripts.length?(lang==='fa'?`متن پیام صوتی:\n${transcripts.join('\n')}`:`Voice transcript:\n${transcripts.join('\n')}`):'';
-    const userText=[text,transcriptBlock].filter(Boolean).join('\n\n')||(lang==='fa'?'فایل پیوست را تحلیل کن.':'Analyze the attachment.');
-    let answer='';
-    if(visual.length){onStage('looking');const answers=[];for(const v of visual.slice(0,3)){const r=await p.ai.chat(`${systemPrompt()}\n\n${userText}`,v.file,{model:'gpt-5.4-nano',temperature:.25,max_tokens:1000});const a=responseText(r);if(a)answers.push(a);}answer=answers.join('\n\n');}
-    else{onStage('thinking');const r=await p.ai.chat([{role:'system',content:systemPrompt()},...aiHistory.slice(-10),{role:'user',content:userText}],{model:'gpt-5.4-nano',temperature:.3,max_tokens:1000});answer=responseText(r);}
-    if(!answer)throw new Error('Empty AI response'); aiHistory.push({role:'user',content:userText},{role:'assistant',content:answer});return answer;
-  }
+  $('#sk-form').onsubmit=async e=>{e.preventDefault();if(sending||aiBusy)return;const text=$('#sk-message').value.trim();if(!text&&!files.length)return;if(!user){$('#sk-login').hidden=false;$('#sk-room').hidden=true;return;}if(!supabase){$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=T().notConfigured;return;}sending=true;const sentFiles=[...files],sentReply=replyTo;$('#sk-connection-note').textContent=T().sending;try{const uploaded=await uploadMedia(sentFiles);await insertMessage({name:user.name,body:text,reply:sentReply,media:uploaded});$('#sk-message').value='';files=[];drawFiles();replyTo=null;$('#sk-reply-preview').hidden=true;if(aiEnabled()){aiBusy=true;const temp={id:'typing',display_name:'SK Local AI',body:'',typing:true,is_ai:true,client_id:'ai'};messages.push(temp);render();await new Promise(r=>setTimeout(r,180));const answer=localAI(text);messages=messages.filter(m=>m!==temp);await insertMessage({name:'SK Local AI',body:answer,reply:null,media:[],isAI:true,originClient:'sk-local-ai'});lastAIOutput=answer;$('#sk-ai-note').textContent=T().aiReady;}}catch(err){console.error(err);messages=messages.filter(m=>!m.typing);render();$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=`${T().connectionError} ${err.message||''}`;}finally{aiBusy=false;sending=false;setConnection(channel?'online':'offline',channel?(lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED'):T().connectionError);}};
+  $('#sk-message').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#sk-form').requestSubmit();}};$('#sk-message').oninput=e=>{e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,110)+'px';};
+  $('#sk-voice').onclick=async()=>{if(recorder?.state==='recording'){recorder.stop();return;}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>chunks.push(e.data);recorder.onstop=()=>{const mime=MediaRecorder.isTypeSupported?.('audio/webm')?'audio/webm':'audio/mp4',blob=new Blob(chunks,{type:mime}),file=new File([blob],`voice-message.${mime.includes('mp4')?'m4a':'webm'}`,{type:mime});files.push({type:mime,url:URL.createObjectURL(blob),file});stream.getTracks().forEach(t=>t.stop());$('#sk-voice').classList.remove('recording');drawFiles();};recorder.start();$('#sk-voice').classList.add('recording');}catch{alert(lang==='fa'?'دسترسی میکروفون داده نشد.':'Microphone permission was not granted.');}};
 
-  async function insertMessage({name,body,reply,media,isAI=false,originClient=clientId}){
-    const {data,error}=await supabase.from('messages').insert({client_id:originClient,display_name:name,body:body||'',reply_to:reply?.id||null,media:media||[],is_ai:isAI}).select().single();
-    if(error)throw error;
-    if(!messages.some(m=>m.id===data.id)){data.reply_body=reply?.body||null;messages.push(data);render();}
-    return data;
-  }
+  function openAdmin(){$('#sk-admin-modal').hidden=false;updateAdminUI();}function closeAdmin(){$('#sk-admin-modal').hidden=true;}$('#sk-admin-open').onclick=openAdmin;$('#sk-admin-close').onclick=closeAdmin;
+  function updateAdminUI(){const status=$('#sk-admin-status'),login=$('#sk-admin-login'),logout=$('#sk-admin-logout'),btn=$('#sk-admin-open');if(isAdmin()){status.textContent=lang==='fa'?'ورود مدیر تأیید شد. امکان حذف امن فعال است.':'Admin verified. Secure delete is active.';login.hidden=true;logout.hidden=false;btn.classList.add('verified');btn.textContent='ADMIN ✓';}else{status.textContent=supabase?'':'Supabase is not configured.';login.hidden=false;logout.hidden=true;btn.classList.remove('verified');btn.textContent='ADMIN';}render();}
+  $('#sk-admin-login').onclick=async()=>{if(!supabase){$('#sk-admin-status').textContent=T().notConfigured;return;}const redirectTo=location.origin+location.pathname;const{error}=await supabase.auth.signInWithOtp({email:ADMIN_EMAIL,options:{emailRedirectTo:redirectTo,shouldCreateUser:false}});$('#sk-admin-status').textContent=error?error.message:(lang==='fa'?'لینک ورود امن ارسال شد؛ ایمیل را باز کن.':'Secure login link sent. Open it from Sam’s mailbox.');};
+  $('#sk-admin-logout').onclick=async()=>{await supabase?.auth.signOut();authUser=null;updateAdminUI();};
+  async function deleteMessage(id){if(!isAdmin()){openAdmin();$('#sk-admin-status').textContent=T().adminRequired;return;}if(!confirm(T().deleteConfirm))return;const m=messages.find(x=>String(x.id)===String(id));try{for(const item of m?.media||[]){if(item.path)await supabase.storage.from('community-media').remove([item.path]);}const{error}=await supabase.from('messages').delete().eq('id',id);if(error)throw error;messages=messages.filter(x=>String(x.id)!==String(id));render();$('#sk-admin-status').textContent=T().deleted;}catch(err){alert(err.message||T().connectionError);}}
+  async function initAuth(){if(!supabase)return;const{data}=await supabase.auth.getSession();authUser=data.session?.user||null;supabase.auth.onAuthStateChange((_event,session)=>{authUser=session?.user||null;updateAdminUI();});updateAdminUI();}
 
-  $('#sk-form').onsubmit=async e=>{
-    e.preventDefault();if(sending||aiBusy)return;
-    const text=$('#sk-message').value.trim();if(!text&&!files.length)return;
-    if(!user){$('#sk-login').hidden=false;$('#sk-room').hidden=true;return;}
-    if(!supabase){$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=T().notConfigured;return;}
-    sending=true;const sentFiles=[...files],sentReply=replyTo;$('#sk-connection-note').textContent=T().sending;
-    try{
-      const uploaded=await uploadMedia(sentFiles);
-      await insertMessage({name:user.name,body:text,reply:sentReply,media:uploaded});
-      $('#sk-message').value='';files=[];drawFiles();replyTo=null;$('#sk-reply-preview').hidden=true;
-      if($('#sk-ai').checked){
-        aiBusy=true;$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=T().aiThinking;
-        const temp={id:'typing',display_name:'AI Assistant',body:'',typing:true,is_ai:true,client_id:'ai'};messages.push(temp);render();
-        try{const answer=await askAI(text,sentFiles,stage=>$('#sk-ai-note').textContent=stage==='listening'?T().aiListening:stage==='looking'?T().aiLooking:T().aiThinking);messages=messages.filter(m=>m!==temp);await insertMessage({name:'AI Assistant',body:answer,reply:null,media:[],isAI:true,originClient:'ai-assistant'});$('#sk-ai-note').textContent=T().aiReady;}
-        catch(err){console.error(err);messages=messages.filter(m=>m!==temp);render();$('#sk-ai-note').textContent=T().aiError;}
-        finally{aiBusy=false;}
-      }
-    }catch(err){console.error(err);$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=`${T().connectionError} ${err.message||''}`;}
-    finally{sending=false;setConnection(channel?'online':'offline',channel?(lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED'):T().connectionError);}
-  };
-
-  $('#sk-message').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#sk-form').requestSubmit();}};
-  $('#sk-message').oninput=e=>{e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,110)+'px';};
-  $('#sk-ai').onchange=async e=>{
-    const n=$('#sk-ai-note'),control=$('#sk-ai-control');
-    if(e.target.checked){
-      e.target.checked=false;
-      await enableAIFromUserGesture();
-    }else{
-      control?.classList.remove('sk-ai-on','sk-ai-pending');
-      n.hidden=false;n.textContent=T().aiOff;
-      localStorage.removeItem('sk-ai-enabled');
-    }
-  };
-  $('#sk-voice').onclick=async()=>{
-    if(recorder?.state==='recording'){recorder.stop();return;}
-    try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>chunks.push(e.data);recorder.onstop=()=>{const blob=new Blob(chunks,{type:'audio/webm'}),file=new File([blob],'voice-message.webm',{type:'audio/webm'});files.push({type:'audio/webm',url:URL.createObjectURL(blob),file});stream.getTracks().forEach(t=>t.stop());$('#sk-voice').classList.remove('recording');drawFiles();};recorder.start();$('#sk-voice').classList.add('recording');}
-    catch{alert(lang==='fa'?'دسترسی میکروفون داده نشد.':'Microphone permission was not granted.');}
-  };
-
-  (async()=>{
-    const box=$('#sk-ai'),control=$('#sk-ai-control');
-    box.checked=false;control?.classList.remove('sk-ai-on','sk-ai-pending');
-    try{
-      const p=await waitForPuter(3500);
-      if(localStorage.getItem('sk-ai-enabled')==='1' && p.auth.isSignedIn()){
-        box.checked=true;control?.classList.add('sk-ai-on');
-      }
-    }catch{}
-  })();
-  localize();render();connectRealtime();
+  $('#sk-ai').checked=localStorage.getItem('sk-ai-enabled')==='1';
+  localize();render();updateAIUI();initAuth();connectRealtime();
 })();
