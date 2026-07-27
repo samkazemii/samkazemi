@@ -188,7 +188,7 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   const root=document.getElementById('vmixConsole'); if(!root)return;
   const $=id=>document.getElementById(id);
   const inputs=[...root.querySelectorAll('.vmix-input')];
-  const frameButtons=[...root.querySelectorAll('[data-frame]')];
+  const frameButtons=[];
   const transitions=[...root.querySelectorAll('[data-transition]')];
   const startBtn=$('vmixStart'), clock=$('vmixClock'), step=$('vmixStep'), upload=$('vmixUpload'), uploadName=$('uploadName');
   const loadBtn=$('vmixLoadPreview'), record=$('vmixRecord'), reset=$('vmixReset');
@@ -196,7 +196,7 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   const previewName=$('vmixPreviewName'), programName=$('vmixProgramName'), status=$('vmixStatus'), success=$('vmixSuccess'), successText=$('vmixSuccessText'), recordTime=$('vmixRecordTime');
   const programScreen=$('vmixProgramScreen');
   let running=false,timeLeft=120,challengeTimer=null,recordTimer=null,recordSeconds=0,recording=false;
-  let selected=null,previewSource=null,frame='frame-full',uploadedUrl=null,finished=false,busy=false;
+  let selected=null,previewSource=null,uploadedUrl=null,finished=false,busy=false,switchCount=0;
   const fmt=n=>`${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;
   const play=v=>{const p=v.play();if(p&&p.catch)p.catch(()=>{});};
   function render(host,source){
@@ -208,7 +208,7 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     el.addEventListener('error',()=>{host.innerHTML='<span class="screen-empty">MEDIA ERROR</span>';setStatus('FILE COULD NOT BE OPENED — TRY MP4, JPG OR PNG','MEDIA ERROR');});
     host.appendChild(el); if(source.type==='video')play(el);
   }
-  function setFrame(el,name){el.classList.remove('frame-full','frame-breaking','frame-gaming');el.classList.add(name);}
+  function setFrame(el){el.classList.remove('frame-breaking','frame-gaming');el.classList.add('frame-full');}
   function setStatus(text,stage){status.textContent=text;step.textContent=stage||text;}
   function enableTransitions(on){transitions.forEach(b=>b.disabled=!on);}
   function begin(){
@@ -216,14 +216,26 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     root.classList.remove('danger','failed');success.classList.remove('show');startBtn.disabled=true;
     inputs.forEach(b=>b.disabled=false);upload.disabled=false;
     setStatus('CHOOSE A VIDEO OR UPLOAD YOUR OWN','STEP 1 · MEDIA');
-    challengeTimer=setInterval(()=>{timeLeft--;clock.textContent=fmt(timeLeft);if(timeLeft<=30)root.classList.add('danger');if(timeLeft===60)setStatus('ONE MINUTE LEFT — BUILD THE SHOT','60 SECONDS');if(timeLeft===10)setStatus('TEN SECONDS — TAKE IT LIVE!','FINAL 10');if(timeLeft<=0)fail();},1000);
+    challengeTimer=setInterval(()=>{timeLeft--;clock.textContent=fmt(timeLeft);if(timeLeft<=30)root.classList.add('danger');if(timeLeft===60)setStatus('ONE MINUTE LEFT — KEEP SWITCHING','60 SECONDS');if(timeLeft===10)setStatus('TEN SECONDS — FINAL SWITCHES!','FINAL 10');if(timeLeft<=0)finishChallenge();},1000);
   }
   function choose(source,button){
-    if(!running||finished||busy)return;selected=source;inputs.forEach(b=>b.classList.toggle('active',b===button));loadBtn.disabled=false;
-    render(previewHost,source);previewName.textContent=`${source.name} · NOT LOADED`;setStatus('CHOOSE A FRAME, THEN LOAD TO PREVIEW','STEP 2 · FRAME');
+    if(!running||finished||busy)return;
+    selected=source;
+    previewSource={...source};
+    inputs.forEach(b=>b.classList.toggle('active',b===button));
+    loadBtn.disabled=false;
+    setFrame(previewPicture);
+    render(previewHost,previewSource);
+    previewName.textContent=previewSource.name;
+    record.disabled=false;
+    if(recording){
+      enableTransitions(true);
+      setStatus('NEW SOURCE IN PREVIEW — CHOOSE CUT, FADE OR MERGE','READY TO SWITCH');
+    }else{
+      setStatus('SOURCE IN PREVIEW — START RECORD','STEP 2 · RECORD');
+    }
   }
   inputs.forEach(b=>b.addEventListener('click',()=>choose({name:b.dataset.name,type:b.dataset.type,src:b.dataset.src},b)));
-  frameButtons.forEach(b=>b.addEventListener('click',()=>{if(!running||busy)return;frame=b.dataset.frame;frameButtons.forEach(x=>x.classList.toggle('active',x===b));setFrame(previewPicture,frame);if(selected)setStatus('FRAME READY — LOAD TO PREVIEW','STEP 3 · PREVIEW');}));
   upload.addEventListener('change',()=>{
     const file=upload.files&&upload.files[0];if(!file)return;
     const ext=(file.name.split('.').pop()||'').toLowerCase();
@@ -234,9 +246,9 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     if(uploadedUrl)URL.revokeObjectURL(uploadedUrl);uploadedUrl=URL.createObjectURL(file);
     uploadName.textContent=file.name.length>26?file.name.slice(0,23)+'…':file.name;
     choose({name:file.name.replace(/\.[^.]+$/,'').toUpperCase().slice(0,22),type:isVideo?'video':'image',src:uploadedUrl},null);
-    setStatus('UPLOAD READY — CHOOSE A FRAME','STEP 2 · FRAME');
+    setStatus(recording?'UPLOAD IN PREVIEW — CHOOSE A TRANSITION':'UPLOAD IN PREVIEW — START RECORD',recording?'READY TO SWITCH':'STEP 2 · RECORD');
   });
-  loadBtn.addEventListener('click',()=>{if(!running||!selected||busy)return;previewSource={...selected};setFrame(previewPicture,frame);render(previewHost,previewSource);previewName.textContent=previewSource.name;record.disabled=false;setStatus('PREVIEW READY — START RECORD','STEP 4 · RECORD');});
+  loadBtn.addEventListener('click',()=>{if(!running||!selected||busy)return;previewSource={...selected};setFrame(previewPicture);render(previewHost,previewSource);previewName.textContent=previewSource.name;record.disabled=false;setStatus(recording?'PREVIEW READY — CHOOSE CUT, FADE OR MERGE':'PREVIEW READY — START RECORD',recording?'READY TO SWITCH':'STEP 2 · RECORD');if(recording)enableTransitions(true);});
   record.addEventListener('click',()=>{
     if(!previewSource||finished||busy)return;recording=!recording;record.classList.toggle('recording',recording);record.querySelector('span').textContent=recording?'RECORDING':'START RECORD';
     if(recording){enableTransitions(true);setStatus('RECORDING — CHOOSE CUT, FADE OR MERGE','STEP 5 · TRANSITION');recordTimer=setInterval(()=>{recordSeconds++;recordTime.textContent=fmt(recordSeconds)},1000);}
@@ -249,18 +261,29 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     programScreen.classList.add(`transition-${type}`);
     const delay=type==='cut'?80:type==='fade'?700:900;
     setTimeout(()=>{
-      setFrame(programPicture,frame);render(programHost,previewSource);programName.textContent=previewSource.name;
-      programScreen.classList.add('on-air');success.classList.add('show');successText.textContent=`${labels[type]} completed with ${fmt(timeLeft)} remaining.`;
-      finished=true;running=false;busy=false;clearInterval(challengeTimer);root.classList.remove('danger');clock.textContent=fmt(timeLeft);setStatus(`LIVE VIA ${labels[type]} · ${fmt(timeLeft)} LEFT`,'ON AIR · SUCCESS');
-      setTimeout(()=>programScreen.classList.remove(`transition-${type}`),950);
+      const liveSource={...previewSource};
+      setFrame(programPicture);
+      render(programHost,liveSource);
+      programName.textContent=liveSource.name;
+      programScreen.classList.add('on-air');
+      switchCount++;
+      success.classList.add('show');
+      successText.textContent=`${labels[type]} complete · Switch ${switchCount} · ${fmt(timeLeft)} left`;
+      busy=false;
+      enableTransitions(true);
+      setStatus(`${labels[type]} COMPLETE — SELECT ANOTHER SOURCE`,'ON AIR · KEEP SWITCHING');
+      setTimeout(()=>{
+        programScreen.classList.remove(`transition-${type}`);
+        success.classList.remove('show');
+      },950);
     },delay);
   }
   transitions.forEach(b=>b.addEventListener('click',()=>takeLive(b.dataset.transition)));
-  function fail(){finished=true;running=false;busy=false;clearInterval(challengeTimer);clearInterval(recordTimer);root.classList.add('failed');clock.textContent='00:00';record.disabled=true;enableTransitions(false);loadBtn.disabled=true;setStatus('TIME EXPIRED — RESET AND TRY AGAIN','OFF AIR · FAILED');}
+  function finishChallenge(){finished=true;running=false;busy=false;clearInterval(challengeTimer);clearInterval(recordTimer);clock.textContent='00:00';record.disabled=true;enableTransitions(false);loadBtn.disabled=true;root.classList.remove('danger');success.classList.add('show');successText.textContent=switchCount?`TIME! ${switchCount} successful switch${switchCount===1?'':'es'}.`:'TIME! No source was taken to Program.';setStatus(switchCount?'CHALLENGE COMPLETE — GREAT SWITCHING':'TIME EXPIRED — RESET AND TRY AGAIN',switchCount?'DIRECTOR TEST COMPLETE':'OFF AIR · FAILED');if(!switchCount)root.classList.add('failed');}
   function resetAll(){
-    clearInterval(challengeTimer);clearInterval(recordTimer);running=false;finished=false;busy=false;recording=false;timeLeft=120;recordSeconds=0;selected=null;previewSource=null;frame='frame-full';
+    clearInterval(challengeTimer);clearInterval(recordTimer);running=false;finished=false;busy=false;recording=false;timeLeft=120;recordSeconds=0;selected=null;previewSource=null;switchCount=0;
     root.classList.remove('danger','failed');startBtn.disabled=false;clock.textContent='02:00';recordTime.textContent='00:00';record.classList.remove('recording');record.querySelector('span').textContent='START RECORD';record.disabled=true;enableTransitions(false);loadBtn.disabled=true;success.classList.remove('show');programScreen.classList.remove('on-air','transition-cut','transition-fade','transition-merge');
-    inputs.forEach(b=>{b.classList.remove('active');b.disabled=true});frameButtons.forEach((b,i)=>b.classList.toggle('active',i===0));upload.disabled=true;upload.value='';uploadName.textContent='PHOTO OR VIDEO';previewName.textContent='EMPTY';programName.textContent='STANDBY';previewHost.innerHTML='<span class="screen-empty">SELECT MEDIA</span>';programHost.innerHTML='<span class="screen-empty">OFF AIR</span>';setFrame(previewPicture,'frame-full');setFrame(programPicture,'frame-full');setStatus('PRESS START TO BEGIN','PRESS START');
+    inputs.forEach(b=>{b.classList.remove('active');b.disabled=true});upload.disabled=true;upload.value='';uploadName.textContent='PHOTO OR VIDEO';previewName.textContent='EMPTY';programName.textContent='STANDBY';previewHost.innerHTML='<span class="screen-empty">SELECT MEDIA</span>';programHost.innerHTML='<span class="screen-empty">OFF AIR</span>';setFrame(previewPicture);setFrame(programPicture);setStatus('PRESS START TO BEGIN','PRESS START');
   }
   startBtn.addEventListener('click',begin);reset.addEventListener('click',resetAll);window.addEventListener('beforeunload',()=>{if(uploadedUrl)URL.revokeObjectURL(uploadedUrl)});resetAll();
 })();
