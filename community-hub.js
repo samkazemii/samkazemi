@@ -3,8 +3,7 @@
   const panel=$('#sk-community-panel'), launch=$('#sk-community-launcher');
   if(!panel||!launch)return;
 
-  const ADMIN_EMAIL='sam.kazmi00990@gmail.com';
-  const MESSAGE_TABLE='community_messages';
+  const ADMIN_EMAIL='sam.kazmi0090@gmail.com';
   const I={
     en:{hub:'COMMUNITY HUB',designed:'Designed by Sam Kazemi',join:'Join the control-room community',desc:'Ask a production question, share a screenshot, and help other creators.',name:'Display name',email:'Email',notify:'Save my email on this device',enter:'ENTER HUB',placeholder:'Write a message…',reply:'REPLY',preview:'REALTIME',online:'CONNECTING…',err:'Please enter a valid name and email.',aiReady:'SK AI ONLINE — natural conversation and voice are ready.',aiOff:'AI MODE is off.',aiThinking:'SK AI is thinking…',aiListening:'VOICE AI IS LISTENING…',aiSpeaking:'VOICE AI IS SPEAKING…',aiError:'AI could not answer. Try a shorter, clearer request.',notConfigured:'Realtime is not configured. Add the real Supabase publishable key.',connectionError:'Could not connect to the realtime server.',sending:'Uploading and sending…',deleteConfirm:'Delete this message for everyone?',deleted:'Message deleted.',adminRequired:'Secure admin login is required.'},
     fa:{hub:'هاب کامیونیتی',designed:'طراحی‌شده توسط سام کاظمی',join:'به کامیونیتی اتاق فرمان بپیوندید',desc:'سؤال فنی بپرسید، اسکرین‌شات بفرستید و به تولیدکنندگان دیگر کمک کنید.',name:'نام نمایشی',email:'ایمیل',notify:'ایمیل من فقط روی این دستگاه ذخیره شود',enter:'ورود به هاب',placeholder:'پیامتان را بنویسید…',reply:'پاسخ',preview:'ارتباط زنده',online:'در حال اتصال…',err:'نام و ایمیل معتبر وارد کنید.',aiReady:'هوش مصنوعی واقعی آماده است؛ بنویس یا با آن حرف بزن.',aiOff:'AI MODE خاموش است.',aiThinking:'هوش مصنوعی در حال فکر کردن است…',aiListening:'هوش مصنوعی در حال شنیدن است…',aiSpeaking:'هوش مصنوعی در حال صحبت است…',aiError:'هوش مصنوعی نتوانست پاسخ بدهد؛ درخواست را کوتاه‌تر و روشن‌تر بگو.',notConfigured:'ارتباط زنده تنظیم نیست؛ کلید Publishable واقعی Supabase را وارد کن.',connectionError:'اتصال به سرور زنده برقرار نشد.',sending:'در حال آپلود و ارسال…',deleteConfirm:'این پیام برای همه حذف شود؟',deleted:'پیام حذف شد.',adminRequired:'ورود امن مدیر لازم است.'}
@@ -14,7 +13,7 @@
   const T=()=>I[lang];
   let user=null, replyTo=null, files=[], recorder=null, chunks=[], sending=false, aiBusy=false;
   let messages=[], presence={}, channel=null, authUser=null;
-  let selectedMessages=new Set();
+  const selectedMessageIds=new Set();
   let recognition=null, voiceActive=false, voiceRestart=false, lastAIOutput='';
   let isAISpeaking=false, voicePromptBusy=false, ignoreRecognitionUntil=0, lastVoicePrompt='';
   const clientId=localStorage.getItem('sk-community-client-id')||(crypto.randomUUID?.()||String(Date.now())+Math.random());
@@ -48,29 +47,28 @@
   }
 
   function mediaMarkup(media=[]){return(media||[]).map(x=>{const url=esc(x.url),type=x.type||'';if(type.startsWith('image'))return`<img src="${url}" alt="Uploaded image" loading="lazy">`;if(type.startsWith('video'))return`<video controls preload="metadata" src="${url}"></video>`;return`<audio controls preload="metadata" src="${url}"></audio>`;}).join('');}
-  function updateAdminToolbar(){
-    const bar=$('#sk-admin-toolbar');
-    if(!bar)return;
-    bar.hidden=!isAdmin();
-    const count=$('#sk-selected-count');
-    if(count)count.textContent=lang==='fa'?`${selectedMessages.size} انتخاب‌شده`:`${selectedMessages.size} selected`;
-    const all=$('#sk-select-all');
-    if(all)all.checked=messages.filter(m=>!m.typing).length>0&&messages.filter(m=>!m.typing).every(m=>selectedMessages.has(String(m.id)));
+  function updateSelectionUI(){
+    const toolbar=$('#sk-admin-toolbar'), all=$('#sk-select-all'), count=$('#sk-selection-count'), del=$('#sk-delete-selected');
+    const selectable=messages.filter(m=>!m.typing);
+    if(toolbar)toolbar.hidden=!isAdmin();
+    if(!isAdmin())selectedMessageIds.clear();
+    for(const id of [...selectedMessageIds])if(!selectable.some(m=>String(m.id)===id))selectedMessageIds.delete(id);
+    if(all){all.checked=selectable.length>0&&selectedMessageIds.size===selectable.length;all.indeterminate=selectedMessageIds.size>0&&selectedMessageIds.size<selectable.length;}
+    if(count)count.textContent=`${selectedMessageIds.size} SELECTED`;
+    if(del)del.disabled=selectedMessageIds.size===0;
   }
   function render(){
-    const ordered=[...messages].sort((a,b)=>(Number(b.is_pinned)-Number(a.is_pinned))||(new Date(a.created_at)-new Date(b.created_at)));
-    $('#sk-messages').innerHTML=ordered.map(m=>`<article class="sk-msg ${m.client_id===clientId?'mine':''} ${m.typing?'sk-typing':''} ${m.is_pinned?'sk-pinned':''} ${selectedMessages.has(String(m.id))?'sk-selected':''}">${isAdmin()&&!m.typing?`<label class="sk-select-box" title="Select"><input type="checkbox" data-select="${m.id}" ${selectedMessages.has(String(m.id))?'checked':''}><span></span></label>`:''}<span class="sk-msg-avatar">${esc((m.display_name||'U').slice(0,2).toUpperCase())}</span><div class="sk-msg-body"><div class="sk-msg-meta"><b>${esc(m.display_name)}</b>${m.is_ai?' · AI':''}${m.is_pinned?' <span class="sk-pin-badge">📌 PINNED</span>':''}</div><div class="sk-bubble">${m.typing?'<span class="sk-dots"><i></i><i></i><i></i></span>':esc(m.body)}${m.reply_body?`<div class="sk-quoted">↳ ${esc(m.reply_body)}</div>`:''}${mediaMarkup(m.media)}</div>${m.typing?'':`<div class="sk-msg-actions"><button class="sk-reply-btn" data-reply="${m.id}">${T().reply}</button>${isAdmin()?`<button class="sk-pin-btn" data-pin="${m.id}" title="${m.is_pinned?'Unpin':'Pin'}">${m.is_pinned?'📍':'📌'}</button><button class="sk-delete-btn" data-delete="${m.id}" title="Delete">🗑</button>`:''}</div>`}</div></article>`).join('');
+    $('#sk-messages').innerHTML=messages.map(m=>`<article class="sk-msg ${m.client_id===clientId?'mine':''} ${m.typing?'sk-typing':''} ${selectedMessageIds.has(String(m.id))?'sk-selected':''}">${isAdmin()&&!m.typing?`<label class="sk-msg-check" title="Select message"><input type="checkbox" data-select="${m.id}" ${selectedMessageIds.has(String(m.id))?'checked':''}><span></span></label>`:''}<span class="sk-msg-avatar">${esc((m.display_name||'U').slice(0,2).toUpperCase())}</span><div class="sk-msg-body"><div class="sk-msg-meta"><b>${esc(m.display_name)}</b>${m.is_ai?' · AI':''}</div><div class="sk-bubble">${m.typing?'<span class="sk-dots"><i></i><i></i><i></i></span>':esc(m.body)}${m.reply_body?`<div class="sk-quoted">↳ ${esc(m.reply_body)}</div>`:''}${mediaMarkup(m.media)}</div>${m.typing?'':`<div class="sk-msg-actions"><button class="sk-reply-btn" data-reply="${m.id}">${T().reply}</button>${isAdmin()?`<button class="sk-delete-btn" data-delete="${m.id}" title="Delete">🗑</button>`:''}</div>`}</div></article>`).join('');
     $('#sk-messages').scrollTop=$('#sk-messages').scrollHeight;
     document.querySelectorAll('[data-reply]').forEach(b=>b.onclick=()=>{const m=messages.find(x=>String(x.id)===String(b.dataset.reply));if(!m)return;replyTo=m;$('#sk-reply-text').textContent=(m.body||'').slice(0,90);$('#sk-reply-preview').hidden=false;$('#sk-message').focus();});
     document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>deleteMessage(b.dataset.delete));
-    document.querySelectorAll('[data-pin]').forEach(b=>b.onclick=()=>togglePin(b.dataset.pin));
-    document.querySelectorAll('[data-select]').forEach(c=>c.onchange=()=>{const id=String(c.dataset.select);c.checked?selectedMessages.add(id):selectedMessages.delete(id);render();});
-    updateAdminToolbar();
+    document.querySelectorAll('[data-select]').forEach(input=>input.onchange=()=>{const id=String(input.dataset.select);input.checked?selectedMessageIds.add(id):selectedMessageIds.delete(id);render();});
+    updateSelectionUI();
   }
   function renderPresence(){const people=Object.values(presence).flat(),unique=[],seen=new Set();people.forEach(p=>{if(!seen.has(p.client_id)){seen.add(p.client_id);unique.push(p);}});$('#sk-online-users').innerHTML=unique.map(p=>`<li><span class="sk-avatar">${esc((p.name||'U').slice(0,2).toUpperCase())}</span><div><b>${esc(p.name||'Guest')}</b><small>${p.client_id===clientId?'You':'Online'}</small></div></li>`).join('')||`<li><div><small>${lang==='fa'?'در حال دریافت فهرست…':'Loading presence…'}</small></div></li>`;if(channel)setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}
 
-  async function loadMessages(){const{data,error}=await supabase.from(MESSAGE_TABLE).select('*').order('created_at',{ascending:true}).limit(150);if(error)throw error;messages=(data||[]).map(m=>({...m,reply_body:null}));const ids=[...new Set(messages.map(m=>m.reply_to).filter(Boolean))];if(ids.length){const{data:parents}=await supabase.from(MESSAGE_TABLE).select('id,body').in('id',ids);const map=new Map((parents||[]).map(x=>[x.id,x.body]));messages.forEach(m=>m.reply_body=map.get(m.reply_to)||null);}render();}
-  async function connectRealtime(){if(!supabase){setConnection('offline',T().notConfigured);return;}setConnection('connecting',lang==='fa'?'در حال اتصال به سرور…':'CONNECTING TO REALTIME…');try{await loadMessages();channel=supabase.channel('sam-community-live',{config:{presence:{key:clientId}}}).on('postgres_changes',{event:'INSERT',schema:'public',table:MESSAGE_TABLE},payload=>{const row=payload.new;if(messages.some(m=>m.id===row.id))return;if(row.reply_to){const p=messages.find(m=>m.id===row.reply_to);row.reply_body=p?.body||null;}messages.push(row);messages.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));render();}).on('postgres_changes',{event:'UPDATE',schema:'public',table:MESSAGE_TABLE},payload=>{const i=messages.findIndex(m=>String(m.id)===String(payload.new.id));if(i>=0)messages[i]={...messages[i],...payload.new};render();}).on('postgres_changes',{event:'DELETE',schema:'public',table:MESSAGE_TABLE},payload=>{selectedMessages.delete(String(payload.old.id));messages=messages.filter(m=>String(m.id)!==String(payload.old.id));render();}).on('presence',{event:'sync'},()=>{presence=channel.presenceState();renderPresence();}).on('presence',{event:'join'},()=>{presence=channel.presenceState();renderPresence();}).on('presence',{event:'leave'},()=>{presence=channel.presenceState();renderPresence();}).subscribe(async status=>{if(status==='SUBSCRIBED'){await channel.track({client_id:clientId,name:user?.name||'Guest',online_at:new Date().toISOString()});setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')setConnection('offline',T().connectionError);});}catch(err){console.error(err);setConnection('offline',`${T().connectionError} ${err.message||''}`);}}
+  async function loadMessages(){const{data,error}=await supabase.from('community_messages').select('*').order('created_at',{ascending:true}).limit(150);if(error)throw error;messages=(data||[]).map(m=>({...m,reply_body:null}));const ids=[...new Set(messages.map(m=>m.reply_to).filter(Boolean))];if(ids.length){const{data:parents}=await supabase.from('community_messages').select('id,body').in('id',ids);const map=new Map((parents||[]).map(x=>[x.id,x.body]));messages.forEach(m=>m.reply_body=map.get(m.reply_to)||null);}render();}
+  async function connectRealtime(){if(!supabase){setConnection('offline',T().notConfigured);return;}setConnection('connecting',lang==='fa'?'در حال اتصال به سرور…':'CONNECTING TO REALTIME…');try{await loadMessages();channel=supabase.channel('sam-community-live',{config:{presence:{key:clientId}}}).on('postgres_changes',{event:'INSERT',schema:'public',table:'community_messages'},payload=>{const row=payload.new;if(messages.some(m=>m.id===row.id))return;if(row.reply_to){const p=messages.find(m=>m.id===row.reply_to);row.reply_body=p?.body||null;}messages.push(row);messages.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));render();}).on('postgres_changes',{event:'DELETE',schema:'public',table:'community_messages'},payload=>{messages=messages.filter(m=>String(m.id)!==String(payload.old.id));render();}).on('presence',{event:'sync'},()=>{presence=channel.presenceState();renderPresence();}).on('presence',{event:'join'},()=>{presence=channel.presenceState();renderPresence();}).on('presence',{event:'leave'},()=>{presence=channel.presenceState();renderPresence();}).subscribe(async status=>{if(status==='SUBSCRIBED'){await channel.track({client_id:clientId,name:user?.name||'Guest',online_at:new Date().toISOString()});setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')setConnection('offline',T().connectionError);});}catch(err){console.error(err);setConnection('offline',`${T().connectionError} ${err.message||''}`);}}
 
   $('#sk-cancel-reply').onclick=()=>{replyTo=null;$('#sk-reply-preview').hidden=true;};
   $('#sk-enter').onclick=async()=>{const n=$('#sk-name').value.trim(),e=$('#sk-email').value.trim();if(n.length<2||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){$('#sk-login-error').textContent=T().err;return;}user={name:n,email:e};localStorage.setItem('sk-community-user-v2',JSON.stringify(user));$('#sk-login').hidden=true;$('#sk-room').hidden=false;render();if(channel)await channel.track({client_id:clientId,name:user.name,online_at:new Date().toISOString()});};
@@ -79,7 +77,7 @@
   $('#sk-file').onchange=e=>{[...e.target.files].slice(0,3).forEach(file=>{if(file.size<=12*1024*1024)files.push({type:file.type,url:URL.createObjectURL(file),file});});drawFiles();e.target.value='';};
   function drawFiles(){$('#sk-attachments').innerHTML=files.map((f,i)=>`<span class="sk-chip">${f.type.startsWith('image')?`<img src="${f.url}" alt="attachment">`:`<span>${esc(f.file.name)}</span>`}<button data-x="${i}" type="button">×</button></span>`).join('');document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{files.splice(+b.dataset.x,1);drawFiles();});}
   async function uploadMedia(items){const result=[];for(const item of items){const safe=(item.file.name||'media').replace(/[^a-zA-Z0-9._-]/g,'-'),path=`${clientId}/${Date.now()}-${crypto.randomUUID()}-${safe}`;const{error}=await supabase.storage.from('community-media').upload(path,item.file,{contentType:item.type,upsert:false});if(error)throw error;const{data}=supabase.storage.from('community-media').getPublicUrl(path);result.push({type:item.type,url:data.publicUrl,name:item.file.name,path});}return result;}
-  async function insertMessage({name,body,reply,media,isAI=false,originClient=clientId}){const{data,error}=await supabase.from(MESSAGE_TABLE).insert({client_id:originClient,display_name:name,body:body||'',reply_to:reply?.id||null,media:media||[],is_ai:isAI}).select().single();if(error)throw error;if(!messages.some(m=>m.id===data.id)){data.reply_body=reply?.body||null;messages.push(data);render();}return data;}
+  async function insertMessage({name,body,reply,media,isAI=false,originClient=clientId}){const{data,error}=await supabase.from('community_messages').insert({client_id:originClient,display_name:name,body:body||'',reply_to:reply?.id||null,media:media||[],is_ai:isAI}).select().single();if(error)throw error;if(!messages.some(m=>m.id===data.id)){data.reply_body=reply?.body||null;messages.push(data);render();}return data;}
 
   function detectLang(text){return/[\u0600-\u06ff]/.test(text)?'fa':/[çğıöşüİ]/i.test(text)?'tr':'en';}
   function clean(text){return text.replace(/\s+/g,' ').trim();}
@@ -153,17 +151,33 @@
   $('#sk-voice').onclick=async()=>{if(recorder?.state==='recording'){recorder.stop();return;}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>chunks.push(e.data);recorder.onstop=()=>{const mime=MediaRecorder.isTypeSupported?.('audio/webm')?'audio/webm':'audio/mp4',blob=new Blob(chunks,{type:mime}),file=new File([blob],`voice-message.${mime.includes('mp4')?'m4a':'webm'}`,{type:mime});files.push({type:mime,url:URL.createObjectURL(blob),file});stream.getTracks().forEach(t=>t.stop());$('#sk-voice').classList.remove('recording');drawFiles();};recorder.start();$('#sk-voice').classList.add('recording');}catch{alert(lang==='fa'?'دسترسی میکروفون داده نشد.':'Microphone permission was not granted.');}};
 
   function openAdmin(){$('#sk-admin-modal').hidden=false;updateAdminUI();}function closeAdmin(){$('#sk-admin-modal').hidden=true;}$('#sk-admin-open').onclick=openAdmin;$('#sk-admin-close').onclick=closeAdmin;
-  function updateAdminUI(){const status=$('#sk-admin-status'),login=$('#sk-admin-login'),logout=$('#sk-admin-logout'),btn=$('#sk-admin-open');if(isAdmin()){status.textContent=lang==='fa'?'ورود مدیر تأیید شد. مدیریت گروهی فعال است.':'Admin verified. Bulk moderation is active.';login.hidden=true;logout.hidden=false;btn.classList.add('verified');btn.textContent='ADMIN ✓';}else{selectedMessages.clear();status.textContent=supabase?'':'Supabase is not configured.';login.hidden=false;logout.hidden=true;btn.classList.remove('verified');btn.textContent='ADMIN';}render();}
+  function updateAdminUI(){const status=$('#sk-admin-status'),login=$('#sk-admin-login'),logout=$('#sk-admin-logout'),btn=$('#sk-admin-open');if(isAdmin()){status.textContent=lang==='fa'?'ورود مدیر تأیید شد. امکان حذف امن فعال است.':'Admin verified. Secure delete is active.';login.hidden=true;logout.hidden=false;btn.classList.add('verified');btn.textContent='ADMIN ✓';}else{status.textContent=supabase?'':'Supabase is not configured.';login.hidden=false;logout.hidden=true;btn.classList.remove('verified');btn.textContent='ADMIN';}render();}
   $('#sk-admin-login').onclick=async()=>{if(!supabase){$('#sk-admin-status').textContent=T().notConfigured;return;}const redirectTo=location.origin+location.pathname;const{error}=await supabase.auth.signInWithOtp({email:ADMIN_EMAIL,options:{emailRedirectTo:redirectTo,shouldCreateUser:true}});$('#sk-admin-status').textContent=error?error.message:(lang==='fa'?'لینک ورود امن ارسال شد؛ ایمیل را باز کن.':'Secure login link sent. Open it from the verified Gmail inbox.');};
   $('#sk-admin-logout').onclick=async()=>{await supabase?.auth.signOut();authUser=null;updateAdminUI();};
-  async function removeMediaFor(rows){for(const m of rows){for(const item of m?.media||[]){if(item.path){const{error}=await supabase.storage.from('community-media').remove([item.path]);if(error)console.warn('Media cleanup',error);}}}}
-  async function deleteIds(ids,ask=true){if(!isAdmin()){openAdmin();$('#sk-admin-status').textContent=T().adminRequired;return;}ids=[...new Set(ids.map(String))];if(!ids.length)return;if(ask&&!confirm(lang==='fa'?`${ids.length} پیام برای همه حذف شود؟`:`Delete ${ids.length} message(s) for everyone?`))return;try{const rows=messages.filter(m=>ids.includes(String(m.id)));await removeMediaFor(rows);const{error}=await supabase.from(MESSAGE_TABLE).delete().in('id',ids);if(error)throw error;ids.forEach(id=>selectedMessages.delete(id));messages=messages.filter(m=>!ids.includes(String(m.id)));render();$('#sk-admin-status').textContent=lang==='fa'?'پیام‌ها واقعاً از دیتابیس حذف شدند.':'Messages were deleted from the database.';}catch(err){alert(`${lang==='fa'?'حذف انجام نشد':'Delete failed'}: ${err.message||T().connectionError}`);}}
-  async function deleteMessage(id){await deleteIds([id]);}
-  async function togglePin(id){if(!isAdmin())return openAdmin();const m=messages.find(x=>String(x.id)===String(id));if(!m)return;const{error}=await supabase.from(MESSAGE_TABLE).update({is_pinned:!m.is_pinned}).eq('id',id);if(error){alert(error.message);return;}m.is_pinned=!m.is_pinned;render();}
-  $('#sk-select-all').onchange=e=>{if(e.target.checked)messages.filter(m=>!m.typing).forEach(m=>selectedMessages.add(String(m.id)));else selectedMessages.clear();render();};
-  $('#sk-clear-selection').onclick=()=>{selectedMessages.clear();render();};
-  $('#sk-delete-selected').onclick=()=>deleteIds([...selectedMessages]);
-  $('#sk-delete-all').onclick=()=>{const ids=messages.filter(m=>!m.typing).map(m=>String(m.id));if(!ids.length)return;if(confirm(lang==='fa'?'هشدار: همه پیام‌های Community Hub برای همیشه پاک شوند؟':'Warning: permanently delete ALL Community Hub messages?'))deleteIds(ids,false);};
+  async function removeStoredMedia(rows){
+    const paths=rows.flatMap(m=>(m.media||[]).map(x=>x.path).filter(Boolean));
+    if(paths.length){const{error}=await supabase.storage.from('community-media').remove(paths);if(error)console.warn('Media cleanup:',error.message);}
+  }
+  async function deleteIds(ids,{confirmText,statusText}={}){
+    if(!isAdmin()){openAdmin();$('#sk-admin-status').textContent=T().adminRequired;return;}
+    const cleanIds=[...new Set(ids.map(String))];if(!cleanIds.length)return;
+    if(confirmText&&!confirm(confirmText))return;
+    const rows=messages.filter(m=>cleanIds.includes(String(m.id)));
+    try{
+      await removeStoredMedia(rows);
+      const{data,error}=await supabase.from('community_messages').delete().in('id',cleanIds).select('id');
+      if(error)throw error;
+      const deleted=new Set((data||[]).map(x=>String(x.id)));
+      if(deleted.size!==cleanIds.length)throw new Error(lang==='fa'?'حذف توسط قوانین امنیتی دیتابیس انجام نشد. فایل SQL نسخه ۱۸ را اجرا کن.':'Database security rules blocked part of the delete. Run the V18 SQL file.');
+      messages=messages.filter(x=>!deleted.has(String(x.id)));deleted.forEach(id=>selectedMessageIds.delete(id));render();
+      $('#sk-admin-status').textContent=statusText||T().deleted;
+    }catch(err){console.error('Delete failed',err);alert(err.message||T().connectionError);}
+  }
+  async function deleteMessage(id){return deleteIds([id],{confirmText:T().deleteConfirm});}
+  $('#sk-select-all').onchange=e=>{selectedMessageIds.clear();if(e.target.checked)messages.filter(m=>!m.typing).forEach(m=>selectedMessageIds.add(String(m.id)));render();};
+  $('#sk-clear-selection').onclick=()=>{selectedMessageIds.clear();render();};
+  $('#sk-delete-selected').onclick=()=>deleteIds([...selectedMessageIds],{confirmText:lang==='fa'?`حذف ${selectedMessageIds.size} پیام برای همه؟`:`Delete ${selectedMessageIds.size} selected messages for everyone?`,statusText:lang==='fa'?'پیام‌های انتخاب‌شده حذف شدند.':'Selected messages deleted.'});
+  $('#sk-delete-all').onclick=()=>deleteIds(messages.filter(m=>!m.typing).map(m=>m.id),{confirmText:lang==='fa'?'همه پیام‌های کامیونیتی برای همیشه حذف شوند؟':'Permanently delete ALL community messages?',statusText:lang==='fa'?'همه پیام‌ها حذف شدند.':'All messages deleted.'});
   async function initAuth(){if(!supabase)return;const{data}=await supabase.auth.getSession();authUser=data.session?.user||null;supabase.auth.onAuthStateChange((_event,session)=>{authUser=session?.user||null;updateAdminUI();});updateAdminUI();}
 
   $('#sk-ai').checked=localStorage.getItem('sk-ai-enabled')==='1';

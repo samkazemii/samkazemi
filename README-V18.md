@@ -1,19 +1,13 @@
-# V18 — Community Hub 2.0
+# V18 REAL BUILD
 
-## Included
-- Fixed the database table mismatch: the frontend now uses `community_messages`.
-- Real database deletion with visible errors instead of silently hiding messages.
-- Admin checkboxes beside every message.
-- Select All, Clear Selection, Delete Selected, and Delete All.
-- Admin pin/unpin with pinned messages sorted first.
-- Realtime INSERT, UPDATE, and DELETE synchronization.
-- Secure RLS: only `sam.kazmi00990@gmail.com` can update/delete.
-- Instagram button linked to `https://instagram.com/samkazami`.
-- V17 voice-loop protection and AI toggle retained.
+Implemented in code:
+- Instagram button beside Telegram (not inside Community Hub)
+- Community table consistently uses `community_messages`
+- Admin checkboxes on every message
+- Select All, Clear, Delete Selected, Delete All
+- Deletes verify returned database rows and report RLS failures
+- Realtime insert/delete targets `community_messages`
+- Final blue AI MODE control with red knob moving left/right
+- V17 voice-loop protection retained
 
-## Required Supabase step
-Open **Supabase → SQL Editor**, paste the full contents of `supabase-schema.sql`, and press **Run** once.
-Without this step, the table and delete/update policies do not exist.
-
-## Deploy
-Upload all files to the GitHub Pages repository, replacing the old files.
+Required once: run `supabase-schema.sql` in Supabase SQL Editor.
