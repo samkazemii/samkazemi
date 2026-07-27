@@ -1,6 +1,10 @@
-Sam Kazemi Portfolio V10 — Live Director Challenge
+Sam Kazemi Portfolio — V11
 
-Upload all files from this ZIP directly to the root of your GitHub Pages repository.
-Do not upload the containing folder.
+Open index.html to test locally.
+The Live Director Challenge now includes:
+- Large 2-minute countdown at the top
+- Two animated MP4 sources made from the supplied images
+- Reliable local photo/video upload preview
+- CUT, FADE, and MERGE transitions
 
-The game runs entirely in the visitor's browser. Uploaded photo/video files are not sent to a server and are removed when the page closes.
+For GitHub Pages, upload every file in this folder at the repository root.
