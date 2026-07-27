@@ -183,14 +183,17 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   });
 })();
 
-// V9.6 simplified vMix switching game
+// V9.8 simplified vMix switching game with two built-in video feeds and local upload
 (()=>{
   const consoleEl=document.getElementById('vmixConsole');
   if(!consoleEl)return;
   const inputs=[...consoleEl.querySelectorAll('.vmix-input')];
+  const upload=document.getElementById('vmixUpload');
   const previewImage=document.getElementById('vmixPreviewImage');
+  const previewVideo=document.getElementById('vmixPreviewVideo');
   const previewName=document.getElementById('vmixPreviewName');
   const programImage=document.getElementById('vmixProgramImage');
+  const programVideo=document.getElementById('vmixProgramVideo');
   const programName=document.getElementById('vmixProgramName');
   const programScreen=document.getElementById('vmixProgramScreen');
   const merge=document.getElementById('vmixMerge');
@@ -199,15 +202,35 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   const status=document.getElementById('vmixStatus');
   const success=document.getElementById('vmixSuccess');
   const reset=document.getElementById('vmixReset');
-  let selected=inputs[0],recording=false,seconds=0,timer=null;
+  let selected={name:'CONTROL ROOM',type:'video',src:'vmix-control-live.mp4',button:inputs[0]};
+  let recording=false,seconds=0,timer=null,uploadedUrl=null;
 
-  function pick(input){
-    selected=input;
-    inputs.forEach(x=>x.classList.toggle('active',x===input));
-    previewImage.src=input.dataset.image;
-    previewName.textContent=input.dataset.name;
-    status.textContent=`${input.dataset.name} LOADED IN PREVIEW`;
+  function showMedia(image,video,source){
+    video.pause();
+    if(source.type==='video'){
+      image.hidden=true;
+      video.hidden=false;
+      if(video.src!==source.src)video.src=source.src;
+      video.currentTime=0;
+      video.play().catch(()=>{});
+    }else{
+      video.hidden=true;
+      video.removeAttribute('src');
+      video.load();
+      image.hidden=false;
+      image.src=source.src;
+    }
+  }
+  function pick(source){
+    selected=source;
+    inputs.forEach(x=>x.classList.toggle('active',x===source.button));
+    showMedia(previewImage,previewVideo,source);
+    previewName.textContent=source.name;
+    status.textContent=`${source.name} LOADED IN PREVIEW`;
     success.classList.remove('show');
+  }
+  function sourceFromButton(input){
+    return {name:input.dataset.name,type:input.dataset.type||'image',src:input.dataset.src,button:input};
   }
   function formatTime(value){return `${String(Math.floor(value/60)).padStart(2,'0')}:${String(value%60).padStart(2,'0')}`}
   function toggleRecord(){
@@ -224,11 +247,11 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     status.textContent='MERGING PREVIEW TO PROGRAM…';
     success.classList.remove('show');
     setTimeout(()=>{
-      programImage.src=selected.dataset.image;
-      programName.textContent=selected.dataset.name;
+      showMedia(programImage,programVideo,selected);
+      programName.textContent=selected.name;
       programScreen.classList.remove('transitioning');
       programScreen.classList.add('on-air');
-      status.textContent=`${selected.dataset.name} IS LIVE`;
+      status.textContent=`${selected.name} IS LIVE`;
       success.classList.add('show');
     },320);
   }
@@ -238,14 +261,29 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     record.classList.remove('recording');
     record.querySelector('span').textContent='START RECORD';
     recordTime.textContent='00:00';
-    programImage.src='game-control-room.jpg';
+    showMedia(programImage,programVideo,{type:'image',src:'game-control-room.jpg'});
     programName.textContent='STANDBY';
     programScreen.classList.remove('on-air','transitioning');
     success.classList.remove('show');
-    pick(inputs[0]);
-    status.textContent='SELECT AN INPUT';
+    pick(sourceFromButton(inputs[0]));
+    status.textContent='SELECT AN INPUT OR UPLOAD MEDIA';
   }
-  inputs.forEach(input=>input.addEventListener('click',()=>pick(input)));
+  inputs.forEach(input=>input.addEventListener('click',()=>pick(sourceFromButton(input))));
+  upload.addEventListener('change',()=>{
+    const file=upload.files&&upload.files[0];
+    if(!file)return;
+    if(!file.type.startsWith('image/')&&!file.type.startsWith('video/')){
+      status.textContent='PLEASE CHOOSE A PHOTO OR VIDEO';
+      upload.value='';
+      return;
+    }
+    if(uploadedUrl)URL.revokeObjectURL(uploadedUrl);
+    uploadedUrl=URL.createObjectURL(file);
+    const type=file.type.startsWith('video/')?'video':'image';
+    const cleanName=file.name.replace(/\.[^.]+$/,'').slice(0,18).toUpperCase()||'UPLOAD';
+    pick({name:cleanName,type,src:uploadedUrl,button:null});
+    status.textContent=`${type==='video'?'VIDEO':'PHOTO'} READY IN PREVIEW`;
+  });
   record.addEventListener('click',toggleRecord);
   merge.addEventListener('click',takeLive);
   reset.addEventListener('click',resetAll);

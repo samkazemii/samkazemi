@@ -211,7 +211,7 @@
       <div class="section-heading reveal">
         <p class="eyebrow"><span></span> VMIX SWITCHING LAB</p>
         <h2 id="vmixLabTitle">Preview it. Merge it.<br>Take it live.</h2>
-        <p class="game-intro">Choose an input, load it into Preview, start recording and use MERGE to send it to Program.</p>
+        <p class="game-intro">Choose an input—or upload your own photo or video—load it into Preview, start recording and use MERGE to send it to Program.</p>
       </div>
 
       <div class="vmix-console reveal" id="vmixConsole">
@@ -224,21 +224,31 @@
         <div class="vmix-screens">
           <div class="vmix-screen preview-screen" id="vmixPreviewScreen">
             <div class="screen-header"><span>PREVIEW</span><b id="vmixPreviewName">CAM 1</b></div>
-            <div class="screen-picture"><img id="vmixPreviewImage" src="game-cam1.jpg" alt="Preview source"></div>
+            <div class="screen-picture" id="vmixPreviewPicture">
+              <img id="vmixPreviewImage" src="game-cam1.jpg" alt="Preview source" hidden>
+              <video id="vmixPreviewVideo" src="vmix-control-live.mp4" muted loop autoplay playsinline preload="auto" aria-label="Preview video source"></video>
+            </div>
           </div>
           <button type="button" class="merge-control" id="vmixMerge" aria-label="Merge preview into program"><span>MERGE</span><b>→</b></button>
           <div class="vmix-screen program-screen" id="vmixProgramScreen">
             <div class="screen-header"><span>PROGRAM</span><b id="vmixProgramName">STANDBY</b></div>
-            <div class="screen-picture"><img id="vmixProgramImage" src="game-control-room.jpg" alt="Program output"></div>
+            <div class="screen-picture" id="vmixProgramPicture">
+              <img id="vmixProgramImage" src="game-control-room.jpg" alt="Program output">
+              <video id="vmixProgramVideo" muted loop playsinline preload="metadata" aria-label="Program video output"></video>
+            </div>
             <div class="live-bug" id="vmixLiveBug"><i></i>LIVE</div>
           </div>
         </div>
 
         <div class="vmix-inputs" role="group" aria-label="vMix source inputs">
-          <button type="button" class="vmix-input active" data-name="CAM 1" data-image="game-cam1.jpg"><span>1</span><img src="game-cam1.jpg" alt="Camera one input"><b>CAM 1</b></button>
-          <button type="button" class="vmix-input" data-name="REMOTE" data-image="game-remote.jpg"><span>2</span><img src="game-remote.jpg" alt="Remote guest input"><b>REMOTE</b></button>
-          <button type="button" class="vmix-input" data-name="STUDIO" data-image="game-preview.jpg"><span>3</span><img src="game-preview.jpg" alt="Studio input"><b>STUDIO</b></button>
-          <button type="button" class="vmix-input" data-name="LIVE FEED" data-image="game-live.jpg"><span>4</span><img src="game-live.jpg" alt="Live feed input"><b>LIVE FEED</b></button>
+          <button type="button" class="vmix-input active" data-name="CONTROL ROOM" data-type="video" data-src="vmix-control-live.mp4"><span>1</span><video src="vmix-control-live.mp4" muted loop autoplay playsinline preload="metadata" aria-label="Control room video input"></video><b>CONTROL ROOM</b></button>
+          <button type="button" class="vmix-input" data-name="LIVE EVENT" data-type="video" data-src="vmix-event-live.mp4"><span>2</span><video src="vmix-event-live.mp4" muted loop autoplay playsinline preload="metadata" aria-label="Live event video input"></video><b>LIVE EVENT</b></button>
+          <button type="button" class="vmix-input" data-name="STUDIO" data-type="image" data-src="game-preview.jpg"><span>3</span><img src="game-preview.jpg" alt="Studio input"><b>STUDIO</b></button>
+          <button type="button" class="vmix-input" data-name="REMOTE" data-type="image" data-src="game-remote.jpg"><span>4</span><img src="game-remote.jpg" alt="Remote guest input"><b>REMOTE</b></button>
+          <label class="vmix-upload" for="vmixUpload">
+            <input id="vmixUpload" type="file" accept="image/*,video/*">
+            <span>＋</span><b>UPLOAD MEDIA</b><small>PHOTO OR VIDEO</small>
+          </label>
         </div>
 
         <div class="vmix-statusbar">
