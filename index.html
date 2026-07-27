@@ -207,56 +207,45 @@
       </div>
     </section>
 
-    <section class="section vmix-game" id="vmix-game" aria-labelledby="vmixGameTitle">
+    <section class="section vmix-lab" id="vmix-lab" aria-labelledby="vmixLabTitle">
       <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> vMIX SWITCHING GAME</p>
-        <h2 id="vmixGameTitle">Build the preview.<br>Merge it to program.</h2>
-        <p class="game-intro">Start recording, choose an input for Preview, then press MERGE to take it to Program.</p>
+        <p class="eyebrow"><span></span> VMIX SWITCHING LAB</p>
+        <h2 id="vmixLabTitle">Preview it. Merge it.<br>Take it live.</h2>
+        <p class="game-intro">Choose an input, load it into Preview, start recording and use MERGE to send it to Program.</p>
       </div>
 
-      <div class="vmix-shell reveal" id="vmixShell">
+      <div class="vmix-console reveal" id="vmixConsole">
         <div class="vmix-toolbar">
-          <div class="vmix-brand"><b>vMix</b><span>LIVE PRODUCTION SIMULATOR</span></div>
-          <button type="button" class="vmix-record" id="vmixRecord"><i></i><span>START RECORD</span></button>
-          <div class="vmix-clock" id="vmixClock">00:00:00</div>
+          <div class="vmix-brand"><b>vMix</b><span>SIMPLIFIED CONTROL</span></div>
+          <button type="button" class="record-control" id="vmixRecord"><i></i><span>START RECORD</span></button>
+          <div class="record-time" id="vmixRecordTime">00:00</div>
         </div>
 
-        <div class="vmix-monitors">
-          <article class="vmix-monitor preview-monitor">
-            <header><span>PREVIEW</span><b id="previewLabel">SELECT INPUT</b></header>
-            <div class="vmix-screen" id="previewScreen">
-              <img id="previewImage" src="game-preview.jpg" alt="vMix preview monitor">
-              <div class="vmix-screen-shade"></div>
-              <span class="vmix-empty" id="previewEmpty">CHOOSE AN INPUT</span>
-            </div>
-          </article>
-
-          <button type="button" class="vmix-merge" id="vmixMerge" disabled>
-            <span>MERGE</span><b>→</b><small>TAKE TO PROGRAM</small>
-          </button>
-
-          <article class="vmix-monitor program-output">
-            <header><span>PROGRAM</span><b id="programLabel">OFF AIR</b></header>
-            <div class="vmix-screen" id="vmixProgramScreen">
-              <img id="vmixProgramImage" src="game-control-room.jpg" alt="vMix program output monitor">
-              <div class="vmix-screen-shade"></div>
-              <span class="vmix-onair" id="vmixOnAir">PROGRAM</span>
-            </div>
-          </article>
+        <div class="vmix-screens">
+          <div class="vmix-screen preview-screen" id="vmixPreviewScreen">
+            <div class="screen-header"><span>PREVIEW</span><b id="vmixPreviewName">CAM 1</b></div>
+            <div class="screen-picture"><img id="vmixPreviewImage" src="game-cam1.jpg" alt="Preview source"></div>
+          </div>
+          <button type="button" class="merge-control" id="vmixMerge" aria-label="Merge preview into program"><span>MERGE</span><b>→</b></button>
+          <div class="vmix-screen program-screen" id="vmixProgramScreen">
+            <div class="screen-header"><span>PROGRAM</span><b id="vmixProgramName">STANDBY</b></div>
+            <div class="screen-picture"><img id="vmixProgramImage" src="game-control-room.jpg" alt="Program output"></div>
+            <div class="live-bug" id="vmixLiveBug"><i></i>LIVE</div>
+          </div>
         </div>
 
-        <div class="vmix-inputs" role="group" aria-label="vMix input sources">
-          <button type="button" class="vmix-input" data-src="game-cam1.jpg" data-name="CAMERA 1"><img src="game-cam1.jpg" alt="Camera one input"><span>1</span><b>CAMERA 1</b></button>
-          <button type="button" class="vmix-input" data-src="game-remote.jpg" data-name="REMOTE GUEST"><img src="game-remote.jpg" alt="Remote guest input"><span>2</span><b>REMOTE</b></button>
-          <button type="button" class="vmix-input" data-src="game-preview.jpg" data-name="NEWS PACKAGE"><img src="game-preview.jpg" alt="News package input"><span>3</span><b>PACKAGE</b></button>
-          <button type="button" class="vmix-input" data-src="game-live.jpg" data-name="ON AIR GRAPHIC"><img src="game-live.jpg" alt="On air graphic input"><span>4</span><b>ON AIR</b></button>
+        <div class="vmix-inputs" role="group" aria-label="vMix source inputs">
+          <button type="button" class="vmix-input active" data-name="CAM 1" data-image="game-cam1.jpg"><span>1</span><img src="game-cam1.jpg" alt="Camera one input"><b>CAM 1</b></button>
+          <button type="button" class="vmix-input" data-name="REMOTE" data-image="game-remote.jpg"><span>2</span><img src="game-remote.jpg" alt="Remote guest input"><b>REMOTE</b></button>
+          <button type="button" class="vmix-input" data-name="STUDIO" data-image="game-preview.jpg"><span>3</span><img src="game-preview.jpg" alt="Studio input"><b>STUDIO</b></button>
+          <button type="button" class="vmix-input" data-name="LIVE FEED" data-image="game-live.jpg"><span>4</span><img src="game-live.jpg" alt="Live feed input"><b>LIVE FEED</b></button>
         </div>
 
-        <div class="vmix-status" aria-live="polite">
-          <span id="vmixStep">STEP 1 OF 3</span>
-          <b id="vmixMessage">Start recording to begin.</b>
+        <div class="vmix-statusbar">
+          <span id="vmixStatus" aria-live="polite">SELECT AN INPUT</span>
           <button type="button" id="vmixReset">RESET</button>
         </div>
+        <div class="vmix-success" id="vmixSuccess" aria-live="polite"><b>Broadcast Successful</b><span>Preview is now live on Program.</span></div>
       </div>
     </section>
 
@@ -326,6 +315,6 @@
     <span>© <span id="year"></span> Sam Kazemi</span>
   </footer>
 
-  <script src="script.js?v=10"></script>
+  <script src="script.js?v=11"></script>
 </body>
 </html>
