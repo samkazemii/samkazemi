@@ -618,3 +618,9 @@ html[dir="rtl"] input[type="text"]{text-align:right}
 .site-credit a{color:#7bf0b5;text-decoration:none}.site-credit a:hover{text-decoration:underline}
 @media(max-width:900px){.language-switcher{order:3;margin-left:8px;margin-right:0}.language-button{width:42px;height:42px}.language-button img{width:33px;height:33px}.site-header{flex-wrap:wrap}.nav{width:100%;order:4}.language-button span{display:none}}
 @media(max-width:560px){.language-switcher{gap:5px}.language-button{width:38px;height:38px}.language-button img{width:29px;height:29px}}
+
+/* V11.7 keyboard safety control */
+.sound-keyboard-toggle{display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:8px 11px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(0,0,0,.28);color:#aebbc2;font:800 10px/1 monospace;letter-spacing:.08em;cursor:pointer;transition:.2s ease}
+.sound-keyboard-toggle:hover{border-color:rgba(93,255,226,.45);color:#fff}.sound-keyboard-toggle.active{color:#061014;background:#5dffe2;border-color:#5dffe2;box-shadow:0 0 22px rgba(93,255,226,.3)}
+.sound-keyboard-dot{width:8px;height:8px;border-radius:50%;background:#65727a;box-shadow:none}.sound-keyboard-toggle.active .sound-keyboard-dot{background:#071317;box-shadow:0 0 0 3px rgba(0,0,0,.12)}
+@media(max-width:650px){.sound-pad-topbar{flex-wrap:wrap}.sound-keyboard-toggle{width:100%;justify-content:center;margin:8px 0 0}}

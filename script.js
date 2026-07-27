@@ -134,14 +134,18 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
 })();
 
 
-// V9.3 Sound Pad — self-contained Web Audio synth, no external audio files.
+// V9.3 Sound Pad — keyboard input is OFF by default so forms can be typed safely.
 (() => {
   const pads=[...document.querySelectorAll('.note-pad')];
   const display=document.querySelector('.sound-pad-display');
   const noteOut=document.getElementById('soundPadNote');
   const status=document.getElementById('soundPadStatus');
+  const toggle=document.getElementById('soundKeyboardToggle');
+  const toggleText=document.getElementById('soundKeyboardToggleText');
+  const help=document.getElementById('soundPadHelp');
   if(!pads.length||!display||!noteOut)return;
   let audioCtx=null;
+  let keyboardMode=false;
   const keyMap=new Map(pads.map(p=>[p.dataset.key.toLowerCase(),p]));
 
   function context(){
@@ -163,7 +167,6 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     gain.gain.exponentialRampToValueAtTime(.0001,now+.55);
     osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
     osc.start(now); osc.stop(now+.58);
-
     const color=getComputedStyle(pad).getPropertyValue('--pad').trim();
     display.style.setProperty('--pad-color',color);
     display.style.setProperty('--pad-glow',color);
@@ -171,13 +174,25 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     if(status) status.textContent=`PLAYING ${pad.dataset.note}`;
     pad.classList.add('active'); display.classList.add('playing');
     clearTimeout(pad._releaseTimer);
-    pad._releaseTimer=setTimeout(()=>{pad.classList.remove('active');display.classList.remove('playing');if(status)status.textContent='READY'},180);
+    pad._releaseTimer=setTimeout(()=>{pad.classList.remove('active');display.classList.remove('playing');if(status)status.textContent=keyboardMode?'KEYBOARD READY':'READY'},180);
   }
-  pads.forEach(pad=>{
-    pad.addEventListener('pointerdown',e=>{e.preventDefault();play(pad)});
-  });
+  pads.forEach(pad=>pad.addEventListener('pointerdown',e=>{e.preventDefault();play(pad)}));
+
+  function setKeyboardMode(enabled){
+    keyboardMode=enabled;
+    toggle?.setAttribute('aria-pressed',String(enabled));
+    toggle?.classList.toggle('active',enabled);
+    if(toggleText) toggleText.textContent=enabled?'KEYBOARD MODE ON':'KEYBOARD MODE OFF';
+    if(status) status.textContent=enabled?'KEYBOARD READY':'READY';
+    if(help) help.textContent=enabled?'Keyboard keys A–J are active. Click here again to turn them off.':'Keyboard notes are disabled by default. Turn on Keyboard Mode only when you want to play.';
+  }
+  toggle?.addEventListener('click',()=>setKeyboardMode(!keyboardMode));
+  setKeyboardMode(false);
+
   window.addEventListener('keydown',e=>{
-    if(e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;
+    const target=e.target;
+    const typing=target instanceof HTMLElement && (target.matches('input, textarea, select, [contenteditable="true"]') || target.isContentEditable);
+    if(!keyboardMode||typing||e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;
     const pad=keyMap.get(e.key.toLowerCase());
     if(pad){e.preventDefault();play(pad)}
   });
