@@ -244,20 +244,51 @@
           </div>
         </div>
 
-        <div class="director-workflow">
-          <div class="workflow-block">
-            <h3>1. Choose media</h3>
+        <div class="director-workflow director-workflow-v12">
+          <div class="workflow-block media-library-block">
+            <h3>1. Media Inputs</h3>
+            <p class="workflow-help">Click any input at any time. It goes straight to Preview. Then use CUT, FADE or MERGE to send it to Program.</p>
             <div class="vmix-inputs compact-inputs" role="group" aria-label="Source inputs">
               <button type="button" class="vmix-input" data-name="SUNSET LIVE" data-type="video" data-src="vmix-sunset.mp4"><span>1</span><video src="vmix-sunset.mp4" muted loop autoplay playsinline preload="metadata"></video><b>SUNSET LIVE</b></button>
               <button type="button" class="vmix-input" data-name="PODCAST CAM" data-type="video" data-src="vmix-podcast.mp4"><span>2</span><video src="vmix-podcast.mp4" muted loop autoplay playsinline preload="metadata"></video><b>PODCAST CAM</b></button>
-              <label class="vmix-upload" for="vmixUpload"><input id="vmixUpload" type="file" accept="image/*,video/*"><span>＋</span><b>UPLOAD FILE</b><small id="uploadName">PHOTO OR VIDEO</small></label>
+              <label class="vmix-upload" for="vmixUpload" id="vmixUploadCard">
+                <input id="vmixUpload" type="file" accept="image/*,video/mp4,video/webm,video/ogg,.mov,.m4v">
+                <div class="upload-preview" id="uploadPreview"><span>＋</span></div>
+                <b>UPLOAD INPUT</b><small id="uploadName">PHOTO OR VIDEO</small>
+              </label>
             </div>
           </div>
 
-          <div class="workflow-block">
-            <h3>2. Send selected media to Preview</h3>
-            <p class="exact-output-note">The selected photo or video is shown exactly as chosen — no frame, crop, filter or overlay.</p>
-            <button type="button" id="vmixLoadPreview" class="load-preview" disabled>LOAD EXACT MEDIA TO PREVIEW</button>
+          <div class="workflow-block shot-designer-block">
+            <h3>2. Shot Designer</h3>
+            <p class="workflow-help">Build the frame yourself — nothing is forced onto the media.</p>
+            <div class="template-grid" role="group" aria-label="Shot templates">
+              <button type="button" class="template-btn active" data-template="clean">CLEAN</button>
+              <button type="button" class="template-btn" data-template="lower-third">LOWER THIRD</button>
+              <button type="button" class="template-btn" data-template="news">NEWS</button>
+              <button type="button" class="template-btn" data-template="gaming">GAMING</button>
+              <button type="button" class="template-btn" data-template="interview">INTERVIEW</button>
+              <button type="button" class="template-btn" data-template="cinema">CINEMA</button>
+            </div>
+            <div class="designer-controls">
+              <label>Fit
+                <select id="shotFit"><option value="contain">FIT</option><option value="cover">FILL</option></select>
+              </label>
+              <label>Zoom <output id="shotZoomOut">100%</output>
+                <input id="shotZoom" type="range" min="70" max="180" value="100">
+              </label>
+              <label>Horizontal <output id="shotXOut">0</output>
+                <input id="shotX" type="range" min="-50" max="50" value="0">
+              </label>
+              <label>Vertical <output id="shotYOut">0</output>
+                <input id="shotY" type="range" min="-50" max="50" value="0">
+              </label>
+              <label class="title-control">Title
+                <input id="shotTitle" type="text" maxlength="42" value="LIVE" placeholder="Type your title">
+              </label>
+              <label class="form-check"><input class="form-check-input" id="shotOverlay" type="checkbox"><span class="form-check-label">Show graphics overlay</span></label>
+            </div>
+            <button type="button" id="vmixResetShot" class="reset-shot">RESET SHOT</button>
           </div>
         </div>
 
@@ -332,6 +363,6 @@
     <span>© <span id="year"></span> Sam Kazemi</span>
   </footer>
 
-  <script src="script.js?v=11"></script>
+  <script src="script.js?v=12"></script>
 </body>
 </html>

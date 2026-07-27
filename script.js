@@ -183,107 +183,132 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   });
 })();
 
-// V11 two-minute live director challenge — uploads + CUT / FADE / MERGE
+// V12 live director challenge — reusable inputs + manual shot designer
 (()=>{
   const root=document.getElementById('vmixConsole'); if(!root)return;
   const $=id=>document.getElementById(id);
   const inputs=[...root.querySelectorAll('.vmix-input')];
-  const frameButtons=[];
   const transitions=[...root.querySelectorAll('[data-transition]')];
-  const startBtn=$('vmixStart'), clock=$('vmixClock'), step=$('vmixStep'), upload=$('vmixUpload'), uploadName=$('uploadName');
-  const loadBtn=$('vmixLoadPreview'), record=$('vmixRecord'), reset=$('vmixReset');
+  const templateButtons=[...root.querySelectorAll('[data-template]')];
+  const startBtn=$('vmixStart'), clock=$('vmixClock'), step=$('vmixStep');
+  const upload=$('vmixUpload'), uploadName=$('uploadName'), uploadPreview=$('uploadPreview'), uploadCard=$('vmixUploadCard');
+  const record=$('vmixRecord'), reset=$('vmixReset'), resetShot=$('vmixResetShot');
   const previewHost=$('vmixPreviewHost'), programHost=$('vmixProgramHost'), previewPicture=$('vmixPreviewPicture'), programPicture=$('vmixProgramPicture');
   const previewName=$('vmixPreviewName'), programName=$('vmixProgramName'), status=$('vmixStatus'), success=$('vmixSuccess'), successText=$('vmixSuccessText'), recordTime=$('vmixRecordTime');
   const programScreen=$('vmixProgramScreen');
+  const fit=$('shotFit'), zoom=$('shotZoom'), xPos=$('shotX'), yPos=$('shotY'), title=$('shotTitle'), overlay=$('shotOverlay');
+  const zoomOut=$('shotZoomOut'), xOut=$('shotXOut'), yOut=$('shotYOut');
+
   let running=false,timeLeft=120,challengeTimer=null,recordTimer=null,recordSeconds=0,recording=false;
-  let selected=null,previewSource=null,uploadedUrl=null,finished=false,busy=false,switchCount=0;
+  let selected=null,previewSource=null,previewDesign=null,uploadedSource=null,uploadedUrl=null,finished=false,busy=false,switchCount=0;
   const fmt=n=>`${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;
   const play=v=>{const p=v.play();if(p&&p.catch)p.catch(()=>{});};
-  function render(host,source){
-    host.innerHTML='';
-    if(!source){host.innerHTML='<span class="screen-empty">EMPTY</span>';return;}
+  const defaultDesign=()=>({template:'clean',fit:'contain',zoom:100,x:0,y:0,title:'LIVE',overlay:false});
+  const currentDesign=()=>({template:templateButtons.find(b=>b.classList.contains('active'))?.dataset.template||'clean',fit:fit.value,zoom:+zoom.value,x:+xPos.value,y:+yPos.value,title:title.value.trim()||'LIVE',overlay:overlay.checked});
+
+  function createMedia(source){
     const el=document.createElement(source.type==='video'?'video':'img');
     el.src=source.src; el.alt=source.name;
     if(source.type==='video'){el.muted=true;el.loop=true;el.autoplay=true;el.playsInline=true;el.preload='auto';}
-    el.addEventListener('error',()=>{host.innerHTML='<span class="screen-empty">MEDIA ERROR</span>';setStatus('FILE COULD NOT BE OPENED — TRY MP4, JPG OR PNG','MEDIA ERROR');});
-    host.appendChild(el); if(source.type==='video')play(el);
+    el.addEventListener('error',()=>setStatus('THIS FILE CANNOT PLAY IN THE BROWSER — TRY MP4, WEBM, JPG OR PNG','MEDIA ERROR'));
+    if(source.type==='video')el.addEventListener('canplay',()=>play(el),{once:true});
+    return el;
   }
-  function setFrame(el){el.classList.remove('frame-breaking','frame-gaming');el.classList.add('frame-full');}
+  function render(host,source,design){
+    host.innerHTML='';
+    if(!source){host.innerHTML='<span class="screen-empty">EMPTY</span>';return;}
+    const wrap=document.createElement('div'); wrap.className='shot-stage';
+    const el=createMedia(source); el.className='shot-media';
+    el.style.objectFit=design.fit;
+    el.style.transform=`translate(${design.x}%, ${design.y}%) scale(${design.zoom/100})`;
+    wrap.appendChild(el);
+    if(design.overlay){
+      const gfx=document.createElement('div'); gfx.className=`custom-gfx gfx-${design.template}`;
+      gfx.innerHTML=`<b>${escapeHtml(design.title)}</b><small>${templateLabel(design.template)}</small>`;
+      wrap.appendChild(gfx);
+    }
+    host.appendChild(wrap); if(source.type==='video')play(el);
+  }
+  function escapeHtml(str){return str.replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function templateLabel(t){return ({clean:'CLEAN FEED','lower-third':'LOWER THIRD','news':'BREAKING NEWS','gaming':'GAMING LIVE','interview':'INTERVIEW','cinema':'CINEMA'}[t]||'LIVE');}
   function setStatus(text,stage){status.textContent=text;step.textContent=stage||text;}
   function enableTransitions(on){transitions.forEach(b=>b.disabled=!on);}
+  function updateDesignerOutputs(){zoomOut.value=`${zoom.value}%`;xOut.value=xPos.value;yOut.value=yPos.value;}
+  function syncPreview(){if(!previewSource)return;previewDesign=currentDesign();render(previewHost,previewSource,previewDesign);previewName.textContent=previewSource.name;}
+
   function begin(){
-    if(running)return; running=true;finished=false;busy=false;timeLeft=120;clock.textContent='02:00';
+    if(running)return;running=true;finished=false;busy=false;timeLeft=120;clock.textContent='02:00';
     root.classList.remove('danger','failed');success.classList.remove('show');startBtn.disabled=true;
     inputs.forEach(b=>b.disabled=false);upload.disabled=false;
-    setStatus('CHOOSE A VIDEO OR UPLOAD YOUR OWN','STEP 1 · MEDIA');
-    challengeTimer=setInterval(()=>{timeLeft--;clock.textContent=fmt(timeLeft);if(timeLeft<=30)root.classList.add('danger');if(timeLeft===60)setStatus('ONE MINUTE LEFT — KEEP SWITCHING','60 SECONDS');if(timeLeft===10)setStatus('TEN SECONDS — FINAL SWITCHES!','FINAL 10');if(timeLeft<=0)finishChallenge();},1000);
+    setStatus('CHOOSE ANY INPUT — IT WILL OPEN IN PREVIEW','SELECT INPUT');
+    challengeTimer=setInterval(()=>{timeLeft--;clock.textContent=fmt(timeLeft);if(timeLeft<=30)root.classList.add('danger');if(timeLeft===60)setStatus('ONE MINUTE LEFT — KEEP SWITCHING','60 SECONDS');if(timeLeft===10)setStatus('TEN SECONDS — FINAL SWITCH!','FINAL 10');if(timeLeft<=0)finishChallenge();},1000);
   }
   function choose(source,button){
     if(!running||finished||busy)return;
-    selected=source;
-    previewSource={...source};
-    inputs.forEach(b=>b.classList.toggle('active',b===button));
-    loadBtn.disabled=false;
-    setFrame(previewPicture);
-    render(previewHost,previewSource);
-    previewName.textContent=previewSource.name;
+    selected={...source};previewSource={...source};previewDesign=currentDesign();
+    inputs.forEach(b=>b.classList.toggle('active',b===button));uploadCard.classList.toggle('active',!button&&source===uploadedSource);
+    render(previewHost,previewSource,previewDesign);previewName.textContent=previewSource.name;
     record.disabled=false;
-    if(recording){
-      enableTransitions(true);
-      setStatus('NEW SOURCE IN PREVIEW — CHOOSE CUT, FADE OR MERGE','READY TO SWITCH');
-    }else{
-      setStatus('SOURCE IN PREVIEW — START RECORD','STEP 2 · RECORD');
-    }
+    if(recording){enableTransitions(true);setStatus('NEW INPUT IN PREVIEW — CUT, FADE OR MERGE','READY TO SWITCH');}
+    else setStatus('INPUT READY IN PREVIEW — START RECORD','START RECORD');
   }
   inputs.forEach(b=>b.addEventListener('click',()=>choose({name:b.dataset.name,type:b.dataset.type,src:b.dataset.src},b)));
+
   upload.addEventListener('change',()=>{
-    const file=upload.files&&upload.files[0];if(!file)return;
+    const file=upload.files?.[0]; if(!file)return;
     const ext=(file.name.split('.').pop()||'').toLowerCase();
-    const isVideo=file.type.startsWith('video/')||['mp4','webm','mov','m4v'].includes(ext);
+    const isVideo=file.type.startsWith('video/')||['mp4','webm','ogg','mov','m4v'].includes(ext);
     const isImage=file.type.startsWith('image/')||['jpg','jpeg','png','gif','webp'].includes(ext);
-    if(!isVideo&&!isImage){setStatus('UNSUPPORTED FILE — USE MP4, WEBM, MOV, JPG OR PNG','UPLOAD ERROR');upload.value='';return;}
+    if(!isVideo&&!isImage){setStatus('UNSUPPORTED FILE — USE MP4, WEBM, JPG OR PNG','UPLOAD ERROR');upload.value='';return;}
     if(file.size>250*1024*1024){setStatus('FILE TOO LARGE — MAX 250 MB','UPLOAD ERROR');upload.value='';return;}
     if(uploadedUrl)URL.revokeObjectURL(uploadedUrl);uploadedUrl=URL.createObjectURL(file);
+    uploadedSource={name:file.name.replace(/\.[^.]+$/,'').toUpperCase().slice(0,24),type:isVideo?'video':'image',src:uploadedUrl};
     uploadName.textContent=file.name.length>26?file.name.slice(0,23)+'…':file.name;
-    choose({name:file.name.replace(/\.[^.]+$/,'').toUpperCase().slice(0,22),type:isVideo?'video':'image',src:uploadedUrl},null);
-    setStatus(recording?'UPLOAD IN PREVIEW — CHOOSE A TRANSITION':'UPLOAD IN PREVIEW — START RECORD',recording?'READY TO SWITCH':'STEP 2 · RECORD');
+    uploadPreview.innerHTML=''; const thumb=createMedia(uploadedSource); uploadPreview.appendChild(thumb); if(isVideo)play(thumb);
+    choose(uploadedSource,null);
   });
-  loadBtn.addEventListener('click',()=>{if(!running||!selected||busy)return;previewSource={...selected};setFrame(previewPicture);render(previewHost,previewSource);previewName.textContent=previewSource.name;record.disabled=false;setStatus(recording?'PREVIEW READY — CHOOSE CUT, FADE OR MERGE':'PREVIEW READY — START RECORD',recording?'READY TO SWITCH':'STEP 2 · RECORD');if(recording)enableTransitions(true);});
+  uploadCard.addEventListener('click',e=>{
+    if(e.target===upload||!uploadedSource||!running)return;
+    e.preventDefault();choose(uploadedSource,null);
+  });
+
+  [fit,zoom,xPos,yPos,title,overlay].forEach(control=>{
+    control.addEventListener(control===title?'input':'change',()=>{updateDesignerOutputs();syncPreview();});
+    if(control.type==='range')control.addEventListener('input',()=>{updateDesignerOutputs();syncPreview();});
+  });
+  templateButtons.forEach(btn=>btn.addEventListener('click',()=>{
+    templateButtons.forEach(b=>b.classList.toggle('active',b===btn));
+    overlay.checked=btn.dataset.template!=='clean';syncPreview();
+  }));
+  resetShot.addEventListener('click',()=>{
+    const d=defaultDesign();fit.value=d.fit;zoom.value=d.zoom;xPos.value=d.x;yPos.value=d.y;title.value=d.title;overlay.checked=d.overlay;
+    templateButtons.forEach(b=>b.classList.toggle('active',b.dataset.template==='clean'));updateDesignerOutputs();syncPreview();
+  });
+
   record.addEventListener('click',()=>{
     if(!previewSource||finished||busy)return;recording=!recording;record.classList.toggle('recording',recording);record.querySelector('span').textContent=recording?'RECORDING':'START RECORD';
-    if(recording){enableTransitions(true);setStatus('RECORDING — CHOOSE CUT, FADE OR MERGE','STEP 5 · TRANSITION');recordTimer=setInterval(()=>{recordSeconds++;recordTime.textContent=fmt(recordSeconds)},1000);}
-    else{clearInterval(recordTimer);recordTimer=null;enableTransitions(false);setStatus('RECORD STOPPED — START IT AGAIN','STEP 4 · RECORD');}
+    if(recording){enableTransitions(true);setStatus('RECORDING — CHOOSE A TRANSITION','CUT · FADE · MERGE');recordTimer=setInterval(()=>{recordSeconds++;recordTime.textContent=fmt(recordSeconds)},1000);}
+    else{clearInterval(recordTimer);recordTimer=null;enableTransitions(false);setStatus('RECORD STOPPED','START RECORD');}
   });
   function takeLive(type){
     if(!recording||!previewSource||finished||busy)return;busy=true;enableTransitions(false);
-    const labels={cut:'CUT',fade:'FADE',merge:'MERGE'};setStatus(`${labels[type]} TO PROGRAM…`,'TAKING LIVE');
-    programScreen.classList.remove('transition-cut','transition-fade','transition-merge');
-    programScreen.classList.add(`transition-${type}`);
-    const delay=type==='cut'?80:type==='fade'?700:900;
+    const labels={cut:'CUT',fade:'FADE',merge:'MERGE'};const liveSource={...previewSource},liveDesign={...previewDesign};
+    setStatus(`${labels[type]} TO PROGRAM…`,'TAKING LIVE');
+    programScreen.classList.remove('transition-cut','transition-fade','transition-merge');programScreen.classList.add(`transition-${type}`);
+    const delay=type==='cut'?40:type==='fade'?650:850;
     setTimeout(()=>{
-      const liveSource={...previewSource};
-      setFrame(programPicture);
-      render(programHost,liveSource);
-      programName.textContent=liveSource.name;
-      programScreen.classList.add('on-air');
-      switchCount++;
-      success.classList.add('show');
-      successText.textContent=`${labels[type]} complete · Switch ${switchCount} · ${fmt(timeLeft)} left`;
-      busy=false;
-      enableTransitions(true);
-      setStatus(`${labels[type]} COMPLETE — SELECT ANOTHER SOURCE`,'ON AIR · KEEP SWITCHING');
-      setTimeout(()=>{
-        programScreen.classList.remove(`transition-${type}`);
-        success.classList.remove('show');
-      },950);
+      render(programHost,liveSource,liveDesign);programName.textContent=liveSource.name;programScreen.classList.add('on-air');switchCount++;
+      success.classList.add('show');successText.textContent=`${labels[type]} complete · Switch ${switchCount} · ${fmt(timeLeft)} left`;
+      busy=false;enableTransitions(true);setStatus(`${labels[type]} COMPLETE — SELECT ANOTHER INPUT`,'ON AIR · KEEP SWITCHING');
+      setTimeout(()=>{programScreen.classList.remove(`transition-${type}`);success.classList.remove('show');},900);
     },delay);
   }
   transitions.forEach(b=>b.addEventListener('click',()=>takeLive(b.dataset.transition)));
-  function finishChallenge(){finished=true;running=false;busy=false;clearInterval(challengeTimer);clearInterval(recordTimer);clock.textContent='00:00';record.disabled=true;enableTransitions(false);loadBtn.disabled=true;root.classList.remove('danger');success.classList.add('show');successText.textContent=switchCount?`TIME! ${switchCount} successful switch${switchCount===1?'':'es'}.`:'TIME! No source was taken to Program.';setStatus(switchCount?'CHALLENGE COMPLETE — GREAT SWITCHING':'TIME EXPIRED — RESET AND TRY AGAIN',switchCount?'DIRECTOR TEST COMPLETE':'OFF AIR · FAILED');if(!switchCount)root.classList.add('failed');}
+  function finishChallenge(){finished=true;running=false;busy=false;clearInterval(challengeTimer);clearInterval(recordTimer);clock.textContent='00:00';record.disabled=true;enableTransitions(false);root.classList.remove('danger');success.classList.add('show');successText.textContent=switchCount?`TIME! ${switchCount} successful switch${switchCount===1?'':'es'}.`:'TIME! No source was taken to Program.';setStatus(switchCount?'CHALLENGE COMPLETE — GREAT SWITCHING':'TIME EXPIRED — RESET AND TRY AGAIN',switchCount?'DIRECTOR TEST COMPLETE':'OFF AIR · FAILED');if(!switchCount)root.classList.add('failed');}
   function resetAll(){
-    clearInterval(challengeTimer);clearInterval(recordTimer);running=false;finished=false;busy=false;recording=false;timeLeft=120;recordSeconds=0;selected=null;previewSource=null;switchCount=0;
-    root.classList.remove('danger','failed');startBtn.disabled=false;clock.textContent='02:00';recordTime.textContent='00:00';record.classList.remove('recording');record.querySelector('span').textContent='START RECORD';record.disabled=true;enableTransitions(false);loadBtn.disabled=true;success.classList.remove('show');programScreen.classList.remove('on-air','transition-cut','transition-fade','transition-merge');
-    inputs.forEach(b=>{b.classList.remove('active');b.disabled=true});upload.disabled=true;upload.value='';uploadName.textContent='PHOTO OR VIDEO';previewName.textContent='EMPTY';programName.textContent='STANDBY';previewHost.innerHTML='<span class="screen-empty">SELECT MEDIA</span>';programHost.innerHTML='<span class="screen-empty">OFF AIR</span>';setFrame(previewPicture);setFrame(programPicture);setStatus('PRESS START TO BEGIN','PRESS START');
+    clearInterval(challengeTimer);clearInterval(recordTimer);running=false;finished=false;busy=false;recording=false;timeLeft=120;recordSeconds=0;selected=null;previewSource=null;previewDesign=defaultDesign();switchCount=0;
+    root.classList.remove('danger','failed');startBtn.disabled=false;clock.textContent='02:00';recordTime.textContent='00:00';record.classList.remove('recording');record.querySelector('span').textContent='START RECORD';record.disabled=true;enableTransitions(false);success.classList.remove('show');programScreen.classList.remove('on-air','transition-cut','transition-fade','transition-merge');
+    inputs.forEach(b=>{b.classList.remove('active');b.disabled=true});upload.disabled=true;uploadCard.classList.remove('active');previewName.textContent='EMPTY';programName.textContent='STANDBY';previewHost.innerHTML='<span class="screen-empty">SELECT MEDIA</span>';programHost.innerHTML='<span class="screen-empty">OFF AIR</span>';setStatus('PRESS START TO BEGIN','PRESS START');resetShot.click();
   }
-  startBtn.addEventListener('click',begin);reset.addEventListener('click',resetAll);window.addEventListener('beforeunload',()=>{if(uploadedUrl)URL.revokeObjectURL(uploadedUrl)});resetAll();
+  startBtn.addEventListener('click',begin);reset.addEventListener('click',resetAll);window.addEventListener('beforeunload',()=>{if(uploadedUrl)URL.revokeObjectURL(uploadedUrl)});updateDesignerOutputs();resetAll();
 })();

@@ -559,3 +559,37 @@ body.is-loading{overflow:hidden}
   .transition-controls{display:flex;flex-direction:column;gap:2px;align-items:center;width:100%;padding:4px 0}
   .transition-control{width:100%;padding:8px 0;font-size:15px}
 }
+
+/* V12 reusable inputs + manual shot designer */
+.director-workflow-v12{grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);align-items:start}
+.workflow-help{margin:.2rem 0 1rem;color:#8fa0b2;font-size:.78rem;line-height:1.5}
+.media-library-block .compact-inputs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.vmix-upload{padding:0!important;overflow:hidden;display:grid!important;grid-template-rows:1fr auto auto;min-height:142px}
+.vmix-upload .upload-preview{min-height:90px;display:grid;place-items:center;background:#090f16;overflow:hidden}
+.vmix-upload .upload-preview>span{font-size:2rem;color:#25cde7}
+.vmix-upload .upload-preview img,.vmix-upload .upload-preview video{width:100%;height:100%;object-fit:cover;display:block}
+.vmix-upload>b,.vmix-upload>small{padding:0 .75rem}.vmix-upload>b{padding-top:.55rem}.vmix-upload>small{padding-bottom:.65rem}
+.vmix-upload.active{border-color:#f4b000;box-shadow:inset 0 0 0 1px #f4b000}
+.template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;margin-bottom:1rem}
+.template-btn{border:1px solid #344353;background:#111a25;color:#c9d4df;border-radius:8px;padding:.7rem .35rem;font:700 .68rem/1 var(--mono,monospace);letter-spacing:.04em;cursor:pointer}
+.template-btn:hover,.template-btn.active{border-color:#1de879;background:#0b2c20;color:#66f6a9}
+.designer-controls{display:grid;grid-template-columns:1fr 1fr;gap:.7rem .8rem}
+.designer-controls label{display:grid;gap:.35rem;color:#aebccc;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.designer-controls select,.designer-controls input[type="text"]{width:100%;border:1px solid #344353;background:#0d151f;color:#eef6ff;border-radius:7px;padding:.62rem .7rem}
+.designer-controls input[type="range"]{width:100%;accent-color:#1de879}
+.designer-controls output{float:right;color:#1de879}
+.designer-controls .title-control,.designer-controls .form-check{grid-column:1/-1}
+.designer-controls .form-check{display:flex;align-items:center;gap:.6rem;text-transform:none;letter-spacing:0}
+.reset-shot{margin-top:.9rem;width:100%;border:1px solid #44515e;background:transparent;color:#b7c4d0;border-radius:7px;padding:.65rem;cursor:pointer;font-weight:800}
+.screen-picture .frame-overlay{display:none!important}
+.media-host,.shot-stage{width:100%;height:100%;overflow:hidden;position:relative;background:#05080c}
+.shot-stage .shot-media{width:100%;height:100%;display:block;transform-origin:center center;transition:transform .12s ease}
+.custom-gfx{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:5%;color:white;text-shadow:0 2px 8px #000}
+.custom-gfx b{font-size:clamp(1rem,2.2vw,2rem);line-height:1}.custom-gfx small{font:.65rem/1.5 monospace;letter-spacing:.12em;margin-top:.4rem}
+.gfx-lower-third:before,.gfx-news:before,.gfx-gaming:before,.gfx-interview:before{content:"";position:absolute;left:3%;right:3%;bottom:3%;height:23%;background:rgba(5,12,20,.82);border-left:5px solid #1de879;z-index:-1}
+.gfx-news:before{background:rgba(155,0,20,.88);border-left-color:#fff}
+.gfx-gaming:before{background:linear-gradient(90deg,rgba(62,0,140,.9),rgba(0,95,145,.86));border-left-color:#26eaff}
+.gfx-interview:before{height:18%;background:rgba(0,0,0,.72);border-left-color:#f4b000}
+.gfx-cinema{justify-content:center;align-items:center;text-align:center;padding:10%;background:linear-gradient(to bottom,rgba(0,0,0,.35),transparent 30%,transparent 70%,rgba(0,0,0,.5))}
+.gfx-cinema b{font-size:clamp(1.5rem,4vw,3.5rem);letter-spacing:.12em}.gfx-clean{display:none}
+@media(max-width:800px){.director-workflow-v12{grid-template-columns:1fr}.designer-controls{grid-template-columns:1fr}.designer-controls .title-control,.designer-controls .form-check{grid-column:auto}.media-library-block .compact-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}.vmix-upload{grid-column:1/-1}}
