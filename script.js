@@ -134,7 +134,7 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
 })();
 
 
-// V15 Sound Pad — reliable physical-key support across English/Persian keyboard layouts.
+// V18.4 Sound Pad — clean, full piano-like notes without duplicate mobile triggers.
 (() => {
   const pads=[...document.querySelectorAll('.note-pad')];
   const display=document.querySelector('.sound-pad-display');
@@ -145,13 +145,22 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   const help=document.getElementById('soundPadHelp');
   if(!pads.length||!display||!noteOut)return;
 
-  let audioCtx=null;
+  let audioCtx=null, master=null;
   let keyboardMode=false;
   const keyMap=new Map(pads.map(p=>[String(p.dataset.key||'').toLowerCase(),p]));
   const codeMap=new Map(pads.map(p=>[`Key${String(p.dataset.key||'').toUpperCase()}`,p]));
 
   async function context(){
-    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(!audioCtx){
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      master=audioCtx.createDynamicsCompressor();
+      master.threshold.value=-18;
+      master.knee.value=18;
+      master.ratio.value=3;
+      master.attack.value=.004;
+      master.release.value=.18;
+      master.connect(audioCtx.destination);
+    }
     if(audioCtx.state==='suspended'){
       try{await audioCtx.resume();}catch{}
     }
@@ -162,18 +171,34 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
     if(!pad)return;
     const ctx=await context();
     const now=ctx.currentTime;
-    const osc=ctx.createOscillator();
+    const frequency=Number(pad.dataset.frequency)||440;
     const gain=ctx.createGain();
     const filter=ctx.createBiquadFilter();
-    osc.type='triangle';
-    osc.frequency.setValueAtTime(Number(pad.dataset.frequency),now);
+    const fundamental=ctx.createOscillator();
+    const harmonic=ctx.createOscillator();
+    const harmonicGain=ctx.createGain();
+
+    fundamental.type='sine';
+    fundamental.frequency.setValueAtTime(frequency,now);
+    harmonic.type='triangle';
+    harmonic.frequency.setValueAtTime(frequency*2,now);
+    harmonicGain.gain.setValueAtTime(.12,now);
+
     filter.type='lowpass';
-    filter.frequency.setValueAtTime(1800,now);
+    filter.frequency.setValueAtTime(Math.min(4200,frequency*9),now);
+    filter.Q.setValueAtTime(.7,now);
+
+    // Fast attack, gentle piano-style decay. No abrupt cut or clicking.
     gain.gain.setValueAtTime(.0001,now);
-    gain.gain.exponentialRampToValueAtTime(.28,now+.015);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+.55);
-    osc.connect(filter);filter.connect(gain);gain.connect(ctx.destination);
-    osc.start(now);osc.stop(now+.58);
+    gain.gain.exponentialRampToValueAtTime(.34,now+.012);
+    gain.gain.exponentialRampToValueAtTime(.16,now+.18);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+1.15);
+
+    fundamental.connect(filter);
+    harmonic.connect(harmonicGain);harmonicGain.connect(filter);
+    filter.connect(gain);gain.connect(master);
+    fundamental.start(now);harmonic.start(now);
+    fundamental.stop(now+1.2);harmonic.stop(now+1.2);
 
     const color=getComputedStyle(pad).getPropertyValue('--pad').trim();
     display.style.setProperty('--pad-color',color);
@@ -186,12 +211,16 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
       pad.classList.remove('active');
       display.classList.remove('playing');
       if(status)status.textContent=keyboardMode?'KEYBOARD READY':'READY';
-    },180);
+    },220);
   }
 
+  // pointerdown already generates a later click on phones. Listening to both caused
+  // every note to play twice and sound chopped/rough, so use one path only.
   pads.forEach(pad=>{
     pad.addEventListener('pointerdown',e=>{e.preventDefault();play(pad);});
-    pad.addEventListener('click',()=>play(pad));
+    pad.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();play(pad);}
+    });
   });
 
   function setKeyboardMode(enabled){
@@ -212,7 +241,6 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   });
   setKeyboardMode(false);
 
-  // Capture phase prevents other page shortcuts from swallowing piano keys.
   window.addEventListener('keydown',e=>{
     const target=e.target;
     const typing=target instanceof HTMLElement &&
