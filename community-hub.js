@@ -13,6 +13,7 @@
   const T=()=>I[lang];
   let user=null, replyTo=null, files=[], recorder=null, chunks=[], sending=false, aiBusy=false;
   let messages=[], presence={}, channel=null, authUser=null;
+  let realtimeRetryTimer=null, fallbackPollTimer=null, realtimeConnecting=false;
   const selectedMessageIds=new Set();
   let recognition=null, voiceActive=false, voiceRestart=false, lastAIOutput='';
   let isAISpeaking=false, voicePromptBusy=false, ignoreRecognitionUntil=0, lastVoicePrompt='';
@@ -69,8 +70,82 @@
   }
   function renderPresence(){const people=Object.values(presence).flat(),unique=[],seen=new Set();people.forEach(p=>{if(!seen.has(p.client_id)){seen.add(p.client_id);unique.push(p);}});$('#sk-online-users').innerHTML=unique.map(p=>`<li><span class="sk-avatar">${esc((p.name||'U').slice(0,2).toUpperCase())}</span><div><b>${esc(p.name||'Guest')}</b><small>${p.client_id===clientId?'You':'Online'}</small></div></li>`).join('')||`<li><div><small>${lang==='fa'?'در حال دریافت فهرست…':'Loading presence…'}</small></div></li>`;if(channel)setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}
 
-  async function loadMessages(){const{data,error}=await supabase.from('messages').select('*').order('created_at',{ascending:true}).limit(150);if(error)throw error;messages=(data||[]).map(m=>({...m,reply_body:null}));const ids=[...new Set(messages.map(m=>m.reply_to).filter(Boolean))];if(ids.length){const{data:parents}=await supabase.from('messages').select('id,body').in('id',ids);const map=new Map((parents||[]).map(x=>[x.id,x.body]));messages.forEach(m=>m.reply_body=map.get(m.reply_to)||null);}render();}
-  async function connectRealtime(){if(!supabase){setConnection('offline',T().notConfigured);return;}setConnection('connecting',lang==='fa'?'در حال اتصال به سرور…':'CONNECTING TO REALTIME…');try{await loadMessages();channel=supabase.channel('sam-community-live',{config:{presence:{key:clientId}}}).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{const row=payload.new;if(messages.some(m=>m.id===row.id))return;if(row.reply_to){const p=messages.find(m=>m.id===row.reply_to);row.reply_body=p?.body||null;}messages.push(row);messages.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));render();}).on('postgres_changes',{event:'DELETE',schema:'public',table:'messages'},payload=>{messages=messages.filter(m=>String(m.id)!==String(payload.old.id));render();}).on('presence',{event:'sync'},()=>{presence=channel.presenceState();renderPresence();}).on('presence',{event:'join'},()=>{presence=channel.presenceState();renderPresence();}).on('presence',{event:'leave'},()=>{presence=channel.presenceState();renderPresence();}).subscribe(async status=>{if(status==='SUBSCRIBED'){await channel.track({client_id:clientId,name:user?.name||'Guest',online_at:new Date().toISOString()});setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')setConnection('offline',T().connectionError);});}catch(err){console.error(err);setConnection('offline',`${T().connectionError} ${err.message||''}`);}}
+  async function fetchMessages(){
+    const{data,error}=await supabase.from('messages').select('*').order('created_at',{ascending:true}).limit(150);
+    if(error)throw error;
+    const rows=(data||[]).map(m=>({...m,reply_body:null}));
+    const ids=[...new Set(rows.map(m=>m.reply_to).filter(Boolean))];
+    if(ids.length){
+      const{data:parents,error:parentError}=await supabase.from('messages').select('id,body').in('id',ids);
+      if(parentError)console.warn('Reply lookup failed',parentError);
+      const map=new Map((parents||[]).map(x=>[String(x.id),x.body]));
+      rows.forEach(m=>m.reply_body=map.get(String(m.reply_to))||null);
+    }
+    return rows;
+  }
+  async function loadMessages(forceRender=true){
+    const rows=await fetchMessages();
+    const typing=messages.filter(m=>m.typing);
+    const oldSignature=messages.filter(m=>!m.typing).map(m=>`${m.id}:${m.created_at}`).join('|');
+    const newSignature=rows.map(m=>`${m.id}:${m.created_at}`).join('|');
+    messages=[...rows,...typing];
+    if(forceRender||oldSignature!==newSignature)render();
+  }
+  function startFallbackPolling(){
+    clearInterval(fallbackPollTimer);
+    fallbackPollTimer=setInterval(async()=>{
+      if(document.hidden||!supabase)return;
+      try{await loadMessages(false);}catch(err){console.warn('Message sync retry failed',err);}
+    },2500);
+  }
+  function scheduleRealtimeReconnect(){
+    clearTimeout(realtimeRetryTimer);
+    realtimeRetryTimer=setTimeout(()=>connectRealtime(true),3000);
+  }
+  async function connectRealtime(reconnecting=false){
+    if(!supabase){setConnection('offline',T().notConfigured);return;}
+    if(realtimeConnecting)return;
+    realtimeConnecting=true;
+    setConnection('connecting',lang==='fa'?'در حال اتصال به سرور…':'CONNECTING TO REALTIME…');
+    try{
+      if(!reconnecting)await loadMessages();
+      if(channel){try{await supabase.removeChannel(channel);}catch{}channel=null;}
+      channel=supabase.channel(`sam-community-live-${clientId}`,{config:{presence:{key:clientId}}})
+        .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
+          const row=payload.new;
+          if(messages.some(m=>String(m.id)===String(row.id)))return;
+          if(row.reply_to){const p=messages.find(m=>String(m.id)===String(row.reply_to));row.reply_body=p?.body||null;}
+          messages.push(row);messages.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));render();
+        })
+        .on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages'},payload=>{
+          const i=messages.findIndex(m=>String(m.id)===String(payload.new.id));
+          if(i>=0){messages[i]={...messages[i],...payload.new};render();}else loadMessages(false);
+        })
+        .on('postgres_changes',{event:'DELETE',schema:'public',table:'messages'},payload=>{
+          messages=messages.filter(m=>String(m.id)!==String(payload.old.id));render();
+        })
+        .on('presence',{event:'sync'},()=>{presence=channel?.presenceState?.()||{};renderPresence();})
+        .on('presence',{event:'join'},()=>{presence=channel?.presenceState?.()||{};renderPresence();})
+        .on('presence',{event:'leave'},()=>{presence=channel?.presenceState?.()||{};renderPresence();})
+        .subscribe(async status=>{
+          console.info('[Community Realtime]',status);
+          if(status==='SUBSCRIBED'){
+            clearTimeout(realtimeRetryTimer);
+            await channel.track({client_id:clientId,name:user?.name||'Guest',online_at:new Date().toISOString()});
+            setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');
+            await loadMessages(false);
+          }else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){
+            setConnection('offline',T().connectionError);
+            scheduleRealtimeReconnect();
+          }
+        });
+      startFallbackPolling();
+    }catch(err){
+      console.error(err);setConnection('offline',`${T().connectionError} ${err.message||''}`);scheduleRealtimeReconnect();
+    }finally{realtimeConnecting=false;}
+  }
+  window.addEventListener('online',()=>connectRealtime(true));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){loadMessages(false).catch(console.warn);if(!channel)connectRealtime(true);}});
 
   $('#sk-cancel-reply').onclick=()=>{replyTo=null;$('#sk-reply-preview').hidden=true;};
   $('#sk-enter').onclick=async()=>{const n=$('#sk-name').value.trim(),e=$('#sk-email').value.trim();if(n.length<2||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){$('#sk-login-error').textContent=T().err;return;}user={name:n,email:e};localStorage.setItem('sk-community-user-v2',JSON.stringify(user));$('#sk-login').hidden=true;$('#sk-room').hidden=false;render();if(channel)await channel.track({client_id:clientId,name:user.name,online_at:new Date().toISOString()});};
