@@ -118,3 +118,37 @@ html[dir="rtl"] .sk-login label{text-align:right}html[dir="rtl"] .sk-users{borde
 .sk-admin-bulk[hidden]{display:none!important}.sk-admin-bulk label{display:flex;align-items:center;gap:8px;color:#dffcff;font:850 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em}.sk-admin-bulk small{color:#718791;font:750 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace}.sk-admin-bulk>div{margin-left:auto;display:flex;gap:8px}.sk-admin-bulk button{height:30px;padding:0 11px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#dffcff;font:850 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;cursor:pointer}.sk-admin-bulk button:last-child,.sk-admin-bulk #sk-delete-selected{border-color:rgba(255,78,109,.55);color:#ff8096}.sk-admin-bulk button:disabled{opacity:.35;cursor:not-allowed}
 .sk-msg{position:relative}.sk-msg-check{align-self:flex-start;margin:7px 1px 0 0;cursor:pointer}.sk-msg-check input{position:absolute;opacity:0;pointer-events:none}.sk-msg-check span{display:block;width:15px;height:15px;border-radius:4px;border:1px solid rgba(255,255,255,.28);background:#07131c}.sk-msg-check input:checked+span{border-color:#5dffe2;background:linear-gradient(135deg,#5dffe2,#52a7ff);box-shadow:0 0 12px rgba(93,255,226,.3)}.sk-msg-check input:checked+span:after{content:'✓';display:grid;place-items:center;color:#031115;font:950 11px/14px sans-serif}.sk-msg.sk-selected{background:rgba(93,255,226,.035);outline:1px solid rgba(93,255,226,.18);border-radius:14px}
 @media(max-width:700px){.sk-admin-bulk{flex-wrap:wrap;gap:7px;padding:8px}.sk-admin-bulk>div{width:100%;margin-left:0}.sk-admin-bulk button{flex:1;padding:0 6px;font-size:7px}}
+
+/* V18.2 — keep admin selector out of the message grid and force normal horizontal text */
+.sk-msg:has(.sk-msg-check){padding-left:24px}
+.sk-msg-check{
+  position:absolute!important;
+  top:7px!important;
+  left:0!important;
+  z-index:2;
+  margin:0!important;
+}
+.sk-msg-body{
+  min-width:0;
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+}
+.sk-bubble{
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+  white-space:pre-wrap!important;
+  word-break:normal!important;
+  overflow-wrap:anywhere!important;
+  min-width:0;
+}
+.sk-bubble *{
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+}
+html[dir="rtl"] .sk-bubble{
+  direction:rtl;
+  unicode-bidi:plaintext;
+}
+html[dir="ltr"] .sk-bubble{
+  direction:ltr;
+}
