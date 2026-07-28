@@ -41,10 +41,19 @@
   }
   new MutationObserver(localize).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 
+  function uniquePresencePeople(){
+    const unique=[],seen=new Set();
+    Object.values(presence||{}).flat().forEach(person=>{
+      const id=person?.client_id||person?.presence_ref;
+      if(!id||seen.has(id))return;
+      seen.add(id);unique.push(person);
+    });
+    return unique;
+  }
   function setConnection(state,text){
     const count=$('#sk-online-count'),note=$('#sk-connection-note');
     note.textContent=text;note.dataset.state=state;
-    if(state==='online')count.textContent=`${Object.values(presence).flat().length||1} ONLINE`;
+    if(state==='online')count.textContent=`${Math.max(uniquePresencePeople().length,1)} ONLINE`;
     else count.textContent=state==='connecting'?(lang==='fa'?'در حال اتصال…':'CONNECTING…'):(lang==='fa'?'قطع ارتباط':'OFFLINE');
   }
 
@@ -69,7 +78,7 @@
     document.querySelectorAll('[data-select]').forEach(c=>c.onchange=()=>{const id=String(c.dataset.select);c.checked?selectedMessageIds.add(id):selectedMessageIds.delete(id);render();});
     updateBulkUI();
   }
-  function renderPresence(){const people=Object.values(presence).flat(),unique=[],seen=new Set();people.forEach(p=>{if(!seen.has(p.client_id)){seen.add(p.client_id);unique.push(p);}});$('#sk-online-users').innerHTML=unique.map(p=>`<li><span class="sk-avatar">${esc((p.name||'U').slice(0,2).toUpperCase())}</span><div><b>${esc(p.name||'Guest')}</b><small>${p.client_id===clientId?'You':'Online'}</small></div></li>`).join('')||`<li><div><small>${lang==='fa'?'در حال دریافت فهرست…':'Loading presence…'}</small></div></li>`;if(channel)setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}
+  function renderPresence(){const unique=uniquePresencePeople();$('#sk-online-users').innerHTML=unique.map(p=>`<li><span class="sk-avatar">${esc((p.name||'U').slice(0,2).toUpperCase())}</span><div><b>${esc(p.name||'Guest')}</b><small>${p.client_id===clientId?'You':'Online'}</small></div></li>`).join('')||`<li><div><small>${lang==='fa'?'در حال دریافت فهرست…':'Loading presence…'}</small></div></li>`;if(channel)setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}
 
   async function fetchMessages(){
     const{data,error}=await supabase.from('messages').select('*').order('created_at',{ascending:true}).limit(150);
@@ -111,7 +120,7 @@
     try{
       if(!reconnecting)await loadMessages();
       if(channel){try{await supabase.removeChannel(channel);}catch{}channel=null;}
-      channel=supabase.channel(`sam-community-live-${clientId}`,{config:{presence:{key:clientId}}})
+      channel=supabase.channel('sam-community-live',{config:{presence:{key:clientId}}})
         .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
           const row=payload.new;
           if(messages.some(m=>String(m.id)===String(row.id)))return;
@@ -238,34 +247,63 @@
   if('speechSynthesis'in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}
   function buildRecognition(){
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;const r=new SR();r.continuous=false;r.interimResults=false;r.maxAlternatives=3;r.lang=VOICE_RECOGNITION_LANG;
-    r.onstart=()=>{if(isAISpeaking||Date.now()<ignoreRecognitionUntil){try{r.abort();}catch{}return;}$('#sk-voice-ai').classList.add('listening');$('#sk-ai-note').textContent=T().aiListening;};
+    r.onstart=()=>{clearRecognitionStartTimer();recognitionRetryCount=0;if(isAISpeaking||Date.now()<ignoreRecognitionUntil){try{r.abort();}catch{}return;}$('#sk-voice-ai').classList.add('listening');$('#sk-ai-note').textContent=T().aiListening;};
     r.onresult=e=>{if(isAISpeaking||Date.now()<ignoreRecognitionUntil||voicePromptBusy)return;let final='';for(let i=e.resultIndex;i<e.results.length;i++)final+=e.results[i][0]?.transcript||'';final=final.trim();if(!final)return;const normalized=final.toLocaleLowerCase(),aiEcho=(lastAIOutput||'').trim().toLocaleLowerCase();if(normalized===lastVoicePrompt||aiEcho.includes(normalized)||(aiEcho&&normalized.includes(aiEcho.slice(0,Math.min(40,aiEcho.length)))))return;lastVoicePrompt=normalized;handleVoicePrompt(final);};
     r.onerror=e=>{console.warn('Speech recognition',e.error);$('#sk-voice-ai').classList.remove('listening');if(['not-allowed','service-not-allowed'].includes(e.error)){$('#sk-ai-note').textContent=lang==='fa'?'دسترسی میکروفون بسته است. در تنظیمات سایت آن را Allow کن.':'Microphone access is blocked. Allow it in site settings.';stopVoice(false);return;}if(e.error==='audio-capture'){$('#sk-ai-note').textContent=lang==='fa'?'میکروفون پیدا نشد یا توسط برنامه دیگری استفاده می‌شود.':'No microphone was found or it is busy.';stopVoice(false);return;}if(!['aborted','no-speech'].includes(e.error)){$('#sk-ai-note').textContent=lang==='fa'?'اتصال تشخیص صدا قطع شد؛ دوباره تلاش می‌کنم…':'Voice recognition disconnected; retrying…';recognition=null;}};
     r.onend=()=>{$('#sk-voice-ai').classList.remove('listening');if(voiceActive&&!isAISpeaking&&!voicePromptBusy)setTimeout(startRecognition,650);};return r;
   }
-  function startRecognition(){if(!voiceActive||isAISpeaking||voicePromptBusy||Date.now()<ignoreRecognitionUntil)return false;if(!recognition)recognition=buildRecognition();if(!recognition){$('#sk-ai-note').textContent=lang==='fa'?'تشخیص گفتار روی این مرورگر فعال نیست.':'Speech recognition is not available in this browser.';return false;}try{recognition.lang=VOICE_RECOGNITION_LANG;recognition.start();return true;}catch(err){if(err?.name!=='InvalidStateError')console.warn('Recognition start',err);return err?.name==='InvalidStateError';}}
-  function stopVoice(cancelSpeech=true){voiceActive=false;voiceRestart=false;isAISpeaking=false;voicePromptBusy=false;$('#sk-voice-ai').classList.remove('active','listening','speaking');$('#sk-voice-ai').setAttribute('aria-pressed','false');try{recognition?.abort();}catch{}recognition=null;if(cancelSpeech&&'speechSynthesis'in window)speechSynthesis.cancel();if(cancelSpeech&&currentAudio){currentAudio.pause();currentAudio.src='';currentAudio=null;}if(aiEnabled())$('#sk-ai-note').textContent=T().aiReady;}
+  let recognitionStartTimer=null,recognitionRetryCount=0;
+  const mobileVoiceBrowser=()=>/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||matchMedia?.('(pointer: coarse)')?.matches;
+  function clearRecognitionStartTimer(){clearTimeout(recognitionStartTimer);recognitionStartTimer=null;}
+  function startRecognition(forceFresh=false){
+    if(!voiceActive||isAISpeaking||voicePromptBusy||Date.now()<ignoreRecognitionUntil)return false;
+    if(forceFresh&&recognition){try{recognition.abort();}catch{}recognition=null;}
+    if(!recognition)recognition=buildRecognition();
+    if(!recognition){$('#sk-ai-note').textContent=lang==='fa'?'تشخیص گفتار روی این مرورگر فعال نیست.':'Speech recognition is not available in this browser.';return false;}
+    clearRecognitionStartTimer();
+    try{
+      recognition.lang=VOICE_RECOGNITION_LANG;
+      recognition.start();
+      recognitionStartTimer=setTimeout(()=>{
+        if(!voiceActive||$('#sk-voice-ai').classList.contains('listening'))return;
+        if(recognitionRetryCount<2){
+          recognitionRetryCount++;
+          startRecognition(true);
+        }else{
+          $('#sk-ai-note').textContent=lang==='fa'?'میکروفون آماده است؛ دوباره روی Voice بزن.':'Microphone is ready; tap Voice once more.';
+          stopVoice(false);
+        }
+      },3500);
+      return true;
+    }catch(err){
+      if(err?.name!=='InvalidStateError')console.warn('Recognition start',err);
+      if(err?.name==='InvalidStateError')setTimeout(()=>startRecognition(true),250);
+      return false;
+    }
+  }
+  function stopVoice(cancelSpeech=true){clearRecognitionStartTimer();recognitionRetryCount=0;voiceActive=false;voiceRestart=false;isAISpeaking=false;voicePromptBusy=false;$('#sk-voice-ai').classList.remove('active','listening','speaking');$('#sk-voice-ai').setAttribute('aria-pressed','false');try{recognition?.abort();}catch{}recognition=null;if(cancelSpeech&&'speechSynthesis'in window)speechSynthesis.cancel();if(cancelSpeech&&currentAudio){currentAudio.pause();currentAudio.src='';currentAudio=null;}if(aiEnabled())$('#sk-ai-note').textContent=T().aiReady;}
   async function handleVoicePrompt(text){if(!text||voicePromptBusy||isAISpeaking)return;voicePromptBusy=true;voiceRestart=true;try{recognition?.abort();}catch{}$('#sk-message').value=text;$('#sk-ai-note').textContent=T().aiThinking;try{const answer=await askAI(text);lastAIOutput=answer;if(user&&supabase){await insertMessage({name:user.name,body:text,reply:null,media:[]});await insertMessage({name:'SK AI',body:answer,reply:null,media:[],isAI:true,originClient:'sk-gemini'});}else{$('#sk-ai-studio-input').value=text;$('#sk-ai-studio-output').textContent=answer;openStudio();}voicePromptBusy=false;await speak(answer);}catch(err){voicePromptBusy=false;console.error(err);$('#sk-ai-note').textContent=err.message||T().aiError;if(voiceActive)setTimeout(startRecognition,1000);}}
-  $('#sk-voice-ai').onclick=()=>{
+  $('#sk-voice-ai').onclick=async()=>{
     if(!aiEnabled()){$('#sk-ai').checked=true;localStorage.setItem('sk-ai-enabled','1');updateAIUI();}
     if(voiceActive){stopVoice();return;}
 
-    // Mobile WebKit (Safari and iOS Chrome) requires SpeechRecognition.start()
-    // to run directly inside the user's tap. Awaiting getUserMedia first loses
-    // that user activation and produces permission-without-listening behavior.
-    voiceActive=true;voiceRestart=true;
+    voiceActive=true;voiceRestart=true;recognitionRetryCount=0;
     $('#sk-voice-ai').classList.add('active');
     $('#sk-voice-ai').setAttribute('aria-pressed','true');
     $('#sk-ai-note').textContent=lang==='fa'?'در حال فعال‌کردن میکروفون…':'ACTIVATING MICROPHONE…';
-
-    const started=startRecognition();
     unlockMobileVoice().catch(()=>{});
 
-    if(!started){
-      // Keep the first start synchronous; retry only for browsers that finish
-      // initializing recognition immediately after the permission dialog.
-      setTimeout(()=>{if(voiceActive&&!isAISpeaking&&!voicePromptBusy)startRecognition();},500);
-      setTimeout(()=>{if(voiceActive&&!$('#sk-voice-ai').classList.contains('listening')&&!voicePromptBusy){$('#sk-ai-note').textContent=lang==='fa'?'میکروفون فعال نشد؛ یک‌بار Voice را خاموش و دوباره روشن کن.':'Microphone did not start; turn Voice off and on once.';}},2500);
+    if(mobileVoiceBrowser()){
+      // Mobile browsers can show the permission dialog but leave Web Speech in
+      // a half-started state. Acquire and fully release the mic first, then
+      // create a fresh recognition instance after the audio route settles.
+      const allowed=await ensureMicrophonePermission();
+      if(!allowed||!voiceActive){stopVoice(false);return;}
+      await new Promise(resolve=>setTimeout(resolve,180));
+      startRecognition(true);
+    }else{
+      // Preserve the proven desktop path.
+      startRecognition();
     }
   };
 
