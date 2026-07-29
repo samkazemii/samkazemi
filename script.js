@@ -385,15 +385,18 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
 })();
 
 
-// V23 — five taps on the SK logo unlock a short Control Room sequence.
+// V26 — cinematic five-tap Control Room easter egg. Hidden at HTML level to prevent flashes.
 (()=>{
   const overlay=document.getElementById('control-room-easter');
   const logos=[...document.querySelectorAll('.brand-mark-logo,.boot-logo')];
   if(!overlay||!logos.length)return;
-  let taps=0,timer=0,closing=0;
-  const beep=()=>{try{const AC=window.AudioContext||window.webkitAudioContext,ctx=new AC(),gain=ctx.createGain(),osc=ctx.createOscillator();osc.type='sine';osc.frequency.setValueAtTime(880,ctx.currentTime);gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.055,ctx.currentTime+.02);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.18);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.2);setTimeout(()=>ctx.close(),350)}catch{}};
-  const launch=()=>{clearTimeout(closing);overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');beep();closing=setTimeout(()=>{overlay.classList.remove('active');overlay.setAttribute('aria-hidden','true')},3200)};
-  logos.forEach(logo=>{logo.style.cursor='pointer';logo.addEventListener('click',()=>{taps++;clearTimeout(timer);timer=setTimeout(()=>taps=0,1700);if(taps>=5){taps=0;launch()}})});
-  overlay.addEventListener('click',()=>{overlay.classList.remove('active');overlay.setAttribute('aria-hidden','true')});
+  let taps=0,tapTimer=0,closeTimer=0,clockTimer=0;
+  const clock=overlay.querySelector('#cr-clock');
+  const updateClock=()=>{if(clock)clock.textContent=new Date().toISOString().slice(11,19)+' UTC'};
+  const beep=()=>{try{const AC=window.AudioContext||window.webkitAudioContext,ctx=new AC(),g=ctx.createGain(),o=ctx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(720,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(1180,ctx.currentTime+.16);g.gain.setValueAtTime(.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.045,ctx.currentTime+.018);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.22);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.24);setTimeout(()=>ctx.close(),400)}catch{}};
+  const close=()=>{clearTimeout(closeTimer);clearInterval(clockTimer);overlay.classList.remove('active');overlay.setAttribute('aria-hidden','true');setTimeout(()=>{if(!overlay.classList.contains('active'))overlay.hidden=true},420)};
+  const launch=()=>{clearTimeout(closeTimer);overlay.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>overlay.classList.add('active')));overlay.setAttribute('aria-hidden','false');updateClock();clockTimer=setInterval(updateClock,1000);beep();closeTimer=setTimeout(close,3600)};
+  logos.forEach(logo=>{logo.style.cursor='pointer';logo.addEventListener('click',()=>{taps++;clearTimeout(tapTimer);tapTimer=setTimeout(()=>taps=0,1500);if(taps>=5){taps=0;launch()}})});
+  overlay.addEventListener('click',close);
   window.addEventListener('sk-presence-count',e=>{const n=Math.max(Number(e.detail)||1,1),el=document.getElementById('site-live-count');if(el)el.textContent=String(n)});
 })();
