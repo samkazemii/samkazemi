@@ -5,8 +5,8 @@
 
   const ADMIN_EMAIL='sam.kazmi0090@gmail.com';
   const I={
-    en:{hub:'COMMUNITY HUB',designed:'Designed by Sam Kazemi',join:'Join the control-room community',desc:'Ask a production question, share a screenshot, and help other creators.',name:'Display name',email:'Email',notify:'Save my email on this device',enter:'ENTER HUB',placeholder:'Write a message…',reply:'REPLY',preview:'REALTIME',online:'CONNECTING…',err:'Please enter a valid name and email.',aiReady:'SK AI ONLINE — natural conversation and voice are ready.',aiOff:'AI MODE is off.',aiThinking:'SK AI is thinking…',aiListening:'VOICE AI IS LISTENING…',aiSpeaking:'VOICE AI IS SPEAKING…',aiError:'AI could not answer. Try a shorter, clearer request.',notConfigured:'Realtime is not configured. Add the real Supabase publishable key.',connectionError:'Could not connect to the realtime server.',sending:'Uploading and sending…',deleteConfirm:'Delete this message for everyone?',deleted:'Message deleted.',adminRequired:'Secure admin login is required.'},
-    fa:{hub:'هاب کامیونیتی',designed:'طراحی‌شده توسط سام کاظمی',join:'به کامیونیتی اتاق فرمان بپیوندید',desc:'سؤال فنی بپرسید، اسکرین‌شات بفرستید و به تولیدکنندگان دیگر کمک کنید.',name:'نام نمایشی',email:'ایمیل',notify:'ایمیل من فقط روی این دستگاه ذخیره شود',enter:'ورود به هاب',placeholder:'پیامتان را بنویسید…',reply:'پاسخ',preview:'ارتباط زنده',online:'در حال اتصال…',err:'نام و ایمیل معتبر وارد کنید.',aiReady:'هوش مصنوعی واقعی آماده است؛ بنویس یا با آن حرف بزن.',aiOff:'AI MODE خاموش است.',aiThinking:'هوش مصنوعی در حال فکر کردن است…',aiListening:'هوش مصنوعی در حال شنیدن است…',aiSpeaking:'هوش مصنوعی در حال صحبت است…',aiError:'هوش مصنوعی نتوانست پاسخ بدهد؛ درخواست را کوتاه‌تر و روشن‌تر بگو.',notConfigured:'ارتباط زنده تنظیم نیست؛ کلید Publishable واقعی Supabase را وارد کن.',connectionError:'اتصال به سرور زنده برقرار نشد.',sending:'در حال آپلود و ارسال…',deleteConfirm:'این پیام برای همه حذف شود؟',deleted:'پیام حذف شد.',adminRequired:'ورود امن مدیر لازم است.'}
+    en:{hub:'COMMUNITY HUB',designed:'Designed by Sam Kazemi',join:'Join the control-room community',desc:'Ask a production question, share a screenshot, and help other creators.',name:'Display name',email:'Email',notify:'Save my email on this device',enter:'ENTER HUB',placeholder:'Write a message…',reply:'REPLY',preview:'REALTIME',online:'CONNECTING…',err:'Please enter a valid name and email.',aiReady:'SAM ONLINE — personal conversation, memory and voice are ready.',aiOff:'SAM MODE is off.',aiThinking:'Sam is thinking…',aiListening:'SAM IS LISTENING…',aiSpeaking:'SAM IS SPEAKING…',aiError:'Sam could not answer. Try a shorter, clearer request.',notConfigured:'Realtime is not configured. Add the real Supabase publishable key.',connectionError:'Could not connect to the realtime server.',sending:'Uploading and sending…',deleteConfirm:'Delete this message for everyone?',deleted:'Message deleted.',adminRequired:'Secure admin login is required.'},
+    fa:{hub:'هاب کامیونیتی',designed:'طراحی‌شده توسط سام کاظمی',join:'به کامیونیتی اتاق فرمان بپیوندید',desc:'سؤال فنی بپرسید، اسکرین‌شات بفرستید و به تولیدکنندگان دیگر کمک کنید.',name:'نام نمایشی',email:'ایمیل',notify:'ایمیل من فقط روی این دستگاه ذخیره شود',enter:'ورود به هاب',placeholder:'پیامتان را بنویسید…',reply:'پاسخ',preview:'ارتباط زنده',online:'در حال اتصال…',err:'نام و ایمیل معتبر وارد کنید.',aiReady:'سام آماده است؛ می‌توانی بنویسی یا با او حرف بزنی.',aiOff:'حالت سام خاموش است.',aiThinking:'سام در حال فکر کردن است…',aiListening:'سام در حال شنیدن است…',aiSpeaking:'سام در حال صحبت است…',aiError:'سام نتوانست پاسخ بدهد؛ درخواست را کوتاه‌تر و روشن‌تر بگو.',notConfigured:'ارتباط زنده تنظیم نیست؛ کلید Publishable واقعی Supabase را وارد کن.',connectionError:'اتصال به سرور زنده برقرار نشد.',sending:'در حال آپلود و ارسال…',deleteConfirm:'این پیام برای همه حذف شود؟',deleted:'پیام حذف شد.',adminRequired:'ورود امن مدیر لازم است.'}
   };
 
   let lang=document.documentElement.lang==='fa'?'fa':'en';
@@ -53,7 +53,7 @@
   function setConnection(state,text){
     const count=$('#sk-online-count'),note=$('#sk-connection-note');
     note.textContent=text;note.dataset.state=state;
-    if(state==='online')count.textContent=`${Math.max(uniquePresencePeople().length,1)} ONLINE`;
+    if(state==='online'){const live=Math.max(uniquePresencePeople().length,1);count.textContent=`${live} ONLINE`;window.dispatchEvent(new CustomEvent('sk-presence-count',{detail:live}));}
     else count.textContent=state==='connecting'?(lang==='fa'?'در حال اتصال…':'CONNECTING…'):(lang==='fa'?'قطع ارتباط':'OFFLINE');
   }
 
@@ -71,14 +71,14 @@
     $('#sk-select-all').indeterminate=selectedMessageIds.size>0&&selectedMessageIds.size<selectable.length;
   }
   function render(){
-    $('#sk-messages').innerHTML=messages.map(m=>`<article class="sk-msg ${m.client_id===clientId?'mine':''} ${m.typing?'sk-typing':''} ${selectedMessageIds.has(String(m.id))?'sk-selected':''}">${isAdmin()&&!m.typing?`<label class="sk-msg-check" title="Select message"><input type="checkbox" data-select="${m.id}" ${selectedMessageIds.has(String(m.id))?'checked':''}><span></span></label>`:''}<span class="sk-msg-avatar">${esc((m.display_name||'U').slice(0,2).toUpperCase())}</span><div class="sk-msg-body"><div class="sk-msg-meta"><b>${esc(m.display_name)}</b>${m.is_ai?' · AI':''}</div><div class="sk-bubble">${m.typing?'<span class="sk-dots"><i></i><i></i><i></i></span>':esc(m.body)}${m.reply_body?`<div class="sk-quoted">↳ ${esc(m.reply_body)}</div>`:''}${mediaMarkup(m.media)}</div>${m.typing?'':`<div class="sk-msg-actions"><button class="sk-reply-btn" data-reply="${m.id}">${T().reply}</button>${isAdmin()?`<button class="sk-delete-btn" data-delete="${m.id}" title="Delete">🗑</button>`:''}</div>`}</div></article>`).join('');
+    $('#sk-messages').innerHTML=messages.map(m=>`<article class="sk-msg ${m.client_id===clientId?'mine':''} ${m.typing?'sk-typing':''} ${selectedMessageIds.has(String(m.id))?'sk-selected':''}">${isAdmin()&&!m.typing?`<label class="sk-msg-check" title="Select message"><input type="checkbox" data-select="${m.id}" ${selectedMessageIds.has(String(m.id))?'checked':''}><span></span></label>`:''}<span class="sk-msg-avatar">${esc((m.display_name||'U').slice(0,2).toUpperCase())}</span><div class="sk-msg-body"><div class="sk-msg-meta"><b>${esc(m.display_name)}</b>${m.is_ai?' · SAM':''}</div><div class="sk-bubble">${m.typing?'<span class="sk-dots"><i></i><i></i><i></i></span>':esc(m.body)}${m.reply_body?`<div class="sk-quoted">↳ ${esc(m.reply_body)}</div>`:''}${mediaMarkup(m.media)}</div>${m.typing?'':`<div class="sk-msg-actions"><button class="sk-reply-btn" data-reply="${m.id}">${T().reply}</button>${isAdmin()?`<button class="sk-delete-btn" data-delete="${m.id}" title="Delete">🗑</button>`:''}</div>`}</div></article>`).join('');
     $('#sk-messages').scrollTop=$('#sk-messages').scrollHeight;
     document.querySelectorAll('[data-reply]').forEach(b=>b.onclick=()=>{const m=messages.find(x=>String(x.id)===String(b.dataset.reply));if(!m)return;replyTo=m;$('#sk-reply-text').textContent=(m.body||'').slice(0,90);$('#sk-reply-preview').hidden=false;$('#sk-message').focus();});
     document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>deleteMessage(b.dataset.delete));
     document.querySelectorAll('[data-select]').forEach(c=>c.onchange=()=>{const id=String(c.dataset.select);c.checked?selectedMessageIds.add(id):selectedMessageIds.delete(id);render();});
     updateBulkUI();
   }
-  function renderPresence(){const unique=uniquePresencePeople();$('#sk-online-users').innerHTML=unique.map(p=>`<li><span class="sk-avatar">${esc((p.name||'U').slice(0,2).toUpperCase())}</span><div><b>${esc(p.name||'Guest')}</b><small>${p.client_id===clientId?'You':'Online'}</small></div></li>`).join('')||`<li><div><small>${lang==='fa'?'در حال دریافت فهرست…':'Loading presence…'}</small></div></li>`;if(channel)setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}
+  function renderPresence(){const unique=uniquePresencePeople();window.dispatchEvent(new CustomEvent('sk-presence-count',{detail:Math.max(unique.length,1)}));$('#sk-online-users').innerHTML=unique.map(p=>`<li><span class="sk-avatar">${esc((p.name||'U').slice(0,2).toUpperCase())}</span><div><b>${esc(p.name||'Guest')}</b><small>${p.client_id===clientId?'You':'Online'}</small></div></li>`).join('')||`<li><div><small>${lang==='fa'?'در حال دریافت فهرست…':'Loading presence…'}</small></div></li>`;if(channel)setConnection('online',lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED');}
 
   async function fetchMessages(){
     const{data,error}=await supabase.from('messages').select('*').order('created_at',{ascending:true}).limit(150);
@@ -168,8 +168,21 @@
 
   function detectLang(text){return/[\u0600-\u06ff]/.test(text)?'fa':/[çğıöşüİ]/i.test(text)?'tr':'en';}
   function clean(text){return text.replace(/\s+/g,' ').trim();}
-  const aiMemory=[];
-  function remember(role,text){aiMemory.push({role,content:clean(text)});if(aiMemory.length>16)aiMemory.splice(0,aiMemory.length-16);}
+  const AI_MEMORY_KEY='sam-ai-memory-v1';
+  const AI_PROFILE_KEY='sam-ai-profile-v1';
+  let aiMemory=[];
+  let aiProfile={};
+  try{const saved=JSON.parse(localStorage.getItem(AI_MEMORY_KEY)||'[]');if(Array.isArray(saved))aiMemory=saved.slice(-24);}catch{}
+  try{const saved=JSON.parse(localStorage.getItem(AI_PROFILE_KEY)||'{}');if(saved&&typeof saved==='object')aiProfile=saved;}catch{}
+  function saveAIMemory(){try{localStorage.setItem(AI_MEMORY_KEY,JSON.stringify(aiMemory.slice(-24)));localStorage.setItem(AI_PROFILE_KEY,JSON.stringify(aiProfile));}catch{}}
+  function learnProfile(text){
+    const q=clean(text||'');
+    const fa=q.match(/(?:اسم من|من اسمم)\s+([؀-ۿA-Za-z][؀-ۿA-Za-z‌\- ]{1,30}?)(?:\s+(?:است|هست|هستم)|[.!؟?]|$)/i);
+    const en=q.match(/(?:my name is|call me)\s+([A-Za-z][A-Za-z '\-]{1,30})(?:[.!?]|$)/i);
+    const name=clean((fa?.[1]||en?.[1]||'')).replace(/\s+(?:است|هست|هستم)$/,'');
+    if(name&&name.length<=32)aiProfile.name=name;
+  }
+  function remember(role,text){learnProfile(role==='user'?text:'');aiMemory.push({role,content:clean(text)});if(aiMemory.length>24)aiMemory.splice(0,aiMemory.length-24);saveAIMemory();}
   async function askAI(text,action='auto'){
     const q=clean(text||'');
     if(!q)throw new Error(lang==='fa'?'پیامی برای هوش مصنوعی وارد نشده.':'No AI prompt was provided.');
@@ -177,7 +190,7 @@
     const response=await fetch(`${cfg.url}/functions/v1/sk-ai-chat`,{
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':cfg.key,'Authorization':`Bearer ${cfg.key}`},
-      body:JSON.stringify({message:q,action,language:detectLang(q),history:aiMemory.slice(-12)})
+      body:JSON.stringify({message:q,action,language:detectLang(q),history:aiMemory.slice(-18),profile:aiProfile})
     });
     const data=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(data.error||data.message||`AI request failed (${response.status})`);
@@ -282,7 +295,7 @@
     }
   }
   function stopVoice(cancelSpeech=true){clearRecognitionStartTimer();recognitionRetryCount=0;voiceActive=false;voiceRestart=false;isAISpeaking=false;voicePromptBusy=false;$('#sk-voice-ai').classList.remove('active','listening','speaking');$('#sk-voice-ai').setAttribute('aria-pressed','false');try{recognition?.abort();}catch{}recognition=null;if(cancelSpeech&&'speechSynthesis'in window)speechSynthesis.cancel();if(cancelSpeech&&currentAudio){currentAudio.pause();currentAudio.src='';currentAudio=null;}if(aiEnabled())$('#sk-ai-note').textContent=T().aiReady;}
-  async function handleVoicePrompt(text){if(!text||voicePromptBusy||isAISpeaking)return;voicePromptBusy=true;voiceRestart=true;try{recognition?.abort();}catch{}$('#sk-message').value=text;$('#sk-ai-note').textContent=T().aiThinking;try{const answer=await askAI(text);lastAIOutput=answer;if(user&&supabase){await insertMessage({name:user.name,body:text,reply:null,media:[]});await insertMessage({name:'SK AI',body:answer,reply:null,media:[],isAI:true,originClient:'sk-gemini'});}else{$('#sk-ai-studio-input').value=text;$('#sk-ai-studio-output').textContent=answer;openStudio();}voicePromptBusy=false;await speak(answer);}catch(err){voicePromptBusy=false;console.error(err);$('#sk-ai-note').textContent=err.message||T().aiError;if(voiceActive)setTimeout(startRecognition,1000);}}
+  async function handleVoicePrompt(text){if(!text||voicePromptBusy||isAISpeaking)return;voicePromptBusy=true;voiceRestart=true;try{recognition?.abort();}catch{}$('#sk-message').value=text;$('#sk-ai-note').textContent=T().aiThinking;try{const answer=await askAI(text);lastAIOutput=answer;if(user&&supabase){await insertMessage({name:user.name,body:text,reply:null,media:[]});await insertMessage({name:'Sam',body:answer,reply:null,media:[],isAI:true,originClient:'sam-assistant'});}else{$('#sk-ai-studio-input').value=text;$('#sk-ai-studio-output').textContent=answer;openStudio();}voicePromptBusy=false;await speak(answer);}catch(err){voicePromptBusy=false;console.error(err);$('#sk-ai-note').textContent=err.message||T().aiError;if(voiceActive)setTimeout(startRecognition,1000);}}
   $('#sk-voice-ai').onclick=async()=>{
     if(!aiEnabled()){$('#sk-ai').checked=true;localStorage.setItem('sk-ai-enabled','1');updateAIUI();}
     if(voiceActive){stopVoice();return;}
@@ -307,7 +320,7 @@
     }
   };
 
-  $('#sk-form').onsubmit=async e=>{e.preventDefault();if(sending||aiBusy)return;const text=$('#sk-message').value.trim();if(!text&&!files.length)return;if(!user){$('#sk-login').hidden=false;$('#sk-room').hidden=true;return;}if(!supabase){$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=T().notConfigured;return;}sending=true;const sentFiles=[...files],sentReply=replyTo;$('#sk-connection-note').textContent=T().sending;try{const uploaded=await uploadMedia(sentFiles);await insertMessage({name:user.name,body:text,reply:sentReply,media:uploaded});$('#sk-message').value='';files=[];drawFiles();replyTo=null;$('#sk-reply-preview').hidden=true;if(aiEnabled()){aiBusy=true;const temp={id:'typing',display_name:'SK AI',body:'',typing:true,is_ai:true,client_id:'ai'};messages.push(temp);render();const answer=await askAI(text);messages=messages.filter(m=>m!==temp);await insertMessage({name:'SK AI',body:answer,reply:null,media:[],isAI:true,originClient:'sk-gemini'});lastAIOutput=answer;$('#sk-ai-note').textContent=T().aiReady;}}catch(err){console.error(err);messages=messages.filter(m=>!m.typing);render();$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=`${T().connectionError} ${err.message||''}`;}finally{aiBusy=false;sending=false;setConnection(channel?'online':'offline',channel?(lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED'):T().connectionError);}};
+  $('#sk-form').onsubmit=async e=>{e.preventDefault();if(sending||aiBusy)return;const text=$('#sk-message').value.trim();if(!text&&!files.length)return;if(!user){$('#sk-login').hidden=false;$('#sk-room').hidden=true;return;}if(!supabase){$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=T().notConfigured;return;}sending=true;const sentFiles=[...files],sentReply=replyTo;$('#sk-connection-note').textContent=T().sending;try{const uploaded=await uploadMedia(sentFiles);await insertMessage({name:user.name,body:text,reply:sentReply,media:uploaded});$('#sk-message').value='';files=[];drawFiles();replyTo=null;$('#sk-reply-preview').hidden=true;if(aiEnabled()){aiBusy=true;const temp={id:'typing',display_name:'Sam',body:'',typing:true,is_ai:true,client_id:'ai'};messages.push(temp);render();const answer=await askAI(text);messages=messages.filter(m=>m!==temp);await insertMessage({name:'Sam',body:answer,reply:null,media:[],isAI:true,originClient:'sam-assistant'});lastAIOutput=answer;$('#sk-ai-note').textContent=T().aiReady;}}catch(err){console.error(err);messages=messages.filter(m=>!m.typing);render();$('#sk-ai-note').hidden=false;$('#sk-ai-note').textContent=`${T().connectionError} ${err.message||''}`;}finally{aiBusy=false;sending=false;setConnection(channel?'online':'offline',channel?(lang==='fa'?'ارتباط زنده برقرار است':'REALTIME CONNECTED'):T().connectionError);}};
   $('#sk-message').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#sk-form').requestSubmit();}};$('#sk-message').oninput=e=>{e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,110)+'px';};
   $('#sk-voice').onclick=async()=>{if(recorder?.state==='recording'){recorder.stop();return;}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>chunks.push(e.data);recorder.onstop=()=>{const mime=MediaRecorder.isTypeSupported?.('audio/webm')?'audio/webm':'audio/mp4',blob=new Blob(chunks,{type:mime}),file=new File([blob],`voice-message.${mime.includes('mp4')?'m4a':'webm'}`,{type:mime});files.push({type:mime,url:URL.createObjectURL(blob),file});stream.getTracks().forEach(t=>t.stop());$('#sk-voice').classList.remove('recording');drawFiles();};recorder.start();$('#sk-voice').classList.add('recording');}catch{alert(lang==='fa'?'دسترسی میکروفون داده نشد.':'Microphone permission was not granted.');}};
 

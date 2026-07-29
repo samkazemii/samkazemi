@@ -383,3 +383,17 @@ setInterval(()=>{feedIndex=(feedIndex+1)%cameraFeeds.length;if(previewFeed)previ
   }
   startBtn.addEventListener('click',begin);reset.addEventListener('click',resetAll);window.addEventListener('beforeunload',()=>{if(uploadedUrl)URL.revokeObjectURL(uploadedUrl)});updateDesignerOutputs();resetAll();
 })();
+
+
+// V23 — five taps on the SK logo unlock a short Control Room sequence.
+(()=>{
+  const overlay=document.getElementById('control-room-easter');
+  const logos=[...document.querySelectorAll('.brand-mark-logo,.boot-logo')];
+  if(!overlay||!logos.length)return;
+  let taps=0,timer=0,closing=0;
+  const beep=()=>{try{const AC=window.AudioContext||window.webkitAudioContext,ctx=new AC(),gain=ctx.createGain(),osc=ctx.createOscillator();osc.type='sine';osc.frequency.setValueAtTime(880,ctx.currentTime);gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.055,ctx.currentTime+.02);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.18);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.2);setTimeout(()=>ctx.close(),350)}catch{}};
+  const launch=()=>{clearTimeout(closing);overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');beep();closing=setTimeout(()=>{overlay.classList.remove('active');overlay.setAttribute('aria-hidden','true')},3200)};
+  logos.forEach(logo=>{logo.style.cursor='pointer';logo.addEventListener('click',()=>{taps++;clearTimeout(timer);timer=setTimeout(()=>taps=0,1700);if(taps>=5){taps=0;launch()}})});
+  overlay.addEventListener('click',()=>{overlay.classList.remove('active');overlay.setAttribute('aria-hidden','true')});
+  window.addEventListener('sk-presence-count',e=>{const n=Math.max(Number(e.detail)||1,1),el=document.getElementById('site-live-count');if(el)el.textContent=String(n)});
+})();

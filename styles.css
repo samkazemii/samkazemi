@@ -646,3 +646,18 @@ html[dir="rtl"] input[type="text"]{text-align:right}
   background:transparent;
   border-radius:50%;
 }
+
+
+/* V23 — Sam identity, live presence and Control Room easter egg */
+.site-live-counter{position:fixed;left:22px;bottom:22px;z-index:190;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(5,8,12,.78);backdrop-filter:blur(14px);box-shadow:0 14px 40px rgba(0,0,0,.28);font:800 9px/1.1 monospace;letter-spacing:.1em;color:#aebbc2;pointer-events:none}
+.site-live-counter i{width:7px;height:7px;border-radius:50%;background:#5dffe2;box-shadow:0 0 12px rgba(93,255,226,.9);animation:skLivePulse 1.7s ease-in-out infinite}.site-live-counter b{color:#fff;font-size:11px}
+@keyframes skLivePulse{50%{opacity:.45;transform:scale(.75)}}
+.control-room-easter{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(0,3,6,.96);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease;overflow:hidden}
+.control-room-easter.active{opacity:1;visibility:visible}.cr-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px);animation:crScan 7s linear infinite}.cr-grid{position:absolute;inset:-20%;background-image:linear-gradient(rgba(93,255,226,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(93,255,226,.06) 1px,transparent 1px);background-size:46px 46px;transform:perspective(600px) rotateX(58deg) translateY(35%);transform-origin:center bottom;animation:crGrid 2.8s ease-out both}
+.cr-console{position:relative;width:min(780px,88vw);text-align:center;padding:42px;border:1px solid rgba(93,255,226,.28);background:rgba(4,10,14,.78);box-shadow:0 0 100px rgba(93,255,226,.1),inset 0 0 60px rgba(93,255,226,.035);clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px);transform:scale(.88);opacity:0}.control-room-easter.active .cr-console{animation:crConsole .55s .08s cubic-bezier(.2,.8,.2,1) forwards}
+.cr-on-air{display:inline-flex;align-items:center;gap:9px;margin-bottom:26px;padding:8px 13px;border:1px solid rgba(255,55,55,.5);color:#ff5b5b;font:900 11px/1 monospace;letter-spacing:.18em}.cr-on-air i{width:9px;height:9px;border-radius:50%;background:#ff3535;box-shadow:0 0 18px #ff3535;animation:crBlink .75s steps(1) infinite}
+.cr-monitors{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:0 auto 28px}.cr-monitors span{height:74px;display:grid;place-items:end start;padding:9px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(135deg,rgba(93,255,226,.12),rgba(143,108,255,.08));color:#8da0aa;font:800 8px/1 monospace;letter-spacing:.12em}.cr-monitors span:nth-child(3){border-color:rgba(255,55,55,.55);box-shadow:inset 0 0 22px rgba(255,55,55,.08)}
+.cr-console strong{display:block;font-size:clamp(24px,5vw,58px);line-height:.95;letter-spacing:.05em;color:#fff}.cr-console small{display:block;margin-top:15px;color:#5dffe2;font:800 10px/1.2 monospace;letter-spacing:.16em}
+@keyframes crConsole{to{opacity:1;transform:scale(1)}}@keyframes crBlink{50%{opacity:.25}}@keyframes crScan{to{transform:translateY(20px)}}@keyframes crGrid{from{opacity:0;transform:perspective(600px) rotateX(58deg) translateY(50%)}to{opacity:1;transform:perspective(600px) rotateX(58deg) translateY(35%)}}
+@media(max-width:650px){.site-live-counter{left:12px;bottom:12px}.site-live-counter span{display:none}.cr-console{padding:28px 18px}.cr-monitors{grid-template-columns:repeat(2,1fr)}.cr-monitors span{height:58px}}
+@media(prefers-reduced-motion:reduce){.control-room-easter *,.site-live-counter i{animation:none!important}}
