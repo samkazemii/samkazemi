@@ -236,9 +236,13 @@
   function browserSpeak(text){
     return new Promise((resolve,reject)=>{
       if(!('speechSynthesis'in window))return reject(new Error('Speech synthesis unavailable'));
+      // Keep the stable pre-V26 desktop behavior. A short watchdog was cancelling
+      // normal long responses before Chrome/Edge had finished speaking.
       speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=detectLang(text)==='fa'?'fa-IR':'en-US';u.rate=1.02;u.pitch=1;u.volume=1;
       const voices=speechSynthesis.getVoices();u.voice=voices.find(v=>v.lang?.toLowerCase().startsWith(u.lang.slice(0,2).toLowerCase()))||null;
-      u.onend=()=>{finishSpeaking(1000);resolve();};u.onerror=e=>reject(e.error||e);speechSynthesis.speak(u);
+      u.onend=()=>{finishSpeaking(1000);resolve();};
+      u.onerror=e=>reject(e.error||e);
+      speechSynthesis.speak(u);
       setTimeout(()=>{if(speechSynthesis.paused)speechSynthesis.resume();},250);
     });
   }
@@ -255,11 +259,14 @@
     isAISpeaking=true;ignoreRecognitionUntil=Date.now()+450;try{recognition?.abort();}catch{}
     $('#sk-voice-ai').classList.add('speaking');$('#sk-ai-note').textContent=T().aiSpeaking;
     await unlockMobileVoice();if(currentAudio){currentAudio.pause();currentAudio.src='';currentAudio=null;}if('speechSynthesis'in window)speechSynthesis.cancel();
-    // Browser speech begins almost instantly. Cloud TTS is now only a fallback,
-    // eliminating the long network wait that made Voice mode feel sluggish.
-    try{await browserSpeak(text);}catch(err){
-      console.warn('Browser voice unavailable; using cloud TTS',err);
-      try{await cloudSpeak(text);}catch(fallbackErr){console.error('AI voice',fallbackErr);finishSpeaking(350);$('#sk-ai-note').textContent=lang==='fa'?'پاسخ متنی آماده است، اما صدا در این مرورگر پخش نشد.':'The text reply is ready, but audio could not play in this browser.';}
+    // iOS Safari is unreliable with SpeechSynthesis after asynchronous AI requests.
+    // Use the existing cloud voice first on iPhone/iPad, then fall back to browser speech.
+    // Other browsers keep the near-instant browser voice first.
+    const primary=isIOS()?cloudSpeak:browserSpeak;
+    const fallback=isIOS()?browserSpeak:cloudSpeak;
+    try{await primary(text);}catch(err){
+      console.warn('Primary voice unavailable; trying fallback',err);
+      try{await fallback(text);}catch(fallbackErr){console.error('AI voice',fallbackErr);finishSpeaking(350);$('#sk-ai-note').textContent=lang==='fa'?'پاسخ متنی آماده است، اما صدا در این مرورگر پخش نشد.':'The text reply is ready, but audio could not play in this browser.';}
     }
   }
 
