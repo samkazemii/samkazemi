@@ -1,5 +1,4 @@
 (()=>{
-  // Voice stability release V28: no Supabase changes; iOS uses one-tap recognition.
   const $=s=>document.querySelector(s);
   const panel=$('#sk-community-panel'), launch=$('#sk-community-launcher');
   if(!panel||!launch)return;
@@ -215,6 +214,7 @@
   $('#sk-ai-studio-speak').onclick=()=>speak(lastAIOutput||$('#sk-ai-studio-output').textContent);
 
   let currentAudio=null, mobileAudioContext=null, mobileVoiceUnlocked=false, micPermissionReady=false;
+  let iosRecorder=null,iosStream=null,iosChunks=[],iosMaxTimer=null,iosAudioContext=null,iosAnalyser=null,iosMonitorFrame=null;
   const isIOS=()=>/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 
   async function unlockMobileVoice(){
@@ -253,14 +253,7 @@
     isAISpeaking=false;ignoreRecognitionUntil=Date.now()+delay;
     $('#sk-voice-ai').classList.remove('speaking');
     $('#sk-ai-note').textContent=T().aiReady;
-    // iPhone/iPad use one deliberate tap per question. This avoids Safari permission loops.
-    if(isIOS()){
-      voiceActive=false;voiceRestart=false;
-      $('#sk-voice-ai').classList.remove('active','listening');
-      $('#sk-voice-ai').setAttribute('aria-pressed','false');
-      return;
-    }
-    if(voiceRestart&&voiceActive)setTimeout(startRecognition,delay+100);
+    if(voiceRestart&&voiceActive)setTimeout(()=>isIOS()?startIOSRecording():startRecognition(),delay+100);
   }
 
   function browserSpeak(text){
@@ -315,6 +308,7 @@
     if(!text)return;
     isAISpeaking=true;ignoreRecognitionUntil=Date.now()+1000;
     try{recognition?.abort();}catch{}
+    stopIOSRecorderOnly();
     $('#sk-voice-ai').classList.add('speaking');$('#sk-ai-note').textContent=T().aiSpeaking;
     await unlockMobileVoice();
     if(currentAudio){currentAudio.pause();currentAudio.src='';currentAudio=null;}
@@ -331,6 +325,94 @@
     }
   }
 
+  function stopIOSRecorderOnly(){
+    clearTimeout(iosMaxTimer);iosMaxTimer=null;
+    if(iosMonitorFrame)cancelAnimationFrame(iosMonitorFrame);iosMonitorFrame=null;
+    try{if(iosRecorder&&iosRecorder.state==='recording')iosRecorder.stop();}catch{}
+    try{iosAudioContext?.close();}catch{}
+    iosAudioContext=null;iosAnalyser=null;iosRecorder=null;
+    $('#sk-voice-ai').classList.remove('listening');
+  }
+
+  function releaseIOSMicrophone(){
+    stopIOSRecorderOnly();
+    try{iosStream?.getTracks().forEach(track=>track.stop());}catch{}
+    iosStream=null;iosChunks=[];
+  }
+
+  async function transcribeAudio(blob){
+    const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');reader.onerror=reject;reader.readAsDataURL(blob);});
+    const response=await fetchWithTimeout(`${cfg.url}/functions/v1/sk-ai-stt`,{
+      method:'POST',headers:{'Content-Type':'application/json','apikey':cfg.key,'Authorization':`Bearer ${cfg.key}`},
+      body:JSON.stringify({audio:base64,mimeType:blob.type||'audio/mp4',language:VOICE_RECOGNITION_LANG})
+    },20000);
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||'Speech transcription failed');
+    return String(data.text||'').trim();
+  }
+
+  async function startIOSRecording(){
+    if(!voiceActive||isAISpeaking||voicePromptBusy)return false;
+    if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
+      $('#sk-ai-note').textContent=lang==='fa'?'این نسخه Safari امکان ضبط صدا را ندارد. iOS را به‌روزرسانی کن.':'This Safari version cannot record audio. Update iOS.';
+      stopVoice(false);return false;
+    }
+    try{
+      if(!iosStream||iosStream.getTracks().every(track=>track.readyState==='ended')){
+        iosStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+        micPermissionReady=true;
+      }
+      const mime=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(type=>MediaRecorder.isTypeSupported?.(type))||'';
+      iosChunks=[];
+      const recorder=new MediaRecorder(iosStream,mime?{mimeType:mime}:undefined);iosRecorder=recorder;
+      recorder.ondataavailable=e=>{if(e.data?.size)iosChunks.push(e.data);};
+      recorder.onerror=e=>{console.error('iOS recorder',e);releaseIOSMicrophone();stopVoice(false);};
+      recorder.onstop=async()=>{
+        if(iosRecorder===recorder)iosRecorder=null;
+        if(iosMonitorFrame)cancelAnimationFrame(iosMonitorFrame);iosMonitorFrame=null;
+        clearTimeout(iosMaxTimer);iosMaxTimer=null;
+        try{iosAudioContext?.close();}catch{}iosAudioContext=null;iosAnalyser=null;
+        $('#sk-voice-ai').classList.remove('listening');
+        const blob=new Blob(iosChunks,{type:recorder.mimeType||mime||'audio/mp4'});iosChunks=[];
+        if(!voiceActive||blob.size<700)return;
+        $('#sk-ai-note').textContent=lang==='fa'?'سام صدایت را شنید؛ در حال پاسخ…':'Sam heard you — preparing a reply…';
+        try{
+          const text=await transcribeAudio(blob);
+          if(!text)throw new Error(lang==='fa'?'صدایی تشخیص داده نشد.':'No speech was detected.');
+          await handleVoicePrompt(text);
+        }catch(err){
+          console.error('iOS voice',err);
+          releaseIOSMicrophone();
+          $('#sk-ai-note').textContent=lang==='fa'?'تبدیل صدا فعال نیست. تابع sk-ai-stt باید در Supabase منتشر شود.':'Voice transcription is unavailable. Deploy the sk-ai-stt function in Supabase.';
+          stopVoice(false);
+        }
+      };
+      recorder.start(120);
+      $('#sk-voice-ai').classList.add('listening');$('#sk-ai-note').textContent=T().aiListening;
+
+      const AC=window.AudioContext||window.webkitAudioContext;
+      iosAudioContext=new AC();if(iosAudioContext.state==='suspended')await iosAudioContext.resume();
+      const source=iosAudioContext.createMediaStreamSource(iosStream);iosAnalyser=iosAudioContext.createAnalyser();iosAnalyser.fftSize=512;source.connect(iosAnalyser);
+      const levels=new Uint8Array(iosAnalyser.fftSize);let heardSpeech=false,silentSince=0,startedAt=Date.now();
+      const monitor=()=>{
+        if(!iosRecorder||iosRecorder!==recorder||recorder.state!=='recording')return;
+        iosAnalyser.getByteTimeDomainData(levels);let sum=0;
+        for(const value of levels){const normalized=(value-128)/128;sum+=normalized*normalized;}
+        const rms=Math.sqrt(sum/levels.length),now=Date.now();
+        if(rms>.02){heardSpeech=true;silentSince=0;}
+        else if(heardSpeech){silentSince=silentSince||now;if(now-silentSince>750){try{recorder.stop();}catch{}return;}}
+        else if(now-startedAt>7000){try{recorder.stop();}catch{}return;}
+        iosMonitorFrame=requestAnimationFrame(monitor);
+      };
+      monitor();iosMaxTimer=setTimeout(()=>{try{if(recorder.state==='recording')recorder.stop();}catch{}},12000);
+      return true;
+    }catch(err){
+      releaseIOSMicrophone();console.error('iOS microphone',err);
+      $('#sk-ai-note').textContent=lang==='fa'?'میکروفون باز نشد. در Settings > Safari > Microphone دسترسی را Allow کن و صفحه را دوباره باز کن.':'The microphone could not open. Allow it in Safari settings and reopen the page.';
+      stopVoice(false);return false;
+    }
+  }
+
   if('speechSynthesis'in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}
   function buildRecognition(){
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;
@@ -338,7 +420,7 @@
     r.onstart=()=>{clearRecognitionStartTimer();recognitionRetryCount=0;if(isAISpeaking||Date.now()<ignoreRecognitionUntil){try{r.abort();}catch{}return;}$('#sk-voice-ai').classList.add('listening');$('#sk-ai-note').textContent=T().aiListening;};
     r.onresult=e=>{if(isAISpeaking||Date.now()<ignoreRecognitionUntil||voicePromptBusy)return;let final='';for(let i=e.resultIndex;i<e.results.length;i++)final+=e.results[i][0]?.transcript||'';final=final.trim();if(!final)return;const normalized=final.toLocaleLowerCase(),aiEcho=(lastAIOutput||'').trim().toLocaleLowerCase();if(normalized===lastVoicePrompt||aiEcho.includes(normalized)||(aiEcho&&normalized.includes(aiEcho.slice(0,Math.min(40,aiEcho.length)))))return;lastVoicePrompt=normalized;handleVoicePrompt(final);};
     r.onerror=e=>{console.warn('Speech recognition',e.error);$('#sk-voice-ai').classList.remove('listening');if(['not-allowed','service-not-allowed'].includes(e.error)){$('#sk-ai-note').textContent=lang==='fa'?'دسترسی میکروفون بسته است. در تنظیمات سایت آن را Allow کن.':'Microphone access is blocked. Allow it in site settings.';stopVoice(false);return;}if(e.error==='audio-capture'){$('#sk-ai-note').textContent=lang==='fa'?'میکروفون پیدا نشد یا توسط برنامه دیگری استفاده می‌شود.':'No microphone was found or it is busy.';stopVoice(false);return;}if(!['aborted','no-speech'].includes(e.error)){$('#sk-ai-note').textContent=lang==='fa'?'اتصال تشخیص صدا قطع شد؛ دوباره تلاش می‌کنم…':'Voice recognition disconnected; retrying…';recognition=null;}};
-    r.onend=()=>{$('#sk-voice-ai').classList.remove('listening');if(isIOS()&&!isAISpeaking&&!voicePromptBusy){voiceActive=false;voiceRestart=false;$('#sk-voice-ai').classList.remove('active');$('#sk-voice-ai').setAttribute('aria-pressed','false');return;}if(voiceActive&&!isAISpeaking&&!voicePromptBusy)setTimeout(startRecognition,500);};return r;
+    r.onend=()=>{$('#sk-voice-ai').classList.remove('listening');if(voiceActive&&!isAISpeaking&&!voicePromptBusy)setTimeout(startRecognition,500);};return r;
   }
   let recognitionStartTimer=null,recognitionRetryCount=0;
   const mobileVoiceBrowser=()=>/Android|Mobile/i.test(navigator.userAgent)||(!isIOS()&&matchMedia?.('(pointer: coarse)')?.matches);
@@ -347,12 +429,7 @@
     if(!voiceActive||isAISpeaking||voicePromptBusy||Date.now()<ignoreRecognitionUntil)return false;
     if(forceFresh&&recognition){try{recognition.abort();}catch{}recognition=null;}
     if(!recognition)recognition=buildRecognition();
-    if(!recognition){
-      $('#sk-ai-note').textContent=lang==='fa'?'تشخیص گفتار در این نسخه Safari در دسترس نیست؛ می‌توانی سؤال را تایپ کنی و پاسخ صوتی را با دکمه بلندگو بشنوی.':'Speech recognition is unavailable in this Safari version. Type your question and use the speaker button for audio replies.';
-      voiceActive=false;voiceRestart=false;
-      $('#sk-voice-ai').classList.remove('active','listening');$('#sk-voice-ai').setAttribute('aria-pressed','false');
-      return false;
-    }
+    if(!recognition){$('#sk-ai-note').textContent=lang==='fa'?'تشخیص گفتار روی این مرورگر فعال نیست.':'Speech recognition is not available in this browser.';return false;}
     clearRecognitionStartTimer();
     try{
       recognition.lang=VOICE_RECOGNITION_LANG;recognition.start();
@@ -365,7 +442,7 @@
 
   function stopVoice(cancelSpeech=true){
     voiceActive=false;voiceRestart=false;isAISpeaking=false;voicePromptBusy=false;
-    clearRecognitionStartTimer();recognitionRetryCount=0;
+    releaseIOSMicrophone();clearRecognitionStartTimer();recognitionRetryCount=0;
     $('#sk-voice-ai').classList.remove('active','listening','speaking');$('#sk-voice-ai').setAttribute('aria-pressed','false');
     try{recognition?.abort();}catch{}recognition=null;
     if(cancelSpeech&&'speechSynthesis'in window)speechSynthesis.cancel();
@@ -383,7 +460,7 @@
       if(user&&supabase){await insertMessage({name:user.name,body:text,reply:null,media:[]});await insertMessage({name:'Sam',body:answer,reply:null,media:[],isAI:true,originClient:'sam-assistant'});}
       else{$('#sk-ai-studio-input').value=text;$('#sk-ai-studio-output').textContent=answer;openStudio();}
       voicePromptBusy=false;await speak(answer);
-    }catch(err){voicePromptBusy=false;console.error(err);$('#sk-ai-note').textContent=err.message||T().aiError;if(voiceActive&&!isIOS())setTimeout(startRecognition,900);else if(isIOS()){voiceActive=false;voiceRestart=false;$('#sk-voice-ai').classList.remove('active','listening');$('#sk-voice-ai').setAttribute('aria-pressed','false');}}
+    }catch(err){voicePromptBusy=false;console.error(err);$('#sk-ai-note').textContent=err.message||T().aiError;if(voiceActive)setTimeout(()=>isIOS()?startIOSRecording():startRecognition(),900);}
   }
 
   $('#sk-voice-ai').onclick=async()=>{
@@ -393,11 +470,8 @@
     $('#sk-voice-ai').classList.add('active');$('#sk-voice-ai').setAttribute('aria-pressed','true');
     $('#sk-ai-note').textContent=lang==='fa'?'در حال فعال‌کردن میکروفون…':'ACTIVATING MICROPHONE…';
     await unlockMobileVoice();
-    if(isIOS()){
-      // Do not pre-open getUserMedia on iOS. Safari's recognition API owns the prompt,
-      // and a single recognition cycle prevents repeated permission requests.
-      startRecognition(true);
-    }else if(mobileVoiceBrowser()){
+    if(isIOS())await startIOSRecording();
+    else if(mobileVoiceBrowser()){
       const allowed=await ensureMicrophonePermission();
       if(!allowed||!voiceActive){stopVoice(false);return;}
       await new Promise(resolve=>setTimeout(resolve,150));startRecognition(true);
