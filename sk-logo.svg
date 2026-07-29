@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Sam Kazemi SK logo</title>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8df8a"/>
+      <stop offset="0.5" stop-color="#d7a93e"/>
+      <stop offset="1" stop-color="#9e6d18"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M108 119h214M108 119c-45 0-72 27-72 67s27 67 72 67h124c45 0 72 27 72 67s-27 67-72 67H92" stroke="#f5f7fb" stroke-width="45"/>
+    <path d="M267 336V183M267 260l113-113M267 260l121 121" stroke="url(#gold)" stroke-width="45"/>
+    <path d="M103 387h45" stroke="#f5f7fb" stroke-width="45"/>
+    <path d="M120 430L392 72" stroke="url(#gold)" stroke-width="18"/>
+  </g>
+</svg>

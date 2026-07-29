@@ -630,3 +630,12 @@ html[dir="rtl"] input[type="text"]{text-align:right}
 .sk-contact-btn.x-social{background:#050505;border-color:rgba(255,255,255,.22)}
 .sk-contact-btn.x-social:hover{border-color:rgba(255,255,255,.7);box-shadow:0 0 24px rgba(255,255,255,.15)}
 .sk-contact-btn.x-social svg{fill:#fff}
+
+
+/* V20 — SK brand integration */
+.brand-mark-logo{display:grid;place-items:center;overflow:visible;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+.brand-mark-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.about-card>*:not(.about-logo-watermark){position:relative;z-index:1}
+.about-logo-watermark{position:absolute;inset:50% auto auto 50%;width:min(62vw,680px);aspect-ratio:1;transform:translate(-50%,-50%);opacity:.045;filter:blur(2px);pointer-events:none;z-index:0}
+.about-logo-watermark img{width:100%;height:100%;object-fit:contain}
+@media(max-width:760px){.about-logo-watermark{width:min(105vw,560px);opacity:.035;filter:blur(1.5px)}}
