@@ -29,7 +29,7 @@
 <link href="favicon-16x16.png?v=22" rel="icon" type="image/png" sizes="16x16"/>
 <link href="apple-touch-icon.png?v=22" rel="apple-touch-icon" sizes="180x180"/>
 <link href="site.webmanifest?v=22" rel="manifest"/>
-<link href="styles.css?v=25" rel="stylesheet"/><link href="community-hub.css?v=25" rel="stylesheet"/>
+<link href="styles.css?v=25" rel="stylesheet"/><link href="cinematic-hero.css?v=29" rel="stylesheet"/><link href="community-hub.css?v=25" rel="stylesheet"/>
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -116,31 +116,29 @@
 </nav>
 </header>
 <main id="top">
-<section aria-label="Sam Kazemi in a broadcast control room" class="hero hero-photo">
-<div class="hero-photo-stage" id="heroPhotoStage">
-<img alt="Sam Kazemi wearing a broadcast headset inside a television control room" class="hero-photo-image" src="sam-control-room-hero.jpg?v=9"/>
-<div class="hero-photo-vignette"></div>
-<div class="hero-photo-light light-one"></div>
-<div class="hero-photo-light light-two"></div>
-<div class="hero-photo-scan"></div>
-<div class="hero-photo-grain"></div>
-</div>
-<div aria-label="Sam Kazemi introduction" class="hero-copy-overlay">
-<p class="hero-kicker"><span></span> LIVE BROADCAST DIRECTION</p>
-<h1><small>SAM</small><strong>KAZEMI</strong></h1>
-<p class="hero-role">TV DIRECTOR &amp; BROADCAST SPECIALIST</p>
-<p class="hero-description">Director, producer and control-room operator creating confident live television, current-affairs programs and visual broadcast systems.</p>
-<a class="hero-work-button" href="#game">ENTER CONTROL ROOM <b>→</b></a>
-</div>
-<div aria-hidden="true" class="broadcast-hud">
-<div class="hud-program"><span>PROGRAM</span><b id="programFeed">CAM 1</b></div>
-<div class="hud-preview"><span>PREVIEW</span><b id="previewFeed">CAM 3</b></div>
-<div class="hud-audio"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-<div class="hud-clock" id="liveClock">00:00:00</div>
-</div>
-<a aria-label="Play Sam Kazemi control room challenge" class="hero-hotspot" href="#game"></a>
-<div class="hero-live-badge"><i></i> LIVE CONTROL ROOM</div>
-<a class="hero-enter" href="#game"><span>START CHALLENGE</span><b>↓</b></a>
+<section class="cine-hero" id="cineHero" aria-label="Cinematic introduction to Sam Kazemi">
+  <div class="cine-hero__sticky">
+    <div class="cine-hero__scene">
+      <div class="cine-hero__portrait"><img src="sam-control-room-hero.jpg?v=29" alt="Sam Kazemi in a television broadcast control room"></div>
+      <div class="cine-hero__depth"></div>
+      <canvas class="cine-hero__canvas" aria-hidden="true"></canvas>
+      <div class="cine-hero__vignette"></div><div class="cine-hero__scan"></div>
+      <div class="cine-hero__copy">
+        <p class="cine-hero__eyebrow"><i></i> LIVE BROADCAST DIRECTION</p>
+        <h1 class="cine-hero__title">SAM <span>KAZEMI</span></h1>
+        <p class="cine-hero__role">BROADCAST DIRECTOR &amp; PRODUCER</p>
+        <p class="cine-hero__tagline">I bring stories to life, live.</p>
+        <a class="cine-hero__cta" href="#game">ENTER CONTROL ROOM <b>↗</b></a>
+      </div>
+      <div class="cine-hero__hud" aria-hidden="true">
+        <div class="cine-hero__hud-top"><b>REC</b><span id="cineTimecode">00:00:00:00</span><span>PGM 01</span></div>
+        <div class="cine-hero__rail"><span class="active"></span><span></span><span></span><span></span><span></span></div>
+        <div class="cine-hero__chapter">SCROLL SEQUENCE<strong>ORBITING CAMERA</strong></div>
+      </div>
+      <div class="cine-hero__logo"><img src="sk-logo.svg?v=29" alt=""><div class="cine-hero__logo-copy"><b>WELCOME TO MY CONTROL ROOM</b>SAM KAZEMI · BROADCAST DIRECTOR</div></div>
+      <a class="cine-hero__skip" href="#game">SKIP INTRO ↓</a>
+    </div>
+  </div>
 </section>
 <section aria-label="Skills ticker" class="ticker">
 <div class="ticker-track">
@@ -382,7 +380,7 @@
 <p>Broadcast Director • Live Production • vMix</p>
 <span>© <span id="year"></span> Sam Kazemi</span>
 <p class="site-credit">Designed and developed by Sam Kazemi · Website design inquiries: <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=sam.kazmi0090%40gmail.com&amp;su=Website%20Design%20Inquiry" rel="noopener noreferrer" target="_blank">sam.kazmi0090@gmail.com</a></p></footer>
-<script src="language.js?v=1"></script><script src="script.js?v=26"></script>
+<script src="language.js?v=1"></script><script src="script.js?v=26"></script><script src="cinematic-hero.js?v=29"></script>
 
 <!-- V11.6 fixed floating Community Hub -->
 <div id="sk-contact-dock" aria-label="Quick contact">
@@ -415,6 +413,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js?v=2"></script>
 </div>
-<script src="community-hub.js?v=27.0"></script>
+<script src="community-hub.js?v=28"></script>
 </body>
 </html>
