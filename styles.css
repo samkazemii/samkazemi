@@ -203,6 +203,26 @@ footer{display:flex;align-items:center;justify-content:space-between;gap:20px;pa
   footer{flex-direction:column;text-align:center}
 }
 
+/* Particle-head scroll track: JS promotes this to a tall sticky track once WebGL is confirmed */
+.hero-scroll-track{position:relative}
+.hero-scroll-track.particle-active{height:220vh}
+.hero-scroll-track.particle-active .hero.hero-photo{position:sticky;top:0}
+.hero-particle-canvas{
+  position:absolute;inset:0;width:100%;height:100%;display:block;
+  opacity:0;pointer-events:none;
+}
+.hero-photo-image.is-particled{opacity:0;transition:opacity .5s ease}
+.hero-scroll-cue{
+  position:absolute;z-index:4;left:50%;bottom:clamp(26px,4vw,40px);transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);background:rgba(5,7,10,.5);backdrop-filter:blur(12px);
+  font:800 9px/1 monospace;letter-spacing:.16em;color:#9fb0bd;opacity:0;transition:opacity .4s ease,transform .4s ease;
+}
+.hero-scroll-cue span{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px rgba(70,231,255,.8);animation:livePulse 1.8s infinite}
+.hero-scroll-cue.is-visible{opacity:1}
+@media(max-width:900px){.hero-scroll-track.particle-active{height:175vh}.hero-scroll-cue{display:none}}
+@media(prefers-reduced-motion:reduce){.hero-scroll-track.particle-active{height:auto}.hero-scroll-track.particle-active .hero.hero-photo{position:relative}.hero-particle-canvas{display:none!important}}
+
 /* Cinematic control-room hero */
 .hero.hero-photo{
   position:relative;
